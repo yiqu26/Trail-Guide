@@ -8,12 +8,15 @@ import {
   IconButton,
   Chip,
   Paper,
+  Button,
+  Alert,
 } from '@mui/material';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Pagination } from 'swiper/modules';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import CampaignIcon from '@mui/icons-material/Campaign';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import RefreshIcon from '@mui/icons-material/Refresh';
 import { useNavigate } from 'react-router-dom';
 import { homeService } from '../services/home';
 import { BentoTrailCard } from '../components/BentoTrailCard';
@@ -150,20 +153,24 @@ const getCollectionStyle = (name: string): { icon: React.ReactNode; bgColor: str
 export function Home() {
   const [homeData, setHomeData] = useState<HomeData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const data = await homeService.getHomeData();
-        setHomeData(data);
-      } catch (error) {
-        console.error('Failed to fetch home data:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  const fetchData = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const data = await homeService.getHomeData();
+      setHomeData(data);
+    } catch (err) {
+      console.error('Failed to fetch home data:', err);
+      setError('無法載入資料，伺服器可能正在啟動中');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchData();
   }, []);
 
@@ -177,6 +184,37 @@ export function Home() {
             <Skeleton key={i} variant="rectangular" width={100} height={100} sx={{ borderRadius: 2 }} />
           ))}
         </Box>
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          minHeight: '60vh',
+          p: 3,
+          textAlign: 'center',
+        }}
+      >
+        <Alert severity="warning" sx={{ mb: 3, maxWidth: 400 }}>
+          {error}
+        </Alert>
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+          首次載入可能需要 30 秒左右，請稍候再試
+        </Typography>
+        <Button
+          variant="contained"
+          startIcon={<RefreshIcon />}
+          onClick={fetchData}
+          sx={{ borderRadius: 2 }}
+        >
+          重新載入
+        </Button>
       </Box>
     );
   }
