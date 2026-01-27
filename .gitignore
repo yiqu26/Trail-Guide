@@ -1,0 +1,52 @@
+# Dependencies
+node_modules/
+vendor/
+
+# Build outputs
+dist/
+build/
+bin/
+obj/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+.env.development
+.env.production
+
+# ASP.NET Core - 敏感配置
+appsettings.json
+appsettings.Development.json
+appsettings.Production.json
+
+# Docker volumes
+postgres_data/
+
+# IDE
+.vs/
+.vscode/
+.idea/
+*.suo
+*.user
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temp
+*.tmp
+*.temp
+.cache/
+
+# Archive and reference (old code, not for deployment)
+.archive/
+.reference/
+
+# Claude Code settings
+.claude/
