@@ -1,0 +1,22 @@
+# Render Blueprint - 一鍵部署配置
+# 文檔: https://render.com/docs/blueprint-spec
+
+services:
+  # 後端 API
+  - type: web
+    name: trailguide-api
+    runtime: docker
+    dockerfilePath: ./backend/TrailGuide.API/Dockerfile
+    dockerContext: ./backend/TrailGuide.API
+    envVars:
+      - key: ConnectionStrings__DefaultConnection
+        sync: false  # 手動設定，從 Neon 取得
+      - key: Jwt__Key
+        generateValue: true  # 自動生成安全密鑰
+      - key: Jwt__Issuer
+        value: TrailGuideAPI
+      - key: Jwt__Audience
+        value: TrailGuideApp
+      - key: AllowedOrigins
+        sync: false  # 設定 Vercel 前端網址，例如: https://trail-guide.vercel.app
+    healthCheckPath: /api/home

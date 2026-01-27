@@ -72,41 +72,28 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 // Services
 builder.Services.AddScoped<IJwtService, JwtService>();
 
-// CORS
+// CORS - 從環境變數讀取允許的來源
+var allowedOrigins = builder.Configuration["AllowedOrigins"]?.Split(',') ?? Array.Empty<string>();
+var defaultOrigins = new[] { "http://localhost:5173", "http://localhost:3000" };
+var allOrigins = defaultOrigins.Concat(allowedOrigins).Where(o => !string.IsNullOrEmpty(o)).ToArray();
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins(
-                "http://localhost:5173",    // Vite dev server
-                "http://localhost:3000"     // Alternative
-            )
+        policy.WithOrigins(allOrigins)
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials();
-    });
-
-    options.AddPolicy("AllowAll", policy =>
-    {
-        policy.AllowAnyOrigin()
-            .AllowAnyHeader()
-            .AllowAnyMethod();
     });
 });
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-    app.UseCors("AllowAll");
-}
-else
-{
-    app.UseCors("AllowFrontend");
-}
+app.UseSwagger();
+app.UseSwaggerUI();
+app.UseCors("AllowFrontend");
 
 app.UseAuthentication();
 app.UseAuthorization();
