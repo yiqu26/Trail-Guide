@@ -6,10 +6,14 @@ import {
   CardContent,
   Skeleton,
   IconButton,
+  Chip,
+  Paper,
 } from '@mui/material';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Pagination } from 'swiper/modules';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import CampaignIcon from '@mui/icons-material/Campaign';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { useNavigate } from 'react-router-dom';
 import { homeService } from '../services/home';
 import { TrailCard } from '../components/TrailCard';
@@ -334,27 +338,73 @@ export function Home() {
 
       {/* Announcements */}
       {homeData?.announcements && homeData.announcements.length > 0 && (
-        <Box sx={{ p: 2 }}>
-          <Typography variant="h6" fontWeight="bold" sx={{ mb: 1 }}>
-            最新消息
-          </Typography>
-          {homeData.announcements.map((announcement) => (
-            <Card
-              key={announcement.id}
-              sx={{ mb: 1, cursor: announcement.link ? 'pointer' : 'default' }}
-              onClick={() => announcement.link && window.open(announcement.link, '_blank')}
-            >
-              <CardContent sx={{ py: 1.5, '&:last-child': { pb: 1.5 } }}>
-                <Typography variant="subtitle2" fontWeight="bold">
-                  {announcement.title}
-                </Typography>
-                <Typography variant="caption" color="text.secondary">
-                  {announcement.date && new Date(announcement.date).toLocaleDateString('zh-TW')}
-                  {announcement.source && ` • ${announcement.source}`}
-                </Typography>
-              </CardContent>
-            </Card>
-          ))}
+        <Box sx={{ px: { xs: 2, md: 4 }, maxWidth: 1200, mx: 'auto', width: '100%' }}>
+          <Paper
+            elevation={0}
+            sx={{
+              mb: 3,
+              p: { xs: 2, sm: 3 },
+              borderRadius: 3,
+              background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
+            }}
+          >
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+            <CampaignIcon sx={{ color: 'primary.main' }} />
+            <Typography variant="h6" fontWeight="bold">
+              最新消息
+            </Typography>
+          </Box>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+            {homeData.announcements.map((announcement, index) => (
+              <Card
+                key={announcement.id}
+                elevation={1}
+                sx={{
+                  cursor: announcement.link ? 'pointer' : 'default',
+                  transition: 'all 0.2s ease',
+                  '&:hover': announcement.link ? {
+                    transform: 'translateX(4px)',
+                    boxShadow: 3,
+                  } : {},
+                  borderLeft: '4px solid',
+                  borderLeftColor: index === 0 ? 'primary.main' : 'grey.300',
+                }}
+                onClick={() => announcement.link && window.open(announcement.link, '_blank')}
+              >
+                <CardContent sx={{ py: 1.5, px: 2, '&:last-child': { pb: 1.5 } }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <Box sx={{ flex: 1 }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
+                        {index === 0 && (
+                          <Chip
+                            label="NEW"
+                            size="small"
+                            color="primary"
+                            sx={{ height: 20, fontSize: '0.65rem', fontWeight: 'bold' }}
+                          />
+                        )}
+                        <Typography variant="caption" color="text.secondary">
+                          {announcement.date && new Date(announcement.date).toLocaleDateString('zh-TW')}
+                        </Typography>
+                      </Box>
+                      <Typography variant="subtitle2" fontWeight="medium" sx={{ lineHeight: 1.4 }}>
+                        {announcement.title}
+                      </Typography>
+                      {announcement.source && (
+                        <Typography variant="caption" color="text.secondary">
+                          來源：{announcement.source}
+                        </Typography>
+                      )}
+                    </Box>
+                    {announcement.link && (
+                      <OpenInNewIcon sx={{ fontSize: 16, color: 'text.secondary', ml: 1, mt: 0.5 }} />
+                    )}
+                  </Box>
+                </CardContent>
+              </Card>
+            ))}
+          </Box>
+        </Paper>
         </Box>
       )}
     </Box>

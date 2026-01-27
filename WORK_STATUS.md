@@ -1,6 +1,25 @@
 # Trail Guide 工作狀態記錄
 
-**更新日期**: 2026-01-27
+**更新日期**: 2026-01-27 21:30
+
+## 待討論事項（下次繼續）
+
+### 熱門步道區塊設計方案選擇
+
+已研究 2025 UI 設計趨勢，提出以下方案待選：
+
+| 方案 | 特點 |
+|------|------|
+| **A. Bento Grid** | 不規則格子，1大+4小混搭，Apple 風格 |
+| **B. Tall Card 水平滑動** | 高比例卡片橫向滑動，類似 Netflix |
+| **C. 圖片優先卡片** | 大圖覆蓋+文字疊加，類似 Airbnb |
+| **D. Glassmorphism** | 毛玻璃效果，現代高端感 |
+
+**參考資料:**
+- https://www.lummi.ai/blog/ui-design-trends-2025
+- https://bricxlabs.com/blogs/card-ui-design-examples
+
+---
 
 ## 專案概述
 
@@ -19,6 +38,12 @@ Trail Guide 是一個台灣步道導覽 App，包含：
 | GitHub | GitHub | https://github.com/yiqu26/Trail-Guide |
 
 ## 本次完成工作
+
+### 0. 最新消息區塊優化 (進行中)
+- 改用 Paper 容器 + 漸層背景
+- 新增公告 icon、NEW 標籤、外連 icon
+- 左側彩色邊框強調最新消息
+- **已修復置中問題**
 
 ### 1. 地圖功能實作
 - 安裝 `leaflet`, `react-leaflet`, `@types/leaflet`
