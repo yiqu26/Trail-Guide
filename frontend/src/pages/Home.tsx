@@ -229,18 +229,20 @@ export function Home() {
       {homeData?.collections && homeData.collections.length > 0 && (
         <Box
           sx={{
-            py: 3,
-            px: 2,
+            py: { xs: 3, md: 4 },
+            px: { xs: 2, sm: 3, md: 4, lg: 6 },
             background: 'linear-gradient(180deg, #f5f5f5 0%, #ffffff 100%)',
             borderBottom: '1px solid #eee',
           }}
         >
           <Box
             sx={{
+              maxWidth: 1600,
+              mx: 'auto',
               display: 'flex',
-              justifyContent: 'space-between',
+              justifyContent: { xs: 'space-between', md: 'center' },
               overflowX: 'auto',
-              gap: 2,
+              gap: { xs: 2, sm: 3, md: 5, lg: 8 },
               pb: 1,
               '&::-webkit-scrollbar': { display: 'none' },
               msOverflowStyle: 'none',
@@ -258,11 +260,11 @@ export function Home() {
                     flexDirection: 'column',
                     alignItems: 'center',
                     cursor: 'pointer',
-                    minWidth: 70,
+                    minWidth: { xs: 70, md: 90 },
                     flex: '0 0 auto',
                     transition: 'all 0.2s ease',
                     '&:hover': {
-                      transform: 'translateY(-2px)',
+                      transform: 'translateY(-4px)',
                     },
                     '&:active': {
                       transform: 'scale(0.95)',
@@ -272,17 +274,22 @@ export function Home() {
                   {/* Icon Container with Background */}
                   <Box
                     sx={{
-                      width: 60,
-                      height: 60,
+                      width: { xs: 60, md: 80 },
+                      height: { xs: 60, md: 80 },
                       borderRadius: '50%',
                       backgroundColor: style.bgColor,
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      mb: 1,
-                      boxShadow: '0 3px 10px rgba(0,0,0,0.1)',
+                      mb: 1.5,
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.12)',
                       border: '3px solid white',
                       color: style.iconColor,
+                      transition: 'all 0.2s ease',
+                      '& svg': {
+                        width: { xs: 32, md: 40 },
+                        height: { xs: 32, md: 40 },
+                      },
                     }}
                   >
                     {style.icon}
@@ -291,11 +298,11 @@ export function Home() {
                   <Typography
                     sx={{
                       textAlign: 'center',
-                      fontSize: '12px',
+                      fontSize: { xs: '12px', md: '14px' },
                       fontWeight: 600,
                       lineHeight: 1.3,
                       color: '#333',
-                      maxWidth: 80,
+                      maxWidth: { xs: 80, md: 100 },
                     }}
                   >
                     {collection.name}
@@ -309,8 +316,8 @@ export function Home() {
 
       {/* Popular Trails - Bento Grid */}
       {homeData?.popularTrails && homeData.popularTrails.length > 0 && (
-        <Box sx={{ px: { xs: 2, md: 4 }, py: 2, maxWidth: 1200, mx: 'auto' }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+        <Box sx={{ px: { xs: 2, sm: 3, md: 4, lg: 6 }, py: 3, maxWidth: 1600, mx: 'auto' }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2.5 }}>
             <Typography variant="h6" fontWeight="bold">
               熱門步道
             </Typography>
@@ -318,19 +325,20 @@ export function Home() {
               <ChevronRightIcon />
             </IconButton>
           </Box>
-          {/* Bento Grid Layout */}
+          {/* Bento Grid Layout - 響應式 */}
           <Box
             sx={{
               display: 'grid',
-              gap: 1.5,
-              // 桌面版: 4 欄
+              gap: { xs: 1.5, sm: 2, md: 2.5 },
               gridTemplateColumns: {
-                xs: 'repeat(2, 1fr)',
-                sm: 'repeat(4, 1fr)',
+                xs: 'repeat(2, 1fr)',      // 手機: 2 欄
+                sm: 'repeat(4, 1fr)',      // 平板: 4 欄
+                lg: 'repeat(6, 1fr)',      // 桌面: 6 欄
               },
               gridTemplateRows: {
-                xs: 'repeat(3, 140px)',
-                sm: 'repeat(2, 160px)',
+                xs: 'repeat(3, 150px)',    // 手機: 3 排
+                sm: 'repeat(2, 180px)',    // 平板: 2 排
+                lg: 'repeat(2, 200px)',    // 桌面: 2 排，更高
               },
             }}
           >
@@ -345,21 +353,29 @@ export function Home() {
                 <BentoTrailCard trail={homeData.popularTrails[0]} isLarge />
               </Box>
             )}
-            {/* 小卡片 1 */}
+            {/* 小卡片 1-4 (所有尺寸都顯示) */}
             {homeData.popularTrails[1] && (
               <BentoTrailCard trail={homeData.popularTrails[1]} />
             )}
-            {/* 小卡片 2 */}
             {homeData.popularTrails[2] && (
               <BentoTrailCard trail={homeData.popularTrails[2]} />
             )}
-            {/* 小卡片 3 */}
             {homeData.popularTrails[3] && (
               <BentoTrailCard trail={homeData.popularTrails[3]} />
             )}
-            {/* 小卡片 4 */}
             {homeData.popularTrails[4] && (
               <BentoTrailCard trail={homeData.popularTrails[4]} />
+            )}
+            {/* 小卡片 5-6 (僅桌面版顯示) */}
+            {homeData.popularTrails[5] && (
+              <Box sx={{ display: { xs: 'none', lg: 'block' }, height: '100%' }}>
+                <BentoTrailCard trail={homeData.popularTrails[5]} />
+              </Box>
+            )}
+            {homeData.popularTrails[6] && (
+              <Box sx={{ display: { xs: 'none', lg: 'block' }, height: '100%' }}>
+                <BentoTrailCard trail={homeData.popularTrails[6]} />
+              </Box>
             )}
           </Box>
         </Box>
@@ -367,7 +383,7 @@ export function Home() {
 
       {/* Announcements */}
       {homeData?.announcements && homeData.announcements.length > 0 && (
-        <Box sx={{ px: { xs: 2, md: 4 }, maxWidth: 1200, mx: 'auto', width: '100%' }}>
+        <Box sx={{ px: { xs: 2, sm: 3, md: 4, lg: 6 }, maxWidth: 1600, mx: 'auto', width: '100%' }}>
           <Paper
             elevation={0}
             sx={{

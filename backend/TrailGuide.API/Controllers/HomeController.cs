@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using TrailGuide.API.Data;
 using TrailGuide.API.Models.DTOs;
 
@@ -16,9 +17,17 @@ public class HomeController : ControllerBase
         _context = context;
     }
 
+    // 取得當前用戶 ID（未登入則為 null）
+    private int? GetCurrentUserId()
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        return int.TryParse(userIdClaim, out var userId) ? userId : null;
+    }
+
     [HttpGet]
     public async Task<ActionResult<HomeDataDto>> GetHomeData()
     {
+        var userId = GetCurrentUserId();
         var banners = await _context.Banners
             .Where(b => b.IsActive)
             .OrderBy(b => b.SortOrder)
@@ -46,6 +55,7 @@ public class HomeController : ControllerBase
         var popularTrails = await _context.Trails
             .Include(t => t.Location)
             .Include(t => t.ChipTrails).ThenInclude(ct => ct.Chip)
+            .Include(t => t.Favorites)
             .OrderByDescending(t => t.Evaluation)
             .Take(10)
             .Select(t => new TrailListDto
@@ -58,7 +68,8 @@ public class HomeController : ControllerBase
                 Distance = t.Distance,
                 CostTime = t.CostTime,
                 LocationName = t.Location != null ? t.Location.Name : null,
-                Chips = t.ChipTrails.Select(ct => ct.Chip.Name).ToList()
+                Chips = t.ChipTrails.Select(ct => ct.Chip.Name).ToList(),
+                IsFavorite = userId.HasValue && t.Favorites.Any(f => f.UserId == userId)
             })
             .ToListAsync();
 
@@ -88,6 +99,8 @@ public class HomeController : ControllerBase
     [HttpGet("collections/{id}")]
     public async Task<ActionResult<CollectionDetailDto>> GetCollection(int id)
     {
+        var userId = GetCurrentUserId();
+
         var collection = await _context.Collections
             .Include(c => c.CollectionTrails)
                 .ThenInclude(ct => ct.Trail)
@@ -96,6 +109,9 @@ public class HomeController : ControllerBase
                 .ThenInclude(ct => ct.Trail)
                     .ThenInclude(t => t.ChipTrails)
                         .ThenInclude(ct => ct.Chip)
+            .Include(c => c.CollectionTrails)
+                .ThenInclude(ct => ct.Trail)
+                    .ThenInclude(t => t.Favorites)
             .FirstOrDefaultAsync(c => c.Id == id);
 
         if (collection == null)
@@ -121,7 +137,8 @@ public class HomeController : ControllerBase
                     Distance = ct.Trail.Distance,
                     CostTime = ct.Trail.CostTime,
                     LocationName = ct.Trail.Location?.Name,
-                    Chips = ct.Trail.ChipTrails.Select(c => c.Chip.Name).ToList()
+                    Chips = ct.Trail.ChipTrails.Select(c => c.Chip.Name).ToList(),
+                    IsFavorite = userId.HasValue && ct.Trail.Favorites.Any(f => f.UserId == userId)
                 })
                 .ToList()
         };
