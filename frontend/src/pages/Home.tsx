@@ -16,7 +16,7 @@ import CampaignIcon from '@mui/icons-material/Campaign';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { useNavigate } from 'react-router-dom';
 import { homeService } from '../services/home';
-import { TrailCard } from '../components/TrailCard';
+import { BentoTrailCard } from '../components/BentoTrailCard';
 import type { HomeData } from '../types';
 
 import 'swiper/swiper-bundle.css';
@@ -307,7 +307,7 @@ export function Home() {
         </Box>
       )}
 
-      {/* Popular Trails */}
+      {/* Popular Trails - Bento Grid */}
       {homeData?.popularTrails && homeData.popularTrails.length > 0 && (
         <Box sx={{ px: { xs: 2, md: 4 }, py: 2, maxWidth: 1200, mx: 'auto' }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
@@ -318,20 +318,49 @@ export function Home() {
               <ChevronRightIcon />
             </IconButton>
           </Box>
+          {/* Bento Grid Layout */}
           <Box
             sx={{
               display: 'grid',
+              gap: 1.5,
+              // 桌面版: 4 欄
               gridTemplateColumns: {
-                xs: '1fr',
-                sm: 'repeat(2, 1fr)',
-                md: 'repeat(2, 1fr)',
+                xs: 'repeat(2, 1fr)',
+                sm: 'repeat(4, 1fr)',
               },
-              gap: { xs: 1.5, sm: 2, md: 2.5 },
+              gridTemplateRows: {
+                xs: 'repeat(3, 140px)',
+                sm: 'repeat(2, 160px)',
+              },
             }}
           >
-            {homeData.popularTrails.slice(0, 6).map((trail) => (
-              <TrailCard key={trail.id} trail={trail} />
-            ))}
+            {/* 大卡片 - 佔據 2x2 */}
+            {homeData.popularTrails[0] && (
+              <Box
+                sx={{
+                  gridColumn: 'span 2',
+                  gridRow: 'span 2',
+                }}
+              >
+                <BentoTrailCard trail={homeData.popularTrails[0]} isLarge />
+              </Box>
+            )}
+            {/* 小卡片 1 */}
+            {homeData.popularTrails[1] && (
+              <BentoTrailCard trail={homeData.popularTrails[1]} />
+            )}
+            {/* 小卡片 2 */}
+            {homeData.popularTrails[2] && (
+              <BentoTrailCard trail={homeData.popularTrails[2]} />
+            )}
+            {/* 小卡片 3 */}
+            {homeData.popularTrails[3] && (
+              <BentoTrailCard trail={homeData.popularTrails[3]} />
+            )}
+            {/* 小卡片 4 */}
+            {homeData.popularTrails[4] && (
+              <BentoTrailCard trail={homeData.popularTrails[4]} />
+            )}
           </Box>
         </Box>
       )}

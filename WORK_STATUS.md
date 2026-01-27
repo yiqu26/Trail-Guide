@@ -1,23 +1,19 @@
 # Trail Guide 工作狀態記錄
 
-**更新日期**: 2026-01-27 21:30
+**更新日期**: 2026-01-28 01:55
 
-## 待討論事項（下次繼續）
+## 待優化事項（下次繼續）
 
-### 熱門步道區塊設計方案選擇
+### Bento Grid 設計細節優化
 
-已研究 2025 UI 設計趨勢，提出以下方案待選：
+已選定 **A. Bento Grid** 設計並套用到首頁，可考慮的優化方向：
 
-| 方案 | 特點 |
-|------|------|
-| **A. Bento Grid** | 不規則格子，1大+4小混搭，Apple 風格 |
-| **B. Tall Card 水平滑動** | 高比例卡片橫向滑動，類似 Netflix |
-| **C. 圖片優先卡片** | 大圖覆蓋+文字疊加，類似 Airbnb |
-| **D. Glassmorphism** | 毛玻璃效果，現代高端感 |
-
-**參考資料:**
-- https://www.lummi.ai/blog/ui-design-trends-2025
-- https://bricxlabs.com/blogs/card-ui-design-examples
+- [ ] 格子比例/大小調整
+- [ ] hover 動畫效果加強
+- [ ] 陰影/圓角風格微調
+- [ ] 資訊顯示方式優化
+- [ ] 色彩/漸層調整
+- [ ] 響應式斷點微調
 
 ---
 
@@ -39,7 +35,14 @@ Trail Guide 是一個台灣步道導覽 App，包含：
 
 ## 本次完成工作
 
-### 0. 最新消息區塊優化 (進行中)
+### 0. 熱門步道 Bento Grid 設計 (2026-01-28)
+- 研究 4 種 UI 設計趨勢（Bento Grid、Tall Card、Image-First、Glassmorphism）
+- 建立 `DesignDemo.tsx` 演示頁面供比較
+- 選定 **Bento Grid** 設計
+- 新增 `BentoTrailCard.tsx` 組件
+- 修改 `Home.tsx` 套用 Bento Grid 布局（1大+4小）
+
+### 1. 最新消息區塊優化
 - 改用 Paper 容器 + 漸層背景
 - 新增公告 icon、NEW 標籤、外連 icon
 - 左側彩色邊框強調最新消息
@@ -111,18 +114,17 @@ npm run dev
 ## Git 狀態
 
 目前有未提交的變更：
-- `frontend/src/components/TrailCard.tsx`
-- `frontend/src/pages/Home.tsx`
-- `frontend/src/pages/Search.tsx`
-- `frontend/src/pages/Collection.tsx`
-- `frontend/src/pages/Favorites.tsx`
-- `frontend/src/pages/Nearby.tsx`
+- `frontend/src/components/BentoTrailCard.tsx` (新增)
+- `frontend/src/pages/DesignDemo.tsx` (新增)
+- `frontend/src/pages/Home.tsx` (修改 - Bento Grid)
+- `frontend/src/App.tsx` (修改 - 新增路由)
+- 其他響應式優化檔案
 
 建議執行：
 ```bash
 cd Trail-Guide
 git add frontend/
-git commit -m "feat: 響應式 TrailCard 設計與 grid 排版優化"
+git commit -m "feat: 熱門步道區塊改用 Bento Grid 設計"
 git push
 ```
 

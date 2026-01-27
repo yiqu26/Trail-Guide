@@ -14,6 +14,7 @@ const Favorites = lazy(() => import('./pages/Favorites').then((m) => ({ default:
 const Profile = lazy(() => import('./pages/Profile').then((m) => ({ default: m.Profile })));
 const Login = lazy(() => import('./pages/Login').then((m) => ({ default: m.Login })));
 const Collection = lazy(() => import('./pages/Collection').then((m) => ({ default: m.Collection })));
+const DesignDemo = lazy(() => import('./pages/DesignDemo').then((m) => ({ default: m.DesignDemo })));
 
 const theme = createTheme({
   palette: {
@@ -96,6 +97,7 @@ function AppRoutes() {
           <Route path="/trail/:id" element={<TrailDetail />} />
           <Route path="/nearby" element={<Nearby />} />
           <Route path="/collection/:id" element={<Collection />} />
+          <Route path="/design-demo" element={<DesignDemo />} />
           <Route path="/login" element={<Login />} />
           <Route
             path="/favorites"
