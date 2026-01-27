@@ -29,6 +29,12 @@ export function TrailCard({ trail, onFavoriteToggle }: TrailCardProps) {
     severity: 'success',
   });
 
+  // Responsive image size
+  const imageSize = {
+    width: { xs: 110, sm: 140, md: 160 },
+    height: { xs: 110, sm: 140, md: 160 },
+  };
+
   const handleClick = () => {
     navigate(`/trail/${trail.id}`);
   };
@@ -69,20 +75,28 @@ export function TrailCard({ trail, onFavoriteToggle }: TrailCardProps) {
     <Card
       sx={{
         display: 'flex',
-        mb: 2,
         cursor: 'pointer',
-        '&:hover': { boxShadow: 4 },
+        transition: 'box-shadow 0.2s, transform 0.2s',
+        '&:hover': {
+          boxShadow: 4,
+          transform: 'translateY(-2px)',
+        },
       }}
       onClick={handleClick}
     >
       <CardMedia
         component="img"
-        sx={{ width: 120, height: 120, objectFit: 'cover' }}
+        sx={{
+          width: imageSize.width,
+          height: imageSize.height,
+          objectFit: 'cover',
+          flexShrink: 0,
+        }}
         image={trail.coverImage || '/placeholder-trail.jpg'}
         alt={trail.title}
       />
-      <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
-        <CardContent sx={{ flex: '1 0 auto', py: 1, px: 1.5 }}>
+      <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1, minWidth: 0 }}>
+        <CardContent sx={{ flex: '1 0 auto', py: { xs: 1, sm: 1.5 }, px: { xs: 1.5, sm: 2 }, '&:last-child': { pb: { xs: 1, sm: 1.5 } } }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <Typography variant="subtitle1" fontWeight="bold" noWrap sx={{ flex: 1 }}>
               {trail.title}

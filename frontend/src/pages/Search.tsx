@@ -251,14 +251,26 @@ export function Search() {
       {isLoading ? (
         <Typography>搜尋中...</Typography>
       ) : trails.length > 0 ? (
-        <>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+        <Box sx={{ maxWidth: 1200, mx: 'auto' }}>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
             找到 {trails.length} 條步道
           </Typography>
-          {trails.map((trail) => (
-            <TrailCard key={trail.id} trail={trail} />
-          ))}
-        </>
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: {
+                xs: '1fr',
+                sm: 'repeat(2, 1fr)',
+                md: 'repeat(2, 1fr)',
+              },
+              gap: { xs: 1.5, sm: 2, md: 2.5 },
+            }}
+          >
+            {trails.map((trail) => (
+              <TrailCard key={trail.id} trail={trail} />
+            ))}
+          </Box>
+        </Box>
       ) : hasSearched ? (
         <Box sx={{ textAlign: 'center', mt: 4 }}>
           <Typography color="text.secondary">找不到符合的步道</Typography>

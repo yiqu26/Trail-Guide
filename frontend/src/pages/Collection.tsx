@@ -74,11 +74,23 @@ export function Collection() {
       </Box>
 
       {/* Trails */}
-      <Box sx={{ p: 2 }}>
+      <Box sx={{ px: { xs: 2, md: 4 }, py: 2, maxWidth: 1200, mx: 'auto' }}>
         {collection.trails.length > 0 ? (
-          collection.trails.map((trail) => (
-            <TrailCard key={trail.id} trail={trail} />
-          ))
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: {
+                xs: '1fr',
+                sm: 'repeat(2, 1fr)',
+                md: 'repeat(2, 1fr)',
+              },
+              gap: { xs: 1.5, sm: 2, md: 2.5 },
+            }}
+          >
+            {collection.trails.map((trail) => (
+              <TrailCard key={trail.id} trail={trail} />
+            ))}
+          </Box>
         ) : (
           <Typography color="text.secondary" textAlign="center" sx={{ mt: 4 }}>
             這個精選集還沒有步道

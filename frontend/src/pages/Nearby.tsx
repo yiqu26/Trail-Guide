@@ -102,21 +102,35 @@ export function Nearby() {
       )}
 
       {trails.length > 0 ? (
-        trails.map((trail) => (
-          <TrailCard
-            key={trail.id}
-            trail={{
-              id: trail.id,
-              title: trail.title,
-              coverImage: trail.coverImage,
-              difficulty: trail.difficulty,
-              evaluation: trail.evaluation,
-              chips: [],
-              isFavorite: false,
-              locationName: `距離 ${trail.distanceKm} 公里`,
-            }}
-          />
-        ))
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: {
+              xs: '1fr',
+              sm: 'repeat(2, 1fr)',
+              md: 'repeat(2, 1fr)',
+            },
+            gap: { xs: 1.5, sm: 2, md: 2.5 },
+            maxWidth: 1200,
+            mx: 'auto',
+          }}
+        >
+          {trails.map((trail) => (
+            <TrailCard
+              key={trail.id}
+              trail={{
+                id: trail.id,
+                title: trail.title,
+                coverImage: trail.coverImage,
+                difficulty: trail.difficulty,
+                evaluation: trail.evaluation,
+                chips: [],
+                isFavorite: false,
+                locationName: `距離 ${trail.distanceKm} 公里`,
+              }}
+            />
+          ))}
+        </Box>
       ) : (
         <Box sx={{ textAlign: 'center', mt: 4 }}>
           <Typography color="text.secondary">附近 100 公里內沒有找到步道</Typography>

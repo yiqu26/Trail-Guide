@@ -53,13 +53,27 @@ export function Favorites() {
       )}
 
       {trails.length > 0 ? (
-        trails.map((trail) => (
-          <TrailCard
-            key={trail.id}
-            trail={trail}
-            onFavoriteToggle={handleFavoriteToggle}
-          />
-        ))
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: {
+              xs: '1fr',
+              sm: 'repeat(2, 1fr)',
+              md: 'repeat(2, 1fr)',
+            },
+            gap: { xs: 1.5, sm: 2, md: 2.5 },
+            maxWidth: 1200,
+            mx: 'auto',
+          }}
+        >
+          {trails.map((trail) => (
+            <TrailCard
+              key={trail.id}
+              trail={trail}
+              onFavoriteToggle={handleFavoriteToggle}
+            />
+          ))}
+        </Box>
       ) : !error && (
         <Box sx={{ textAlign: 'center', mt: 4 }}>
           <FavoriteIcon sx={{ fontSize: 48, color: 'text.secondary', mb: 1 }} />

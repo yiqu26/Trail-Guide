@@ -24,6 +24,7 @@ import { useNavigate } from 'react-router-dom';
 import { trailService, favoriteService } from '../services/trails';
 import { useAuth } from '../contexts/AuthContext';
 import { CommentSection } from '../components/CommentSection';
+import { TrailMap } from '../components/TrailMap';
 import type { TrailDetail as TrailDetailType } from '../types';
 
 const difficultyLabels = ['', '入門', '簡單', '中等', '困難', '挑戰'];
@@ -245,6 +246,14 @@ export function TrailDetail() {
             </Typography>
           </Box>
         )}
+
+        {/* Map */}
+        <TrailMap
+          title={trail.title}
+          latitude={trail.latitude}
+          longitude={trail.longitude}
+          trailHeads={trail.trailHeads}
+        />
 
         {/* Trail Heads */}
         {trail.trailHeads.length > 0 && (

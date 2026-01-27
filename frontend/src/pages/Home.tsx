@@ -305,8 +305,8 @@ export function Home() {
 
       {/* Popular Trails */}
       {homeData?.popularTrails && homeData.popularTrails.length > 0 && (
-        <Box sx={{ p: 2 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+        <Box sx={{ px: { xs: 2, md: 4 }, py: 2, maxWidth: 1200, mx: 'auto' }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
             <Typography variant="h6" fontWeight="bold">
               熱門步道
             </Typography>
@@ -314,9 +314,21 @@ export function Home() {
               <ChevronRightIcon />
             </IconButton>
           </Box>
-          {homeData.popularTrails.slice(0, 5).map((trail) => (
-            <TrailCard key={trail.id} trail={trail} />
-          ))}
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: {
+                xs: '1fr',
+                sm: 'repeat(2, 1fr)',
+                md: 'repeat(2, 1fr)',
+              },
+              gap: { xs: 1.5, sm: 2, md: 2.5 },
+            }}
+          >
+            {homeData.popularTrails.slice(0, 6).map((trail) => (
+              <TrailCard key={trail.id} trail={trail} />
+            ))}
+          </Box>
         </Box>
       )}
 
