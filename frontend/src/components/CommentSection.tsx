@@ -53,6 +53,7 @@ export function CommentSection({ trailId }: CommentSectionProps) {
 
   useEffect(() => {
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [trailId]);
 
   const fetchData = async () => {
@@ -85,8 +86,9 @@ export function CommentSection({ trailId }: CommentSectionProps) {
       // Refresh stats
       const newStats = await commentService.getCommentStats(trailId);
       setStats(newStats);
-    } catch (error: any) {
-      const message = error.response?.data?.error || '發表失敗，請稍後再試';
+    } catch (error) {
+      const axiosError = error as { response?: { data?: { error?: string } } };
+      const message = axiosError.response?.data?.error || '發表失敗，請稍後再試';
       setSnackbar({ open: true, message, severity: 'error' });
     }
   };

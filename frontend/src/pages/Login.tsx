@@ -67,7 +67,7 @@ export function Login() {
         await register(email, password, name);
       }
       navigate('/');
-    } catch (err) {
+    } catch {
       setError(tab === 0 ? '登入失敗，請檢查帳號密碼' : '註冊失敗，請稍後再試');
     } finally {
       setIsLoading(false);

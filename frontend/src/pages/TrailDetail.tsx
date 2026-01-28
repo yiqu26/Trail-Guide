@@ -105,7 +105,7 @@ export function TrailDetail() {
         await navigator.clipboard.writeText(window.location.href);
         setSnackbar({ open: true, message: '連結已複製到剪貼簿', severity: 'success' });
       }
-    } catch (error) {
+    } catch {
       // User cancelled or error
       console.log('Share cancelled or failed');
     }

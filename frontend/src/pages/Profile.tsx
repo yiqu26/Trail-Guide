@@ -212,6 +212,7 @@ export function Profile() {
   // 進入頁面時刷新用戶數據（包括統計）
   useEffect(() => {
     refreshUser();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleLogout = async () => {

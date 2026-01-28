@@ -31,13 +31,14 @@ export function Nearby() {
 
       const nearby = await trailService.getNearbyTrails(latitude, longitude, 100, 15);
       setTrails(nearby);
-    } catch (err: any) {
+    } catch (err) {
       console.error('Failed to get location or fetch trails:', err);
-      if (err.code === 1) {
+      const geoError = err as GeolocationPositionError;
+      if (geoError.code === 1) {
         setError('定位權限被拒絕，請在瀏覽器設定中允許定位');
-      } else if (err.code === 2) {
+      } else if (geoError.code === 2) {
         setError('無法取得位置資訊，請確認 GPS 已開啟');
-      } else if (err.code === 3) {
+      } else if (geoError.code === 3) {
         setError('取得位置逾時，請重試');
       } else {
         setError('無法取得您的位置，請確認已開啟定位權限');
