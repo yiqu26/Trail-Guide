@@ -1,0 +1,46 @@
+=============================================================
+  Trail Guide - URLs Reference
+  Last Updated: 2026-01-28
+=============================================================
+
+CLOUDFLARE TUNNEL (本機展示):
+
+  [Frontend]
+  URL: https://trail.ngo-management-hub.com
+
+  [Backend API]
+  URL: https://trail-api.ngo-management-hub.com
+
+  本地端口:
+  Frontend: http://localhost:5174
+  API:      http://localhost:5274
+
+=============================================================
+VERCEL + RENDER (雲端部署, 24/7 可用):
+
+  [Frontend - Vercel]
+  URL: https://trail-guide-eight.vercel.app
+
+  [Backend API - Render]
+  URL: https://trailguide-api-5yf3.onrender.com
+
+  [Database - Neon]
+  PostgreSQL 雲端資料庫
+
+=============================================================
+TEST ACCOUNT:
+
+  Email:    test@example.com
+  Password: Test123!
+
+=============================================================
+STARTUP:
+
+  本地展示 (Cloudflare Tunnel):
+    1. scripts\start-demo.bat
+    2. cloudflared tunnel run ngo-demo
+
+  本地開發:
+    scripts\start-all.bat
+
+=============================================================

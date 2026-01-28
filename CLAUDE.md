@@ -53,12 +53,30 @@ Password: Test123!
 
 ## 線上環境
 
+### 雲端部署 (24/7 可用)
+
 | 服務 | 平台 | URL |
 |------|------|-----|
 | Frontend | Vercel | https://trail-guide-eight.vercel.app |
 | Backend | Render | https://trailguide-api-5yf3.onrender.com |
 | Database | Neon | PostgreSQL 雲端 |
 | GitHub | - | https://github.com/yiqu26/Trail-Guide |
+
+### Cloudflare Tunnel (本機展示)
+
+| 服務 | URL |
+|------|-----|
+| Frontend | https://trail.ngo-management-hub.com |
+| Backend API | https://trail-api.ngo-management-hub.com |
+
+啟動方式：
+```bash
+# 1. 啟動本地服務
+scripts\start-demo.bat
+
+# 2. 啟動 Cloudflare Tunnel (另開視窗)
+cloudflared tunnel run ngo-demo
+```
 
 ---
 
