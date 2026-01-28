@@ -1,6 +1,6 @@
 # Trail Guide - Claude 工作記錄
 
-> 最後更新: 2026-01-28
+> 最後更新: 2026-01-28 晚間
 
 ## 專案概述
 
@@ -162,3 +162,31 @@ Trail-Guide/
 2. **資料庫**: 本地用 Docker PostgreSQL，線上用 Neon
 3. **Render 冷啟動**: 免費版會休眠，首次請求需等待
 4. **舊版備份**: `.archive/` 包含原始 GoHiking 專案
+
+---
+
+## 工作日誌
+
+### 2026-01-28
+
+**完成項目：**
+- ✅ Google OAuth 登入功能
+  - 整合 `@react-oauth/google` 套件
+  - 設定 Google Cloud Console OAuth 2.0
+  - 前端 Login 頁面新增 Google 登入按鈕
+  - 環境變數：`VITE_GOOGLE_CLIENT_ID`
+- ✅ 修復 Profile 頁面性別顯示 bug（null 判斷）
+- ✅ 修復所有 ESLint 錯誤和警告（7 個問題）
+- ✅ 更新文檔
+
+**Git commits：**
+```
+8c624f7 fix: 修復 ESLint 錯誤和警告
+a54067c feat: 實現 Google OAuth 登入功能
+```
+
+**下次可繼續：**
+- [ ] 用戶頭像上傳（需 Cloudinary 或其他雲端儲存）
+- [ ] PWA 支援（讓 App 可安裝到手機）
+- [ ] UI/UX 細節優化
+- [ ] 線上環境測試 Google 登入（需更新 Vercel 環境變數）
