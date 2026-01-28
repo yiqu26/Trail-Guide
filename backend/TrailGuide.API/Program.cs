@@ -74,7 +74,8 @@ builder.Services.AddScoped<IJwtService, JwtService>();
 
 // CORS - 從環境變數讀取允許的來源
 var allowedOrigins = builder.Configuration["AllowedOrigins"]?.Split(',') ?? Array.Empty<string>();
-var defaultOrigins = new[] { "http://localhost:5173", "http://localhost:3000" };
+// 開發環境允許所有 localhost 端口
+var defaultOrigins = Enumerable.Range(3000, 6000).Select(p => $"http://localhost:{p}").ToArray();
 var allOrigins = defaultOrigins.Concat(allowedOrigins).Where(o => !string.IsNullOrEmpty(o)).ToArray();
 
 builder.Services.AddCors(options =>
