@@ -258,13 +258,13 @@ export function Profile() {
     setSnackbar({ open: true, message: '頭像上傳功能開發中', severity: 'info' as 'success' });
   };
 
-  const genderDisplay = (gender: boolean | undefined) => {
-    if (gender === undefined) return '不公開';
+  const genderDisplay = (gender: boolean | undefined | null) => {
+    if (gender === undefined || gender === null) return '不公開';
     return gender ? '男性' : '女性';
   };
 
-  const genderValue = (gender: boolean | undefined) => {
-    if (gender === undefined) return 'none';
+  const genderValue = (gender: boolean | undefined | null) => {
+    if (gender === undefined || gender === null) return 'none';
     return gender ? 'male' : 'female';
   };
 

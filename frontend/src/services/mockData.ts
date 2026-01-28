@@ -37,7 +37,7 @@ export const mockTrails: TrailListItem[] = [
     costTime: 40,
     locationName: '台北市北投區',
     chips: ['無障礙', '親子友善', '森林浴'],
-    isFavorite: true,
+    isFavorite: false,
   },
   {
     id: 3,
