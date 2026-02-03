@@ -24,10 +24,13 @@ import CommentIcon from '@mui/icons-material/Comment';
 import HikingIcon from '@mui/icons-material/Hiking';
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { authService } from '../services/auth';
-import type { UpdateProfileData } from '../types';
+import { checkinService } from '../services/checkins';
+import type { UpdateProfileData, CheckinStats } from '../types';
 
 // 統計卡片元件
 function StatCard({
@@ -209,9 +212,14 @@ export function Profile() {
     phoneNumber: user?.phoneNumber || '',
   });
 
+  // 打卡統計
+  const [checkinStats, setCheckinStats] = useState<CheckinStats | null>(null);
+
   // 進入頁面時刷新用戶數據（包括統計）
   useEffect(() => {
     refreshUser();
+    // 獲取打卡統計
+    checkinService.getMyStats().then(setCheckinStats).catch(console.error);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -394,22 +402,42 @@ export function Profile() {
         </Fade>
       </Box>
 
-      {/* 統計卡片 */}
+      {/* 統計卡片 - 第一排 */}
       <Box sx={{ display: 'flex', gap: 2, px: 3, mt: 3 }}>
+        <StatCard
+          icon={<CheckCircleIcon sx={{ color: '#2E7D32', fontSize: 24 }} />}
+          value={checkinStats?.totalCheckins || 0}
+          label="登山打卡"
+          color="#2E7D32"
+          onClick={() => navigate('/my-checkins')}
+          delay={100}
+        />
+        <StatCard
+          icon={<EmojiEventsIcon sx={{ color: '#FF8F00', fontSize: 24 }} />}
+          value={checkinStats?.achievementCount || 0}
+          label="成就徽章"
+          color="#FF8F00"
+          onClick={() => navigate('/achievements')}
+          delay={200}
+        />
+      </Box>
+
+      {/* 統計卡片 - 第二排 */}
+      <Box sx={{ display: 'flex', gap: 2, px: 3, mt: 2 }}>
         <StatCard
           icon={<FavoriteIcon sx={{ color: '#E53935', fontSize: 24 }} />}
           value={user?.stats?.favoritesCount || 0}
           label="收藏步道"
           color="#E53935"
           onClick={() => navigate('/favorites')}
-          delay={100}
+          delay={300}
         />
         <StatCard
           icon={<CommentIcon sx={{ color: '#1976D2', fontSize: 24 }} />}
           value={user?.stats?.commentsCount || 0}
           label="發表評論"
           color="#1976D2"
-          delay={200}
+          delay={400}
         />
       </Box>
 
@@ -502,6 +530,18 @@ export function Profile() {
             overflow: 'hidden',
           }}
         >
+          <MenuItemRow
+            icon={<CheckCircleIcon />}
+            label="我的打卡紀錄"
+            onClick={() => navigate('/my-checkins')}
+          />
+          <Box sx={{ borderTop: '1px solid', borderColor: 'divider', mx: 2 }} />
+          <MenuItemRow
+            icon={<EmojiEventsIcon />}
+            label="成就徽章"
+            onClick={() => navigate('/achievements')}
+          />
+          <Box sx={{ borderTop: '1px solid', borderColor: 'divider', mx: 2 }} />
           <MenuItemRow
             icon={<FavoriteIcon />}
             label="我的收藏"

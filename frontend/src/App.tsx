@@ -18,6 +18,8 @@ const Profile = lazy(() => import('./pages/Profile').then((m) => ({ default: m.P
 const Login = lazy(() => import('./pages/Login').then((m) => ({ default: m.Login })));
 const Collection = lazy(() => import('./pages/Collection').then((m) => ({ default: m.Collection })));
 const DesignDemo = lazy(() => import('./pages/DesignDemo').then((m) => ({ default: m.DesignDemo })));
+const MyCheckins = lazy(() => import('./pages/MyCheckins').then((m) => ({ default: m.MyCheckins })));
+const Achievements = lazy(() => import('./pages/Achievements').then((m) => ({ default: m.Achievements })));
 
 const theme = createTheme({
   palette: {
@@ -116,6 +118,22 @@ function AnimatedRoutes() {
           element={
             <ProtectedRoute>
               <PageTransition><Profile /></PageTransition>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/my-checkins"
+          element={
+            <ProtectedRoute>
+              <PageTransition><MyCheckins /></PageTransition>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/achievements"
+          element={
+            <ProtectedRoute>
+              <PageTransition><Achievements /></PageTransition>
             </ProtectedRoute>
           }
         />

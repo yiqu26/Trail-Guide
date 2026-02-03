@@ -11,6 +11,8 @@ import {
   Divider,
   Snackbar,
   Alert,
+  Button,
+  Avatar,
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import FavoriteIcon from '@mui/icons-material/Favorite';
@@ -20,12 +22,16 @@ import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import TerrainIcon from '@mui/icons-material/Terrain';
 import HeightIcon from '@mui/icons-material/Height';
 import StarIcon from '@mui/icons-material/Star';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
 import { useNavigate } from 'react-router-dom';
 import { trailService, favoriteService } from '../services/trails';
+import { checkinService } from '../services/checkins';
 import { useAuth } from '../contexts/AuthContext';
 import { CommentSection } from '../components/CommentSection';
 import { TrailMap } from '../components/TrailMap';
-import type { TrailDetail as TrailDetailType } from '../types';
+import { CheckinDialog } from '../components/CheckinDialog';
+import type { TrailDetail as TrailDetailType, Checkin } from '../types';
 
 const difficultyLabels = ['', '入門', '簡單', '中等', '困難', '挑戰'];
 
@@ -39,6 +45,9 @@ export function TrailDetail() {
     message: '',
     severity: 'success',
   });
+  const [showCheckinDialog, setShowCheckinDialog] = useState(false);
+  const [checkins, setCheckins] = useState<Checkin[]>([]);
+  const [checkinsLoading, setCheckinsLoading] = useState(false);
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
 
@@ -57,6 +66,39 @@ export function TrailDetail() {
 
     fetchTrail();
   }, [id]);
+
+  useEffect(() => {
+    const fetchCheckins = async () => {
+      if (!id) return;
+      setCheckinsLoading(true);
+      try {
+        const data = await checkinService.getTrailCheckins(parseInt(id), 1, 5);
+        setCheckins(data);
+      } catch (error) {
+        console.error('Failed to fetch checkins:', error);
+      } finally {
+        setCheckinsLoading(false);
+      }
+    };
+
+    fetchCheckins();
+  }, [id]);
+
+  const handleCheckinClick = () => {
+    if (!isAuthenticated) {
+      navigate('/login');
+      return;
+    }
+    setShowCheckinDialog(true);
+  };
+
+  const handleCheckinSuccess = () => {
+    setSnackbar({ open: true, message: '打卡成功！', severity: 'success' });
+    // Refresh checkins
+    if (id) {
+      checkinService.getTrailCheckins(parseInt(id), 1, 5).then(setCheckins);
+    }
+  };
 
   const handleFavoriteToggle = async () => {
     if (!trail) return;
@@ -290,6 +332,106 @@ export function TrailDetail() {
 
         <Divider sx={{ my: 2 }} />
 
+        {/* Checkin Section */}
+        <Box sx={{ mb: 3 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+            <Typography variant="subtitle1" fontWeight="bold">
+              登山打卡
+            </Typography>
+            <Button
+              variant="contained"
+              size="small"
+              startIcon={<CheckCircleIcon />}
+              onClick={handleCheckinClick}
+            >
+              打卡
+            </Button>
+          </Box>
+
+          {checkinsLoading ? (
+            <Box sx={{ display: 'flex', gap: 1 }}>
+              {[1, 2, 3].map((i) => (
+                <Skeleton key={i} variant="circular" width={40} height={40} />
+              ))}
+            </Box>
+          ) : checkins.length === 0 ? (
+            <Card sx={{ bgcolor: 'grey.50' }}>
+              <CardContent sx={{ textAlign: 'center', py: 3 }}>
+                <Typography color="text.secondary" variant="body2">
+                  還沒有人打卡
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                  成為第一個完成這條步道的人！
+                </Typography>
+              </CardContent>
+            </Card>
+          ) : (
+            <Box>
+              {checkins.slice(0, 3).map((checkin) => (
+                <Box
+                  key={checkin.id}
+                  sx={{
+                    display: 'flex',
+                    gap: 1.5,
+                    py: 1.5,
+                    borderBottom: '1px solid',
+                    borderColor: 'divider',
+                  }}
+                >
+                  <Avatar src={checkin.userAvatar} sx={{ width: 36, height: 36 }}>
+                    {checkin.userName[0]}
+                  </Avatar>
+                  <Box sx={{ flex: 1, minWidth: 0 }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                      <Typography variant="body2" fontWeight="bold">
+                        {checkin.userName}
+                      </Typography>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                        {checkin.isLocationVerified && (
+                          <LocationOnIcon sx={{ fontSize: 14, color: 'success.main' }} />
+                        )}
+                        <Typography variant="caption" color="text.secondary">
+                          {new Date(checkin.checkinTime).toLocaleDateString('zh-TW')}
+                        </Typography>
+                      </Box>
+                    </Box>
+                    {checkin.note && (
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{
+                          mt: 0.5,
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
+                        {checkin.note}
+                      </Typography>
+                    )}
+                    {checkin.durationMinutes && (
+                      <Typography variant="caption" color="text.secondary">
+                        花費 {Math.floor(checkin.durationMinutes / 60)}h {checkin.durationMinutes % 60}m
+                      </Typography>
+                    )}
+                  </Box>
+                </Box>
+              ))}
+              {checkins.length > 3 && (
+                <Typography
+                  variant="body2"
+                  color="primary"
+                  sx={{ mt: 1, textAlign: 'center', cursor: 'pointer' }}
+                >
+                  查看全部 {checkins.length} 筆打卡紀錄
+                </Typography>
+              )}
+            </Box>
+          )}
+        </Box>
+
+        <Divider sx={{ my: 2 }} />
+
         {/* Comments Section */}
         <CommentSection trailId={trail.id} />
       </Box>
@@ -306,6 +448,19 @@ export function TrailDetail() {
           {snackbar.message}
         </Alert>
       </Snackbar>
+
+      {/* Checkin Dialog */}
+      {trail && (
+        <CheckinDialog
+          open={showCheckinDialog}
+          onClose={() => setShowCheckinDialog(false)}
+          trailId={trail.id}
+          trailTitle={trail.title}
+          trailLat={trail.latitude}
+          trailLng={trail.longitude}
+          onSuccess={handleCheckinSuccess}
+        />
+      )}
     </Box>
   );
 }
