@@ -143,14 +143,14 @@ export function Login() {
 
       <Divider sx={{ my: 3 }}>或</Divider>
 
-      <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%', maxWidth: 400 }}>
         <GoogleLogin
           onSuccess={handleGoogleSuccess}
           onError={handleGoogleError}
           text={tab === 0 ? 'signin_with' : 'signup_with'}
           shape="rectangular"
           size="large"
-          width="100%"
+          width={320}
         />
       </Box>
 
