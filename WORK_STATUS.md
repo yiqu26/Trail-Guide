@@ -4,12 +4,19 @@
 
 ## 當前狀態
 
-### 登山打卡與成就徽章系統 (剛完成，需重啟測試)
+### PWA 支援 (已完成)
+
+- ✅ 可安裝到手機桌面 (Android/iOS)
+- ✅ 離線緩存 (圖片 7 天、API 1 小時)
+- ✅ 新版本更新提示
+- ✅ 已部署到 Vercel
+
+### 登山打卡與成就徽章系統 (需重啟測試)
 
 **已完成：**
 - ✅ 資料庫遷移已執行 (checkins, checkin_images, achievements, user_achievements)
 - ✅ 37 個預設成就已插入
-- ✅ 代碼已 commit (1a8a974)
+- ✅ 代碼已 commit
 
 **下一步：**
 1. **重啟後端** - 關閉 start-all.bat 再重新執行，載入新的 Controller
