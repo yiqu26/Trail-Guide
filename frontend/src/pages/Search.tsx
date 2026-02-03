@@ -118,7 +118,7 @@ function InitialState({ onTagClick }: { onTagClick: (keyword: string) => void })
                 label={tag.label}
                 onClick={() => onTagClick(tag.keyword)}
                 sx={{
-                  bgcolor: 'white',
+                  bgcolor: 'background.paper',
                   border: '1px solid',
                   borderColor: 'grey.300',
                   '&:hover': {
@@ -274,11 +274,11 @@ export function Search() {
   };
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: '#FAFAFA', pb: 10 }}>
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', pb: 10 }}>
       {/* 頂部搜尋區 */}
       <Box
         sx={{
-          bgcolor: 'white',
+          bgcolor: 'background.paper',
           pt: 2,
           pb: 2,
           px: 2,
@@ -342,11 +342,11 @@ export function Search() {
           sx={{
             '& .MuiOutlinedInput-root': {
               borderRadius: 3,
-              bgcolor: '#F5F5F5',
+              bgcolor: 'action.hover',
               '& fieldset': { border: 'none' },
-              '&:hover': { bgcolor: '#EEEEEE' },
+              '&:hover': { bgcolor: 'action.selected' },
               '&.Mui-focused': {
-                bgcolor: 'white',
+                bgcolor: 'background.paper',
                 boxShadow: '0 0 0 2px rgba(46, 125, 50, 0.2)',
               },
             },
@@ -359,7 +359,7 @@ export function Search() {
             sx={{
               mt: 2,
               p: 2,
-              bgcolor: '#F5F5F5',
+              bgcolor: 'action.hover',
               borderRadius: 3,
             }}
           >
@@ -387,7 +387,7 @@ export function Search() {
                   value={selectedCounty}
                   label="縣市"
                   onChange={(e) => setSelectedCounty(e.target.value as number | '')}
-                  sx={{ bgcolor: 'white', borderRadius: 2 }}
+                  sx={{ bgcolor: 'background.paper', borderRadius: 2 }}
                 >
                   <MenuItem value="">全部縣市</MenuItem>
                   {counties.map((county) => (
@@ -410,7 +410,7 @@ export function Search() {
                   value={selectedClassification}
                   label="步道類型"
                   onChange={(e) => setSelectedClassification(e.target.value as number | '')}
-                  sx={{ bgcolor: 'white', borderRadius: 2 }}
+                  sx={{ bgcolor: 'background.paper', borderRadius: 2 }}
                 >
                   <MenuItem value="">全部類型</MenuItem>
                   {classifications.map((c) => (

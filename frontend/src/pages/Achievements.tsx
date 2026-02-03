@@ -135,7 +135,7 @@ export function Achievements() {
   });
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: '#FAFAFA', pb: 10 }}>
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', pb: 10 }}>
       {/* Header */}
       <Box
         sx={{

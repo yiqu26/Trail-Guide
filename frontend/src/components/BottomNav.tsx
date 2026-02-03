@@ -40,7 +40,7 @@ export function BottomNav() {
             padding: '6px 0',
           },
           '& .Mui-selected': {
-            color: '#2e7d32',
+            color: 'primary.main',
           },
         }}
       >

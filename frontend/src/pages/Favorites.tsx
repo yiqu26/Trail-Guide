@@ -178,7 +178,7 @@ export function Favorites() {
   };
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: '#FAFAFA', pb: 10 }}>
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', pb: 10 }}>
       {/* 頂部 Header */}
       <Box
         sx={{

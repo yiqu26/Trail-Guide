@@ -290,8 +290,9 @@ export function Home() {
             sx={{
               py: { xs: 3, md: 4 },
               px: { xs: 2, sm: 3, md: 4, lg: 6 },
-              background: 'linear-gradient(180deg, #f5f5f5 0%, #ffffff 100%)',
-              borderBottom: '1px solid #eee',
+              bgcolor: 'background.default',
+              borderBottom: 1,
+              borderColor: 'divider',
             }}
           >
             <Box
@@ -367,7 +368,7 @@ export function Home() {
                           fontSize: { xs: '12px', md: '14px' },
                           fontWeight: 600,
                           lineHeight: 1.3,
-                          color: '#333',
+                          color: 'text.primary',
                           maxWidth: { xs: 80, md: 100 },
                         }}
                       >
