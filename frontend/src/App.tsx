@@ -6,6 +6,7 @@ import { AnimatePresence } from 'motion/react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { BottomNav } from './components/BottomNav';
 import { PageTransition } from './components/PageTransition';
+import PWAUpdatePrompt from './components/PWAUpdatePrompt';
 import { Home } from './pages/Home';
 
 // Lazy load pages
@@ -166,6 +167,7 @@ function App() {
               <AppRoutes />
             </BrowserRouter>
           </AuthProvider>
+          <PWAUpdatePrompt />
         </ThemeProvider>
       </QueryClientProvider>
     </GoogleOAuthProvider>

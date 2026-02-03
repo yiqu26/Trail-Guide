@@ -9,7 +9,6 @@ import {
   Skeleton,
   Card,
   CardContent,
-  Avatar,
   Chip,
   IconButton,
   Dialog,
