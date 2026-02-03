@@ -26,6 +26,7 @@ import CameraAltIcon from '@mui/icons-material/CameraAlt';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import SettingsIcon from '@mui/icons-material/Settings';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { authService } from '../services/auth';
@@ -57,7 +58,7 @@ function StatCard({
           textAlign: 'center',
           p: 2.5,
           borderRadius: 3,
-          bgcolor: 'rgba(255,255,255,0.9)',
+          bgcolor: 'background.paper',
           backdropFilter: 'blur(10px)',
           boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
           cursor: onClick ? 'pointer' : 'default',
@@ -131,7 +132,7 @@ function EditableField({
           value={value}
           label={label}
           onChange={(e) => onChange(e.target.value)}
-          sx={{ bgcolor: 'white' }}
+          sx={{ bgcolor: 'background.paper' }}
         >
           {options.map((opt) => (
             <MenuItem key={opt.value} value={opt.value}>
@@ -150,7 +151,7 @@ function EditableField({
       label={label}
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      sx={{ my: 1, '& .MuiOutlinedInput-root': { bgcolor: 'white' } }}
+      sx={{ my: 1, '& .MuiOutlinedInput-root': { bgcolor: 'background.paper' } }}
     />
   );
 }
@@ -181,7 +182,7 @@ function MenuItemRow({
         cursor: 'pointer',
         transition: 'all 0.2s',
         '&:hover': {
-          bgcolor: 'grey.100',
+          bgcolor: 'action.hover',
         },
       }}
     >
@@ -291,7 +292,7 @@ export function Profile() {
   }
 
   return (
-    <Box sx={{ pb: 10, minHeight: '100vh', bgcolor: '#f5f5f5' }}>
+    <Box sx={{ pb: 10, minHeight: '100vh', bgcolor: 'background.default' }}>
       {/* 頂部漸層背景 */}
       <Box
         sx={{
@@ -371,7 +372,7 @@ export function Profile() {
                 position: 'absolute',
                 bottom: 0,
                 right: 0,
-                bgcolor: 'white',
+                bgcolor: 'background.paper',
                 boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
                 '&:hover': { bgcolor: 'grey.100' },
               }}
@@ -448,7 +449,7 @@ export function Profile() {
             mx: 3,
             mt: 3,
             p: 3,
-            bgcolor: 'white',
+            bgcolor: 'background.paper',
             borderRadius: 3,
             boxShadow: '0 2px 12px rgba(0,0,0,0.06)',
           }}
@@ -524,7 +525,7 @@ export function Profile() {
           sx={{
             mx: 3,
             mt: 3,
-            bgcolor: 'white',
+            bgcolor: 'background.paper',
             borderRadius: 3,
             boxShadow: '0 2px 12px rgba(0,0,0,0.06)',
             overflow: 'hidden',
@@ -546,6 +547,12 @@ export function Profile() {
             icon={<FavoriteIcon />}
             label="我的收藏"
             onClick={() => navigate('/favorites')}
+          />
+          <Box sx={{ borderTop: '1px solid', borderColor: 'divider', mx: 2 }} />
+          <MenuItemRow
+            icon={<SettingsIcon />}
+            label="設定"
+            onClick={() => navigate('/settings')}
           />
           <Box sx={{ borderTop: '1px solid', borderColor: 'divider', mx: 2 }} />
           <MenuItemRow

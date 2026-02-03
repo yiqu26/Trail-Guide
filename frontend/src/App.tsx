@@ -1,9 +1,10 @@
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { ThemeProvider, createTheme, CssBaseline, Box } from '@mui/material';
+import { CssBaseline, Box } from '@mui/material';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { AnimatePresence } from 'motion/react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { ThemeContextProvider } from './contexts/ThemeContext';
 import { BottomNav } from './components/BottomNav';
 import { PageTransition } from './components/PageTransition';
 import PWAUpdatePrompt from './components/PWAUpdatePrompt';
@@ -23,39 +24,7 @@ const Collection = lazy(() => import('./pages/Collection').then((m) => ({ defaul
 const DesignDemo = lazy(() => import('./pages/DesignDemo').then((m) => ({ default: m.DesignDemo })));
 const MyCheckins = lazy(() => import('./pages/MyCheckins').then((m) => ({ default: m.MyCheckins })));
 const Achievements = lazy(() => import('./pages/Achievements').then((m) => ({ default: m.Achievements })));
-
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: '#2e7d32', // 綠色主題，呼應大自然
-    },
-    secondary: {
-      main: '#ff9800',
-    },
-    background: {
-      default: '#f5f5f5',
-    },
-  },
-  typography: {
-    fontFamily: [
-      '-apple-system',
-      'BlinkMacSystemFont',
-      '"Segoe UI"',
-      'Roboto',
-      '"Noto Sans TC"',
-      'sans-serif',
-    ].join(','),
-  },
-  components: {
-    MuiCard: {
-      styleOverrides: {
-        root: {
-          borderRadius: 12,
-        },
-      },
-    },
-  },
-});
+const Settings = lazy(() => import('./pages/Settings').then((m) => ({ default: m.Settings })));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -133,6 +102,14 @@ function AnimatedRoutes() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/settings"
+          element={
+            <ProtectedRoute>
+              <PageTransition><Settings /></PageTransition>
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </AnimatePresence>
   );
@@ -156,7 +133,7 @@ function App() {
   return (
     <GoogleOAuthProvider clientId={googleClientId}>
       <QueryClientProvider client={queryClient}>
-        <ThemeProvider theme={theme}>
+        <ThemeContextProvider>
           <CssBaseline />
           <AuthProvider>
             <BrowserRouter>
@@ -164,7 +141,7 @@ function App() {
             </BrowserRouter>
           </AuthProvider>
           <PWAUpdatePrompt />
-        </ThemeProvider>
+        </ThemeContextProvider>
       </QueryClientProvider>
     </GoogleOAuthProvider>
   );
