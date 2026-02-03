@@ -7,6 +7,8 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { BottomNav } from './components/BottomNav';
 import { PageTransition } from './components/PageTransition';
 import PWAUpdatePrompt from './components/PWAUpdatePrompt';
+import { LoadingProgress, SuspenseFallback } from './components/LoadingProgress';
+import { PageSkeleton } from './components/Skeletons';
 import { Home } from './pages/Home';
 
 // Lazy load pages
@@ -66,16 +68,9 @@ const queryClient = new QueryClient({
 
 function LoadingFallback() {
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100vh',
-      }}
-    >
-      載入中...
-    </Box>
+    <SuspenseFallback>
+      <PageSkeleton />
+    </SuspenseFallback>
   );
 }
 
@@ -146,6 +141,7 @@ function AnimatedRoutes() {
 function AppRoutes() {
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
+      <LoadingProgress />
       <Suspense fallback={<LoadingFallback />}>
         <AnimatedRoutes />
       </Suspense>
