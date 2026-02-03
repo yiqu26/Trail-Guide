@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Card, Box, Typography, Chip, IconButton, Snackbar, Alert } from '@mui/material';
+import { motion } from 'motion/react';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import StarIcon from '@mui/icons-material/Star';
@@ -69,30 +70,36 @@ export function BentoTrailCard({ trail, isLarge = false, onFavoriteToggle }: Ben
 
   return (
     <>
-      <Card
-        onClick={handleClick}
-        sx={{
-          height: '100%',
-          position: 'relative',
-          overflow: 'hidden',
-          cursor: 'pointer',
-          borderRadius: 3,
-          transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-          '&:hover': {
-            transform: isLarge ? 'scale(1.02)' : 'scale(1.03)',
-            boxShadow: '0 12px 28px rgba(0,0,0,0.25)',
-          },
-          '&:hover .card-image': {
-            transform: 'scale(1.08)',
-          },
-          '&:hover .card-overlay': {
-            background: 'linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0) 25%, rgba(0,0,0,0.8) 100%)',
-          },
-          '&:hover .card-content': {
-            transform: 'translateY(-4px)',
-          },
-        }}
+      <motion.div
+        whileHover={{ scale: isLarge ? 1.02 : 1.03 }}
+        whileTap={{ scale: 0.98 }}
+        transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+        style={{ height: '100%' }}
       >
+        <Card
+          onClick={handleClick}
+          sx={{
+            height: '100%',
+            position: 'relative',
+            overflow: 'hidden',
+            cursor: 'pointer',
+            borderRadius: 3,
+            boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+            transition: 'box-shadow 0.3s ease',
+            '&:hover': {
+              boxShadow: '0 16px 32px rgba(0,0,0,0.2)',
+            },
+            '&:hover .card-image': {
+              transform: 'scale(1.1)',
+            },
+            '&:hover .card-overlay': {
+              background: 'linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0) 25%, rgba(0,0,0,0.85) 100%)',
+            },
+            '&:hover .card-content': {
+              transform: 'translateY(-6px)',
+            },
+          }}
+        >
         {/* 背景圖 - 加入縮放動畫 */}
         <Box
           className="card-image"
@@ -142,31 +149,43 @@ export function BentoTrailCard({ trail, isLarge = false, onFavoriteToggle }: Ben
           />
         )}
 
-        {/* 收藏按鈕 - 右上角，加強 hover 效果 */}
-        <IconButton
-          size={isLarge ? 'medium' : 'small'}
-          onClick={handleFavoriteClick}
-          disabled={isLoading}
-          sx={{
+        {/* 收藏按鈕 - 右上角，加強動畫效果 */}
+        <motion.div
+          style={{
             position: 'absolute',
             top: isLarge ? 10 : 6,
             right: isLarge ? 10 : 6,
-            color: 'white',
-            bgcolor: 'rgba(0,0,0,0.3)',
-            backdropFilter: 'blur(4px)',
-            transition: 'all 0.2s ease',
-            '&:hover': {
-              bgcolor: 'rgba(0,0,0,0.5)',
-              transform: 'scale(1.1)',
-            },
           }}
+          whileHover={{ scale: 1.15 }}
+          whileTap={{ scale: 0.9 }}
         >
-          {isFavorite ? (
-            <FavoriteIcon fontSize={isLarge ? 'medium' : 'small'} sx={{ color: '#ff6b6b' }} />
-          ) : (
-            <FavoriteBorderIcon fontSize={isLarge ? 'medium' : 'small'} />
-          )}
-        </IconButton>
+          <IconButton
+            size={isLarge ? 'medium' : 'small'}
+            onClick={handleFavoriteClick}
+            disabled={isLoading}
+            sx={{
+              color: 'white',
+              bgcolor: 'rgba(0,0,0,0.3)',
+              backdropFilter: 'blur(4px)',
+              transition: 'background-color 0.2s ease',
+              '&:hover': {
+                bgcolor: 'rgba(0,0,0,0.5)',
+              },
+            }}
+          >
+            {isFavorite ? (
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ type: 'spring', stiffness: 500, damping: 15 }}
+              >
+                <FavoriteIcon fontSize={isLarge ? 'medium' : 'small'} sx={{ color: '#ff6b6b' }} />
+              </motion.div>
+            ) : (
+              <FavoriteBorderIcon fontSize={isLarge ? 'medium' : 'small'} />
+            )}
+          </IconButton>
+        </motion.div>
 
         {/* 內容 - 底部，加入上移動畫 */}
         <Box
@@ -257,7 +276,8 @@ export function BentoTrailCard({ trail, isLarge = false, onFavoriteToggle }: Ben
             </Box>
           )}
         </Box>
-      </Card>
+        </Card>
+      </motion.div>
 
       <Snackbar
         open={snackbar.open}

@@ -11,6 +11,7 @@ import {
   Button,
   Alert,
 } from '@mui/material';
+import { motion } from 'motion/react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Pagination } from 'swiper/modules';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
@@ -23,6 +24,21 @@ import { BentoTrailCard } from '../components/BentoTrailCard';
 import type { HomeData } from '../types';
 
 import 'swiper/swiper-bundle.css';
+
+// 動畫配置
+const fadeInUp = {
+  initial: { opacity: 0, y: 30 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.5, ease: 'easeOut' },
+};
+
+const staggerContainer = {
+  animate: {
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
+};
 
 // 自定義 SVG 圖標組件
 const CollectionIcons = {
@@ -265,230 +281,276 @@ export function Home() {
 
       {/* Collections - Icon with Background Style */}
       {homeData?.collections && homeData.collections.length > 0 && (
-        <Box
-          sx={{
-            py: { xs: 3, md: 4 },
-            px: { xs: 2, sm: 3, md: 4, lg: 6 },
-            background: 'linear-gradient(180deg, #f5f5f5 0%, #ffffff 100%)',
-            borderBottom: '1px solid #eee',
-          }}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
         >
           <Box
             sx={{
-              maxWidth: 1600,
-              mx: 'auto',
-              display: 'flex',
-              justifyContent: { xs: 'space-between', md: 'center' },
-              overflowX: 'auto',
-              gap: { xs: 2, sm: 3, md: 5, lg: 8 },
-              pb: 1,
-              '&::-webkit-scrollbar': { display: 'none' },
-              msOverflowStyle: 'none',
-              scrollbarWidth: 'none',
+              py: { xs: 3, md: 4 },
+              px: { xs: 2, sm: 3, md: 4, lg: 6 },
+              background: 'linear-gradient(180deg, #f5f5f5 0%, #ffffff 100%)',
+              borderBottom: '1px solid #eee',
             }}
           >
-            {homeData.collections.map((collection) => {
-              const style = getCollectionStyle(collection.name);
-              return (
-                <Box
-                  key={collection.id}
-                  onClick={() => navigate(`/collection/${collection.id}`)}
-                  sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    cursor: 'pointer',
-                    minWidth: { xs: 70, md: 90 },
-                    flex: '0 0 auto',
-                    transition: 'all 0.2s ease',
-                    '&:hover': {
-                      transform: 'translateY(-4px)',
-                    },
-                    '&:active': {
-                      transform: 'scale(0.95)',
-                    },
-                  }}
-                >
-                  {/* Icon Container with Background */}
-                  <Box
-                    sx={{
-                      width: { xs: 60, md: 80 },
-                      height: { xs: 60, md: 80 },
-                      borderRadius: '50%',
-                      backgroundColor: style.bgColor,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      mb: 1.5,
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.12)',
-                      border: '3px solid white',
-                      color: style.iconColor,
-                      transition: 'all 0.2s ease',
-                      '& svg': {
-                        width: { xs: 32, md: 40 },
-                        height: { xs: 32, md: 40 },
-                      },
-                    }}
+            <Box
+              component={motion.div}
+              variants={staggerContainer}
+              initial="initial"
+              animate="animate"
+              sx={{
+                maxWidth: 1600,
+                mx: 'auto',
+                display: 'flex',
+                justifyContent: { xs: 'space-between', md: 'center' },
+                overflowX: 'auto',
+                gap: { xs: 2, sm: 3, md: 5, lg: 8 },
+                pb: 1,
+                '&::-webkit-scrollbar': { display: 'none' },
+                msOverflowStyle: 'none',
+                scrollbarWidth: 'none',
+              }}
+            >
+              {homeData.collections.map((collection, index) => {
+                const style = getCollectionStyle(collection.name);
+                return (
+                  <motion.div
+                    key={collection.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: index * 0.08 }}
+                    whileHover={{ y: -6, scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => navigate(`/collection/${collection.id}`)}
+                    style={{ cursor: 'pointer' }}
                   >
-                    {style.icon}
-                  </Box>
-                  {/* Label */}
-                  <Typography
-                    sx={{
-                      textAlign: 'center',
-                      fontSize: { xs: '12px', md: '14px' },
-                      fontWeight: 600,
-                      lineHeight: 1.3,
-                      color: '#333',
-                      maxWidth: { xs: 80, md: 100 },
-                    }}
-                  >
-                    {collection.name}
-                  </Typography>
-                </Box>
-              );
-            })}
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        minWidth: { xs: 70, md: 90 },
+                        flex: '0 0 auto',
+                      }}
+                    >
+                      {/* Icon Container with Background */}
+                      <Box
+                        sx={{
+                          width: { xs: 60, md: 80 },
+                          height: { xs: 60, md: 80 },
+                          borderRadius: '50%',
+                          backgroundColor: style.bgColor,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          mb: 1.5,
+                          boxShadow: '0 4px 12px rgba(0,0,0,0.12)',
+                          border: '3px solid white',
+                          color: style.iconColor,
+                          transition: 'box-shadow 0.2s ease',
+                          '&:hover': {
+                            boxShadow: '0 8px 24px rgba(0,0,0,0.18)',
+                          },
+                          '& svg': {
+                            width: { xs: 32, md: 40 },
+                            height: { xs: 32, md: 40 },
+                          },
+                        }}
+                      >
+                        {style.icon}
+                      </Box>
+                      {/* Label */}
+                      <Typography
+                        sx={{
+                          textAlign: 'center',
+                          fontSize: { xs: '12px', md: '14px' },
+                          fontWeight: 600,
+                          lineHeight: 1.3,
+                          color: '#333',
+                          maxWidth: { xs: 80, md: 100 },
+                        }}
+                      >
+                        {collection.name}
+                      </Typography>
+                    </Box>
+                  </motion.div>
+                );
+              })}
+            </Box>
           </Box>
-        </Box>
+        </motion.div>
       )}
 
       {/* Popular Trails - Bento Grid */}
       {homeData?.popularTrails && homeData.popularTrails.length > 0 && (
-        <Box sx={{ px: { xs: 2, sm: 3, md: 4, lg: 6 }, py: 3, maxWidth: 1600, mx: 'auto' }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2.5 }}>
-            <Typography variant="h6" fontWeight="bold">
-              熱門步道
-            </Typography>
-            <IconButton size="small" onClick={() => navigate('/search')}>
-              <ChevronRightIcon />
-            </IconButton>
+        <motion.div
+          initial="initial"
+          whileInView="animate"
+          viewport={{ once: true, margin: '-50px' }}
+          variants={{
+            initial: { opacity: 0 },
+            animate: { opacity: 1, transition: { staggerChildren: 0.1 } },
+          }}
+        >
+          <Box sx={{ px: { xs: 2, sm: 3, md: 4, lg: 6 }, py: 3, maxWidth: 1600, mx: 'auto' }}>
+            <motion.div variants={fadeInUp}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2.5 }}>
+                <Typography variant="h6" fontWeight="bold">
+                  熱門步道
+                </Typography>
+                <IconButton size="small" onClick={() => navigate('/search')}>
+                  <ChevronRightIcon />
+                </IconButton>
+              </Box>
+            </motion.div>
+            {/* Bento Grid Layout - 響應式 */}
+            <Box
+              sx={{
+                display: 'grid',
+                gap: { xs: 1.5, sm: 2, md: 2.5 },
+                gridTemplateColumns: {
+                  xs: 'repeat(2, 1fr)',      // 手機: 2 欄
+                  sm: 'repeat(4, 1fr)',      // 平板: 4 欄
+                  lg: 'repeat(6, 1fr)',      // 桌面: 6 欄
+                },
+                gridTemplateRows: {
+                  xs: 'repeat(3, 150px)',    // 手機: 3 排
+                  sm: 'repeat(2, 180px)',    // 平板: 2 排
+                  lg: 'repeat(2, 200px)',    // 桌面: 2 排，更高
+                },
+              }}
+            >
+              {/* 大卡片 - 佔據 2x2 */}
+              {homeData.popularTrails[0] && (
+                <motion.div
+                  variants={fadeInUp}
+                  style={{ gridColumn: 'span 2', gridRow: 'span 2' }}
+                >
+                  <BentoTrailCard trail={homeData.popularTrails[0]} isLarge />
+                </motion.div>
+              )}
+              {/* 小卡片 1-4 (所有尺寸都顯示) */}
+              {homeData.popularTrails[1] && (
+                <motion.div variants={fadeInUp}>
+                  <BentoTrailCard trail={homeData.popularTrails[1]} />
+                </motion.div>
+              )}
+              {homeData.popularTrails[2] && (
+                <motion.div variants={fadeInUp}>
+                  <BentoTrailCard trail={homeData.popularTrails[2]} />
+                </motion.div>
+              )}
+              {homeData.popularTrails[3] && (
+                <motion.div variants={fadeInUp}>
+                  <BentoTrailCard trail={homeData.popularTrails[3]} />
+                </motion.div>
+              )}
+              {homeData.popularTrails[4] && (
+                <motion.div variants={fadeInUp}>
+                  <BentoTrailCard trail={homeData.popularTrails[4]} />
+                </motion.div>
+              )}
+              {/* 小卡片 5-6 (僅桌面版顯示) */}
+              {homeData.popularTrails[5] && (
+                <Box sx={{ display: { xs: 'none', lg: 'block' }, height: '100%' }}>
+                  <motion.div variants={fadeInUp} style={{ height: '100%' }}>
+                    <BentoTrailCard trail={homeData.popularTrails[5]} />
+                  </motion.div>
+                </Box>
+              )}
+              {homeData.popularTrails[6] && (
+                <Box sx={{ display: { xs: 'none', lg: 'block' }, height: '100%' }}>
+                  <motion.div variants={fadeInUp} style={{ height: '100%' }}>
+                    <BentoTrailCard trail={homeData.popularTrails[6]} />
+                  </motion.div>
+                </Box>
+              )}
+            </Box>
           </Box>
-          {/* Bento Grid Layout - 響應式 */}
-          <Box
-            sx={{
-              display: 'grid',
-              gap: { xs: 1.5, sm: 2, md: 2.5 },
-              gridTemplateColumns: {
-                xs: 'repeat(2, 1fr)',      // 手機: 2 欄
-                sm: 'repeat(4, 1fr)',      // 平板: 4 欄
-                lg: 'repeat(6, 1fr)',      // 桌面: 6 欄
-              },
-              gridTemplateRows: {
-                xs: 'repeat(3, 150px)',    // 手機: 3 排
-                sm: 'repeat(2, 180px)',    // 平板: 2 排
-                lg: 'repeat(2, 200px)',    // 桌面: 2 排，更高
-              },
-            }}
-          >
-            {/* 大卡片 - 佔據 2x2 */}
-            {homeData.popularTrails[0] && (
-              <Box
-                sx={{
-                  gridColumn: 'span 2',
-                  gridRow: 'span 2',
-                }}
-              >
-                <BentoTrailCard trail={homeData.popularTrails[0]} isLarge />
-              </Box>
-            )}
-            {/* 小卡片 1-4 (所有尺寸都顯示) */}
-            {homeData.popularTrails[1] && (
-              <BentoTrailCard trail={homeData.popularTrails[1]} />
-            )}
-            {homeData.popularTrails[2] && (
-              <BentoTrailCard trail={homeData.popularTrails[2]} />
-            )}
-            {homeData.popularTrails[3] && (
-              <BentoTrailCard trail={homeData.popularTrails[3]} />
-            )}
-            {homeData.popularTrails[4] && (
-              <BentoTrailCard trail={homeData.popularTrails[4]} />
-            )}
-            {/* 小卡片 5-6 (僅桌面版顯示) */}
-            {homeData.popularTrails[5] && (
-              <Box sx={{ display: { xs: 'none', lg: 'block' }, height: '100%' }}>
-                <BentoTrailCard trail={homeData.popularTrails[5]} />
-              </Box>
-            )}
-            {homeData.popularTrails[6] && (
-              <Box sx={{ display: { xs: 'none', lg: 'block' }, height: '100%' }}>
-                <BentoTrailCard trail={homeData.popularTrails[6]} />
-              </Box>
-            )}
-          </Box>
-        </Box>
+        </motion.div>
       )}
 
       {/* Announcements */}
       {homeData?.announcements && homeData.announcements.length > 0 && (
-        <Box sx={{ px: { xs: 2, sm: 3, md: 4, lg: 6 }, maxWidth: 1600, mx: 'auto', width: '100%' }}>
-          <Paper
-            elevation={0}
-            sx={{
-              mb: 3,
-              p: { xs: 2, sm: 3 },
-              borderRadius: 3,
-              background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
-            }}
-          >
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-            <CampaignIcon sx={{ color: 'primary.main' }} />
-            <Typography variant="h6" fontWeight="bold">
-              最新消息
-            </Typography>
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-50px' }}
+          transition={{ duration: 0.5 }}
+        >
+          <Box sx={{ px: { xs: 2, sm: 3, md: 4, lg: 6 }, maxWidth: 1600, mx: 'auto', width: '100%' }}>
+            <Paper
+              elevation={0}
+              sx={{
+                mb: 3,
+                p: { xs: 2, sm: 3 },
+                borderRadius: 3,
+                background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
+              }}
+            >
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+                <CampaignIcon sx={{ color: 'primary.main' }} />
+                <Typography variant="h6" fontWeight="bold">
+                  最新消息
+                </Typography>
+              </Box>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+                {homeData.announcements.map((announcement, index) => (
+                  <motion.div
+                    key={announcement.id}
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.4, delay: index * 0.1 }}
+                    whileHover={announcement.link ? { x: 4, scale: 1.01 } : {}}
+                  >
+                    <Card
+                      elevation={1}
+                      sx={{
+                        cursor: announcement.link ? 'pointer' : 'default',
+                        borderLeft: '4px solid',
+                        borderLeftColor: index === 0 ? 'primary.main' : 'grey.300',
+                      }}
+                      onClick={() => announcement.link && window.open(announcement.link, '_blank')}
+                    >
+                      <CardContent sx={{ py: 1.5, px: 2, '&:last-child': { pb: 1.5 } }}>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                          <Box sx={{ flex: 1 }}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
+                              {index === 0 && (
+                                <Chip
+                                  label="NEW"
+                                  size="small"
+                                  color="primary"
+                                  sx={{ height: 20, fontSize: '0.65rem', fontWeight: 'bold' }}
+                                />
+                              )}
+                              <Typography variant="caption" color="text.secondary">
+                                {announcement.date && new Date(announcement.date).toLocaleDateString('zh-TW')}
+                              </Typography>
+                            </Box>
+                            <Typography variant="subtitle2" fontWeight="medium" sx={{ lineHeight: 1.4 }}>
+                              {announcement.title}
+                            </Typography>
+                            {announcement.source && (
+                              <Typography variant="caption" color="text.secondary">
+                                來源：{announcement.source}
+                              </Typography>
+                            )}
+                          </Box>
+                          {announcement.link && (
+                            <OpenInNewIcon sx={{ fontSize: 16, color: 'text.secondary', ml: 1, mt: 0.5 }} />
+                          )}
+                        </Box>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                ))}
+              </Box>
+            </Paper>
           </Box>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-            {homeData.announcements.map((announcement, index) => (
-              <Card
-                key={announcement.id}
-                elevation={1}
-                sx={{
-                  cursor: announcement.link ? 'pointer' : 'default',
-                  transition: 'all 0.2s ease',
-                  '&:hover': announcement.link ? {
-                    transform: 'translateX(4px)',
-                    boxShadow: 3,
-                  } : {},
-                  borderLeft: '4px solid',
-                  borderLeftColor: index === 0 ? 'primary.main' : 'grey.300',
-                }}
-                onClick={() => announcement.link && window.open(announcement.link, '_blank')}
-              >
-                <CardContent sx={{ py: 1.5, px: 2, '&:last-child': { pb: 1.5 } }}>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                    <Box sx={{ flex: 1 }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
-                        {index === 0 && (
-                          <Chip
-                            label="NEW"
-                            size="small"
-                            color="primary"
-                            sx={{ height: 20, fontSize: '0.65rem', fontWeight: 'bold' }}
-                          />
-                        )}
-                        <Typography variant="caption" color="text.secondary">
-                          {announcement.date && new Date(announcement.date).toLocaleDateString('zh-TW')}
-                        </Typography>
-                      </Box>
-                      <Typography variant="subtitle2" fontWeight="medium" sx={{ lineHeight: 1.4 }}>
-                        {announcement.title}
-                      </Typography>
-                      {announcement.source && (
-                        <Typography variant="caption" color="text.secondary">
-                          來源：{announcement.source}
-                        </Typography>
-                      )}
-                    </Box>
-                    {announcement.link && (
-                      <OpenInNewIcon sx={{ fontSize: 16, color: 'text.secondary', ml: 1, mt: 0.5 }} />
-                    )}
-                  </Box>
-                </CardContent>
-              </Card>
-            ))}
-          </Box>
-        </Paper>
-        </Box>
+        </motion.div>
       )}
     </Box>
   );

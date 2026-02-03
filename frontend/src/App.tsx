@@ -1,9 +1,11 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { ThemeProvider, createTheme, CssBaseline, Box } from '@mui/material';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import { AnimatePresence } from 'motion/react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { BottomNav } from './components/BottomNav';
+import { PageTransition } from './components/PageTransition';
 import { Home } from './pages/Home';
 
 // Lazy load pages
@@ -88,35 +90,45 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
+function AnimatedRoutes() {
+  const location = useLocation();
+
+  return (
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={location.pathname}>
+        <Route path="/" element={<PageTransition><Home /></PageTransition>} />
+        <Route path="/search" element={<PageTransition><Search /></PageTransition>} />
+        <Route path="/trail/:id" element={<PageTransition><TrailDetail /></PageTransition>} />
+        <Route path="/nearby" element={<PageTransition><Nearby /></PageTransition>} />
+        <Route path="/collection/:id" element={<PageTransition><Collection /></PageTransition>} />
+        <Route path="/design-demo" element={<PageTransition><DesignDemo /></PageTransition>} />
+        <Route path="/login" element={<PageTransition><Login /></PageTransition>} />
+        <Route
+          path="/favorites"
+          element={
+            <ProtectedRoute>
+              <PageTransition><Favorites /></PageTransition>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <PageTransition><Profile /></PageTransition>
+            </ProtectedRoute>
+          }
+        />
+      </Routes>
+    </AnimatePresence>
+  );
+}
+
 function AppRoutes() {
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
       <Suspense fallback={<LoadingFallback />}>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/search" element={<Search />} />
-          <Route path="/trail/:id" element={<TrailDetail />} />
-          <Route path="/nearby" element={<Nearby />} />
-          <Route path="/collection/:id" element={<Collection />} />
-          <Route path="/design-demo" element={<DesignDemo />} />
-          <Route path="/login" element={<Login />} />
-          <Route
-            path="/favorites"
-            element={
-              <ProtectedRoute>
-                <Favorites />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/profile"
-            element={
-              <ProtectedRoute>
-                <Profile />
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
+        <AnimatedRoutes />
       </Suspense>
       <BottomNav />
     </Box>
