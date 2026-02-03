@@ -170,6 +170,50 @@ Trail-Guide/
 
 ## 工作日誌
 
+### 2026-02-04
+
+**完成項目：UX 優化與暗黑模式**
+
+1. **載入體驗優化**
+   - 安裝 `nprogress` - 頂部綠色進度條
+   - 新增 `LoadingProgress.tsx` - 頁面切換進度條
+   - 新增 `Skeletons.tsx` - 多種骨架屏組件
+   - Suspense fallback 改用骨架屏
+
+2. **PWA 支援**
+   - 安裝 `vite-plugin-pwa`
+   - 可安裝到手機桌面
+   - 離線緩存 (圖片 7 天、API 1 小時)
+   - 新版本更新提示 (`PWAUpdatePrompt.tsx`)
+
+3. **設定頁面與暗黑模式**
+   - 新增 `ThemeContext.tsx` - 主題狀態管理
+   - 新增 `Settings.tsx` - 設定頁面 (/settings)
+   - 三種模式：淺色 / 深色 / 跟隨系統
+   - localStorage 持久化
+
+4. **暗黑模式配色修正**
+   - 頁面背景改用 `background.default`
+   - 卡片背景改用 `background.paper`
+   - Hover 效果改用 `action.hover`
+   - 文字顏色改用 `text.primary/secondary`
+
+**Git commits：**
+```
+b95acbe feat: 優化載入體驗 - 頂部進度條 + 骨架屏
+465a72c feat: 新增 PWA 支援 - 可安裝到手機桌面
+f77a720 feat: 新增設定頁面與暗黑模式支援
+a51999c fix: 修正暗黑模式下的配色問題
+```
+
+**下次可繼續：**
+- [ ] 測試打卡功能 (需重啟後端)
+- [ ] 打卡照片上傳 (需 Cloudinary)
+- [ ] 成就分享到社群
+- [ ] 用戶頭像上傳
+
+---
+
 ### 2026-02-03
 
 **完成項目：登山打卡與成就徽章系統**

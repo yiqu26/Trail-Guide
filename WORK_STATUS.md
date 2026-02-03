@@ -1,33 +1,51 @@
 # Trail Guide 工作狀態記錄
 
-**更新日期**: 2026-02-03
+**更新日期**: 2026-02-04
 
 ## 當前狀態
 
-### PWA 支援 (已完成)
+### 2026-02-04 完成項目
 
-- ✅ 可安裝到手機桌面 (Android/iOS)
-- ✅ 離線緩存 (圖片 7 天、API 1 小時)
-- ✅ 新版本更新提示
-- ✅ 已部署到 Vercel
+**UX 優化：**
+- ✅ 頂部進度條 (NProgress) - 頁面切換時顯示
+- ✅ 骨架屏組件 - 取代「載入中...」文字
+- ✅ PWA 支援 - 可安裝到手機桌面
+- ✅ 設定頁面 (/settings)
+- ✅ 暗黑模式 (淺色/深色/跟隨系統)
+- ✅ 暗黑模式配色修正
 
 ### 登山打卡與成就徽章系統 (需重啟測試)
 
 **已完成：**
-- ✅ 資料庫遷移已執行 (checkins, checkin_images, achievements, user_achievements)
+- ✅ 資料庫遷移已執行
 - ✅ 37 個預設成就已插入
-- ✅ 代碼已 commit
+- ✅ 前後端代碼已完成
 
 **下一步：**
-1. **重啟後端** - 關閉 start-all.bat 再重新執行，載入新的 Controller
+1. **重啟後端** - 關閉 start-all.bat 再重新執行
 2. 測試打卡功能（步道詳情頁 → 打卡按鈕）
 3. 測試成就頁面 (/achievements)
+4. 測試設定頁面暗黑模式切換
+
+### 新增的路由
+- `/settings` - 設定頁面
+- `/my-checkins` - 我的打卡紀錄
+- `/achievements` - 成就徽章
 
 ### 新增的 API 端點
 - `GET/POST /api/checkins` - 打卡 CRUD
 - `GET /api/checkins/trail/{trailId}` - 步道打卡紀錄
 - `GET /api/achievements` - 成就列表
 - `GET /api/achievements/user` - 用戶成就
+
+---
+
+## 待完成功能
+
+- [ ] 測試打卡功能 (需重啟後端)
+- [ ] 打卡照片上傳 (需 Cloudinary)
+- [ ] 成就分享到社群
+- [ ] 用戶頭像上傳 (需雲端儲存)
 
 ---
 
