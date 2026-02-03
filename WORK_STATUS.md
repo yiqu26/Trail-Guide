@@ -1,8 +1,30 @@
 # Trail Guide 工作狀態記錄
 
-**更新日期**: 2026-01-28 01:55
+**更新日期**: 2026-02-03
 
-## 待優化事項（下次繼續）
+## 當前狀態
+
+### 登山打卡與成就徽章系統 (剛完成，需重啟測試)
+
+**已完成：**
+- ✅ 資料庫遷移已執行 (checkins, checkin_images, achievements, user_achievements)
+- ✅ 37 個預設成就已插入
+- ✅ 代碼已 commit (1a8a974)
+
+**下一步：**
+1. **重啟後端** - 關閉 start-all.bat 再重新執行，載入新的 Controller
+2. 測試打卡功能（步道詳情頁 → 打卡按鈕）
+3. 測試成就頁面 (/achievements)
+
+### 新增的 API 端點
+- `GET/POST /api/checkins` - 打卡 CRUD
+- `GET /api/checkins/trail/{trailId}` - 步道打卡紀錄
+- `GET /api/achievements` - 成就列表
+- `GET /api/achievements/user` - 用戶成就
+
+---
+
+## 待優化事項
 
 ### Bento Grid 設計細節優化
 

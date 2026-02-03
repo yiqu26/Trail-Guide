@@ -123,12 +123,15 @@ Trail-Guide/
 - [x] 個人資料頁面
 - [x] 錯誤處理與重試機制
 - [x] 響應式設計
+- [x] 第三方登入 (Google) ✅ 2026-01-28
+- [x] 登山打卡系統 ✅ 2026-02-03
+- [x] 成就徽章系統 ✅ 2026-02-03
 
 ## 待完成功能
 
-- [x] 第三方登入 (Google) ✅ 2026-01-28
-- [x] 新增評論功能 ✅ 已實現
-- [x] 骨架屏 Loading ✅ 已實現
+- [ ] 打卡照片上傳 (需雲端儲存)
+- [ ] 成就解鎖通知 (Toast)
+- [ ] 成就分享到社群
 - [ ] 用戶頭像上傳 (需雲端儲存)
 - [ ] Facebook/Apple 登入 (申請較複雜，暫緩)
 
@@ -166,6 +169,44 @@ Trail-Guide/
 ---
 
 ## 工作日誌
+
+### 2026-02-03
+
+**完成項目：登山打卡與成就徽章系統**
+
+後端 (ASP.NET Core)：
+- `database/postgres/003_checkin_achievement.sql` - 打卡與成就資料表
+- `database/postgres/004_seed_achievements.sql` - 預設成就種子資料 (37 個成就)
+- `Models/Domain/CheckinAchievement.cs` - Checkin, CheckinImage, Achievement, UserAchievement
+- `Models/DTOs/CheckinAchievementDtos.cs` - 所有 API 請求/回應 DTO
+- `Services/AchievementService.cs` - 成就檢查與解鎖邏輯
+- `Controllers/CheckinsController.cs` - 打卡 CRUD API
+- `Controllers/AchievementsController.cs` - 成就查詢 API
+
+前端 (React + TypeScript)：
+- `types/index.ts` - 新增 Checkin, Achievement 相關類型
+- `services/checkins.ts` - 打卡 API 服務
+- `services/achievements.ts` - 成就 API 服務
+- `components/CheckinDialog.tsx` - 打卡彈窗 (GPS 驗證、心得、時間)
+- `components/AchievementCard.tsx` - 成就卡片組件
+- `pages/MyCheckins.tsx` - 我的打卡紀錄頁面
+- `pages/Achievements.tsx` - 成就徽章頁面
+- `pages/TrailDetail.tsx` - 新增打卡按鈕和打卡紀錄區塊
+- `pages/Profile.tsx` - 新增統計卡片和選單入口
+- `App.tsx` - 新增路由 /my-checkins, /achievements
+
+**Git commits：**
+```
+1a8a974 feat: 新增登山打卡與成就徽章系統
+```
+
+**下次繼續：**
+- [ ] 重啟後端測試打卡功能
+- [ ] 成就解鎖通知 (Toast)
+- [ ] 打卡照片上傳功能
+- [ ] 成就分享到社群
+
+---
 
 ### 2026-01-28
 
