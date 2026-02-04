@@ -487,7 +487,9 @@ export function Home() {
                 mb: 3,
                 p: { xs: 2, sm: 3 },
                 borderRadius: 3,
-                background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
+                bgcolor: 'background.paper',
+                border: 1,
+                borderColor: 'divider',
               }}
             >
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>

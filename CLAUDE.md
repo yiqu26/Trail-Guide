@@ -198,12 +198,18 @@ Trail-Guide/
    - Hover 效果改用 `action.hover`
    - 文字顏色改用 `text.primary/secondary`
 
+5. **暗黑模式配色修正 (第二輪)**
+   - `Home.tsx` - 新消息區塊：移除硬編碼漸層 `#f8f9fa`，改用 `background.paper` + 邊框
+   - `TrailDetail.tsx` - 打卡空狀態卡片：`grey.50` → `action.hover`
+   - `CommentSection.tsx` - 評論空狀態卡片：`grey.50` → `action.hover`
+
 **Git commits：**
 ```
 b95acbe feat: 優化載入體驗 - 頂部進度條 + 骨架屏
 465a72c feat: 新增 PWA 支援 - 可安裝到手機桌面
 f77a720 feat: 新增設定頁面與暗黑模式支援
 a51999c fix: 修正暗黑模式下的配色問題
+(待提交) fix: 修正暗黑模式下新消息、打卡、評論區塊配色
 ```
 
 **下次可繼續：**

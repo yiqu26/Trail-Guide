@@ -152,7 +152,7 @@ export function CommentSection({ trailId }: CommentSectionProps) {
 
       {/* Comments List */}
       {comments.length === 0 ? (
-        <Card sx={{ bgcolor: 'grey.50' }}>
+        <Card sx={{ bgcolor: 'action.hover' }}>
           <CardContent sx={{ textAlign: 'center', py: 4 }}>
             <Typography color="text.secondary">還沒有評論</Typography>
             <Typography variant="caption" color="text.secondary">

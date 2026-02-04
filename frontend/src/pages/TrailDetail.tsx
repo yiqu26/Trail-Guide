@@ -355,7 +355,7 @@ export function TrailDetail() {
               ))}
             </Box>
           ) : checkins.length === 0 ? (
-            <Card sx={{ bgcolor: 'grey.50' }}>
+            <Card sx={{ bgcolor: 'action.hover' }}>
               <CardContent sx={{ textAlign: 'center', py: 3 }}>
                 <Typography color="text.secondary" variant="body2">
                   還沒有人打卡
