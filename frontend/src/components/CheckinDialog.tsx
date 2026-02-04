@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -12,12 +12,16 @@ import {
   Alert,
   Chip,
   LinearProgress,
+  IconButton,
 } from '@mui/material';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import LocationOffIcon from '@mui/icons-material/LocationOff';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
+import CloseIcon from '@mui/icons-material/Close';
 import { checkinService } from '../services/checkins';
+import { uploadImage } from '../services/cloudinary';
 import type { CreateCheckinData, CheckinResult, Achievement } from '../types';
 
 interface CheckinDialogProps {
@@ -48,6 +52,10 @@ export function CheckinDialog({
   const [error, setError] = useState<string | null>(null);
   const [newAchievements, setNewAchievements] = useState<Achievement[]>([]);
   const [showAchievements, setShowAchievements] = useState(false);
+  const [photos, setPhotos] = useState<{ file: File; preview: string }[]>([]);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Reset form when dialog opens
   useEffect(() => {
@@ -59,6 +67,10 @@ export function CheckinDialog({
       setShowAchievements(false);
       setLocation(null);
       setLocationError(null);
+      // Clean up photo previews
+      photos.forEach(p => URL.revokeObjectURL(p.preview));
+      setPhotos([]);
+      setUploadProgress(0);
       // Auto-get location when dialog opens
       getLocation();
     }
@@ -125,19 +137,58 @@ export function CheckinDialog({
   const distance = calculateDistance();
   const isWithinRange = distance !== null && distance <= 1000;
 
+  const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+
+    const newPhotos = Array.from(files).slice(0, 3 - photos.length).map(file => ({
+      file,
+      preview: URL.createObjectURL(file),
+    }));
+
+    setPhotos(prev => [...prev, ...newPhotos].slice(0, 3));
+    // Reset input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const handleRemovePhoto = (index: number) => {
+    setPhotos(prev => {
+      const removed = prev[index];
+      URL.revokeObjectURL(removed.preview);
+      return prev.filter((_, i) => i !== index);
+    });
+  };
+
   const handleSubmit = async () => {
     setIsLoading(true);
     setError(null);
 
-    const data: CreateCheckinData = {
-      trailId,
-      latitude: location?.lat,
-      longitude: location?.lng,
-      note: note.trim() || undefined,
-      durationMinutes: durationMinutes || undefined,
-    };
-
     try {
+      // Upload photos first
+      let imageUrls: string[] = [];
+      if (photos.length > 0) {
+        setIsUploading(true);
+        const uploadPromises = photos.map((photo, index) =>
+          uploadImage(photo.file, 'checkins').then(result => {
+            setUploadProgress(((index + 1) / photos.length) * 100);
+            return result.secure_url;
+          })
+        );
+        imageUrls = await Promise.all(uploadPromises);
+        setIsUploading(false);
+      }
+
+      const data: CreateCheckinData = {
+        trailId,
+        latitude: location?.lat,
+        longitude: location?.lng,
+        note: note.trim() || undefined,
+        durationMinutes: durationMinutes || undefined,
+        imageUrls: imageUrls.length > 0 ? imageUrls : undefined,
+      };
+
       const result = await checkinService.createCheckin(data);
 
       if (result.newAchievements && result.newAchievements.length > 0) {
@@ -325,6 +376,92 @@ export function CheckinDialog({
               <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: 'block' }}>
                 約 {Math.floor(Number(durationMinutes) / 60)} 小時 {Number(durationMinutes) % 60} 分鐘
               </Typography>
+            )}
+          </Box>
+
+          {/* Photos */}
+          <Box>
+            <Typography variant="subtitle2" gutterBottom>
+              上傳照片（選填，最多 3 張）
+            </Typography>
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              ref={fileInputRef}
+              onChange={handlePhotoSelect}
+              style={{ display: 'none' }}
+            />
+            <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+              {photos.map((photo, index) => (
+                <Box
+                  key={index}
+                  sx={{
+                    position: 'relative',
+                    width: 80,
+                    height: 80,
+                    borderRadius: 2,
+                    overflow: 'hidden',
+                  }}
+                >
+                  <Box
+                    component="img"
+                    src={photo.preview}
+                    alt={`照片 ${index + 1}`}
+                    sx={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover',
+                    }}
+                  />
+                  <IconButton
+                    size="small"
+                    onClick={() => handleRemovePhoto(index)}
+                    sx={{
+                      position: 'absolute',
+                      top: 2,
+                      right: 2,
+                      bgcolor: 'rgba(0,0,0,0.5)',
+                      color: 'white',
+                      p: 0.3,
+                      '&:hover': { bgcolor: 'rgba(0,0,0,0.7)' },
+                    }}
+                  >
+                    <CloseIcon sx={{ fontSize: 14 }} />
+                  </IconButton>
+                </Box>
+              ))}
+              {photos.length < 3 && (
+                <Box
+                  onClick={() => fileInputRef.current?.click()}
+                  sx={{
+                    width: 80,
+                    height: 80,
+                    borderRadius: 2,
+                    border: '2px dashed',
+                    borderColor: 'divider',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                    '&:hover': {
+                      borderColor: 'primary.main',
+                      bgcolor: 'action.hover',
+                    },
+                  }}
+                >
+                  <AddPhotoAlternateIcon color="action" />
+                </Box>
+              )}
+            </Box>
+            {isUploading && (
+              <Box sx={{ mt: 1 }}>
+                <Typography variant="caption" color="text.secondary">
+                  上傳中 {Math.round(uploadProgress)}%
+                </Typography>
+                <LinearProgress variant="determinate" value={uploadProgress} sx={{ mt: 0.5 }} />
+              </Box>
             )}
           </Box>
 

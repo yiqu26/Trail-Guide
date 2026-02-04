@@ -59,6 +59,20 @@ public class CheckinsController : ControllerBase
         _context.Checkins.Add(checkin);
         await _context.SaveChangesAsync();
 
+        // 儲存圖片
+        if (dto.ImageUrls != null && dto.ImageUrls.Count > 0)
+        {
+            var images = dto.ImageUrls.Select((url, index) => new CheckinImage
+            {
+                CheckinId = checkin.Id,
+                ImageUrl = url,
+                SortOrder = index
+            }).ToList();
+
+            _context.CheckinImages.AddRange(images);
+            await _context.SaveChangesAsync();
+        }
+
         // 檢查並解鎖成就
         var newAchievements = await _achievementService.CheckAndUnlockAchievements(userId, checkin);
 
@@ -82,7 +96,7 @@ public class CheckinsController : ControllerBase
             DistanceFromTrail = checkin.DistanceFromTrail,
             Note = checkin.Note,
             DurationMinutes = checkin.DurationMinutes,
-            Images = new List<string>(),
+            Images = dto.ImageUrls ?? new List<string>(),
             CreatedAt = checkin.CreatedAt
         };
 
