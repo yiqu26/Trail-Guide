@@ -4,7 +4,25 @@
 
 ## 當前狀態
 
-### 2026-02-04 完成項目
+### 2026-02-04 完成項目 (晚間更新)
+
+**打卡照片上傳 (Cloudinary)：**
+- ✅ Cloudinary 整合 (Cloud: dblw3jamh, Preset: trailguilde)
+- ✅ 前端上傳服務 (`services/cloudinary.ts`)
+- ✅ CheckinDialog 照片選擇、預覽、上傳 UI
+- ✅ 後端儲存圖片 URL 到 CheckinImages 表
+- ⏳ 待測試（需重啟後端）
+
+**UI 細節修正：**
+- ✅ 步道詳情頁返回/分享/收藏按鈕支援暗黑模式
+- ✅ 熱門步道卡片難度標籤從左上角移至底部資訊列
+- ✅ 時間顯示格式化 (1440分 → 1天)
+- ✅ 新增 `utils/formatTime.ts` 工具函數
+
+**Claude Code Skills：**
+- ✅ 建立 `/start` skill (`.claude/skills/start/SKILL.md`)
+
+### 2026-02-04 完成項目 (早)
 
 **UX 優化：**
 - ✅ 頂部進度條 (NProgress) - 頁面切換時顯示
@@ -57,10 +75,9 @@
 
 ## 待完成功能
 
-- [ ] 測試打卡功能 (需重啟後端)
-- [ ] 打卡照片上傳 (需 Cloudinary)
+- [ ] 測試打卡照片上傳 (需重啟後端)
 - [ ] 成就分享到社群
-- [ ] 用戶頭像上傳 (需雲端儲存)
+- [ ] 用戶頭像上傳 (可用同一個 Cloudinary)
 
 ---
 
