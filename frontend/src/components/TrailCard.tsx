@@ -16,6 +16,7 @@ import StarIcon from '@mui/icons-material/Star';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { favoriteService } from '../services/trails';
+import { formatDuration } from '../utils/formatTime';
 import { ProgressiveImage } from './ProgressiveImage';
 import type { TrailListItem } from '../types';
 
@@ -170,7 +171,7 @@ export function TrailCard({ trail, onFavoriteToggle }: TrailCardProps) {
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
                 <AccessTimeIcon sx={{ fontSize: 14, color: 'text.secondary' }} />
                 <Typography variant="caption" sx={{ ml: 0.3 }}>
-                  {trail.costTime}分
+                  {formatDuration(trail.costTime)}
                 </Typography>
               </Box>
             )}

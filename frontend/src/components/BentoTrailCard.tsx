@@ -10,6 +10,7 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { favoriteService } from '../services/trails';
+import { formatDuration } from '../utils/formatTime';
 import type { TrailListItem } from '../types';
 
 interface BentoTrailCardProps {
@@ -155,43 +156,24 @@ export function BentoTrailCard({ trail, isLarge = false, onFavoriteToggle }: Ben
           }}
         />
 
-        {/* 難度標籤 - 左上角 */}
-        {trail.difficulty && (
-          <Chip
-            label={difficultyLabels[trail.difficulty]}
-            size="small"
-            sx={{
-              position: 'absolute',
-              top: isLarge ? 14 : 10,
-              left: isLarge ? 14 : 10,
-              bgcolor: difficultyColors[trail.difficulty],
-              color: 'white',
-              fontWeight: 'bold',
-              fontSize: isLarge ? '0.8rem' : '0.7rem',
-              height: isLarge ? 28 : 22,
-              boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
-            }}
-          />
-        )}
-
-        {/* 收藏按鈕 - 右上角，加強動畫效果 */}
+        {/* 收藏按鈕 - 右上角 */}
         <motion.div
           style={{
             position: 'absolute',
-            top: isLarge ? 10 : 6,
-            right: isLarge ? 10 : 6,
+            top: isLarge ? 10 : 8,
+            right: isLarge ? 10 : 8,
           }}
-          whileHover={{ scale: 1.15 }}
+          whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
         >
           <IconButton
-            size={isLarge ? 'medium' : 'small'}
             onClick={handleFavoriteClick}
             disabled={isLoading}
             sx={{
               color: 'white',
-              bgcolor: 'rgba(0,0,0,0.3)',
+              bgcolor: 'rgba(0,0,0,0.35)',
               backdropFilter: 'blur(4px)',
+              padding: isLarge ? 1 : 0.6,
               transition: 'background-color 0.2s ease',
               '&:hover': {
                 bgcolor: 'rgba(0,0,0,0.5)',
@@ -203,11 +185,12 @@ export function BentoTrailCard({ trail, isLarge = false, onFavoriteToggle }: Ben
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ type: 'spring', stiffness: 500, damping: 15 }}
+                style={{ display: 'flex' }}
               >
-                <FavoriteIcon fontSize={isLarge ? 'medium' : 'small'} sx={{ color: '#ff6b6b' }} />
+                <FavoriteIcon sx={{ fontSize: isLarge ? 20 : 16, color: '#ff6b6b' }} />
               </motion.div>
             ) : (
-              <FavoriteBorderIcon fontSize={isLarge ? 'medium' : 'small'} />
+              <FavoriteBorderIcon sx={{ fontSize: isLarge ? 20 : 16 }} />
             )}
           </IconButton>
         </motion.div>
@@ -253,7 +236,23 @@ export function BentoTrailCard({ trail, isLarge = false, onFavoriteToggle }: Ben
           </Typography>
 
           {/* 資訊列 */}
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: isLarge ? 2 : 1.5, flexWrap: 'wrap' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: isLarge ? 1.5 : 1, flexWrap: 'wrap' }}>
+            {trail.difficulty && (
+              <Chip
+                label={difficultyLabels[trail.difficulty]}
+                size="small"
+                sx={{
+                  bgcolor: difficultyColors[trail.difficulty],
+                  color: 'white',
+                  fontWeight: 'bold',
+                  fontSize: isLarge ? '0.7rem' : '0.6rem',
+                  height: isLarge ? 22 : 18,
+                  '& .MuiChip-label': {
+                    px: 0.75,
+                  },
+                }}
+              />
+            )}
             {trail.evaluation && (
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
                 <StarIcon sx={{ fontSize: isLarge ? 18 : 14, color: '#ffc107' }} />
@@ -266,7 +265,7 @@ export function BentoTrailCard({ trail, isLarge = false, onFavoriteToggle }: Ben
               <Box sx={{ display: 'flex', alignItems: 'center', opacity: isLarge ? 1 : 0.9 }}>
                 <AccessTimeIcon sx={{ fontSize: isLarge ? 16 : 14 }} />
                 <Typography variant="caption" sx={{ ml: 0.3, fontSize: isLarge ? '0.85rem' : undefined }}>
-                  {trail.costTime}分
+                  {formatDuration(trail.costTime)}
                 </Typography>
               </Box>
             )}

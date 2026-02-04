@@ -40,6 +40,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { CommentSection } from '../components/CommentSection';
 import { TrailMap } from '../components/TrailMap';
 import { CheckinDialog } from '../components/CheckinDialog';
+import { formatDuration } from '../utils/formatTime';
 import type { TrailDetail as TrailDetailType, Checkin } from '../types';
 
 const difficultyLabels = ['', '入門', '簡單', '中等', '困難', '挑戰'];
@@ -197,7 +198,15 @@ export function TrailDetail() {
             position: 'absolute',
             top: 8,
             left: 8,
-            bgcolor: 'rgba(255,255,255,0.9)',
+            bgcolor: (theme) => theme.palette.mode === 'dark'
+              ? 'rgba(30, 30, 30, 0.85)'
+              : 'rgba(255, 255, 255, 0.9)',
+            backdropFilter: 'blur(8px)',
+            '&:hover': {
+              bgcolor: (theme) => theme.palette.mode === 'dark'
+                ? 'rgba(50, 50, 50, 0.9)'
+                : 'rgba(255, 255, 255, 1)',
+            },
           }}
           onClick={() => navigate(-1)}
         >
@@ -205,17 +214,33 @@ export function TrailDetail() {
         </IconButton>
         <Box sx={{ position: 'absolute', top: 8, right: 8, display: 'flex', gap: 1 }}>
           <IconButton
-            sx={{ bgcolor: 'rgba(255,255,255,0.9)' }}
+            sx={{
+              bgcolor: (theme) => theme.palette.mode === 'dark'
+                ? 'rgba(30, 30, 30, 0.85)'
+                : 'rgba(255, 255, 255, 0.9)',
+              backdropFilter: 'blur(8px)',
+              '&:hover': {
+                bgcolor: (theme) => theme.palette.mode === 'dark'
+                  ? 'rgba(50, 50, 50, 0.9)'
+                  : 'rgba(255, 255, 255, 1)',
+              },
+            }}
             onClick={handleShare}
           >
             <ShareIcon />
           </IconButton>
           <IconButton
             sx={{
-              bgcolor: 'rgba(255,255,255,0.9)',
-              transition: 'transform 0.2s ease',
+              bgcolor: (theme) => theme.palette.mode === 'dark'
+                ? 'rgba(30, 30, 30, 0.85)'
+                : 'rgba(255, 255, 255, 0.9)',
+              backdropFilter: 'blur(8px)',
+              transition: 'transform 0.2s ease, background-color 0.2s ease',
               '&:hover': {
                 transform: 'scale(1.1)',
+                bgcolor: (theme) => theme.palette.mode === 'dark'
+                  ? 'rgba(50, 50, 50, 0.9)'
+                  : 'rgba(255, 255, 255, 1)',
               },
               '&:active': {
                 transform: 'scale(0.9)',
@@ -278,7 +303,7 @@ export function TrailDetail() {
           {trail.costTime && (
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <AccessTimeIcon sx={{ fontSize: 20, mr: 0.5, color: 'text.secondary' }} />
-              <Typography variant="body2">{trail.costTime} 分鐘</Typography>
+              <Typography variant="body2">{formatDuration(trail.costTime)}</Typography>
             </Box>
           )}
           {trail.altitude && (
