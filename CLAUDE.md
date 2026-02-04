@@ -203,13 +203,28 @@ Trail-Guide/
    - `TrailDetail.tsx` - 打卡空狀態卡片：`grey.50` → `action.hover`
    - `CommentSection.tsx` - 評論空狀態卡片：`grey.50` → `action.hover`
 
+6. **UI/UX 設計大優化**
+   - 精選集圖標暗黑模式適配 (alpha 動態背景色)
+   - 空狀態插圖設計 (Favorites, Search, Collection, MyCheckins, Nearby)
+   - 圖片載入優化 (新增 `ProgressiveImage.tsx`)
+   - 返回頂部按鈕 (新增 `ScrollToTop.tsx`)
+   - 收藏按鈕心跳動畫
+   - 卡片 hover 效果加強 (陰影 + 縮放)
+   - 頁面轉場動畫優化 (Material Design easing)
+   - 統一圓角設計規範 (8/12/16/24px)
+   - 統一陰影層級定義
+   - 擴展主色調配置
+   - 下拉刷新功能 (新增 `PullToRefresh.tsx`)
+   - 底部導航動畫 (彈跳 + 滑動指示線)
+
 **Git commits：**
 ```
 b95acbe feat: 優化載入體驗 - 頂部進度條 + 骨架屏
 465a72c feat: 新增 PWA 支援 - 可安裝到手機桌面
 f77a720 feat: 新增設定頁面與暗黑模式支援
 a51999c fix: 修正暗黑模式下的配色問題
-(待提交) fix: 修正暗黑模式下新消息、打卡、評論區塊配色
+4f29674 fix: 修正暗黑模式下新消息、打卡、評論區塊配色
+55169da feat: UI/UX 設計優化 - 動畫、空狀態、視覺一致性
 ```
 
 **下次可繼續：**

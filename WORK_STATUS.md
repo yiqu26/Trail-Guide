@@ -14,9 +14,20 @@
 - ✅ 暗黑模式 (淺色/深色/跟隨系統)
 - ✅ 暗黑模式配色修正
 - ✅ 暗黑模式配色修正 (第二輪)
-  - 首頁新消息區塊：移除硬編碼漸層 → `background.paper` + 邊框
-  - 步道詳情頁打卡空狀態：`grey.50` → `action.hover`
-  - 評論區空狀態：`grey.50` → `action.hover`
+
+**UI/UX 設計大優化：**
+- ✅ 精選集圖標暗黑模式適配 (alpha 動態背景色)
+- ✅ 空狀態插圖設計 (Favorites, Search, Collection, MyCheckins, Nearby)
+- ✅ 圖片載入優化 (ProgressiveImage 組件)
+- ✅ 返回頂部按鈕 (ScrollToTop 組件)
+- ✅ 收藏按鈕心跳動畫
+- ✅ 卡片 hover 效果加強
+- ✅ 頁面轉場動畫優化
+- ✅ 統一圓角設計規範 (8/12/16/24px)
+- ✅ 統一陰影層級定義
+- ✅ 擴展主色調配置
+- ✅ 下拉刷新功能 (PullToRefresh 組件)
+- ✅ 底部導航動畫 (彈跳 + 滑動指示線)
 
 ### 登山打卡與成就徽章系統 (需重啟測試)
 
