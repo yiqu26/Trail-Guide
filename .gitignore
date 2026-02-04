@@ -48,5 +48,6 @@ Thumbs.db
 .archive/
 .reference/
 
-# Claude Code settings
-.claude/
+# Claude Code settings (保留 skills 供團隊共享)
+.claude/*
+!.claude/skills/
