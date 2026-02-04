@@ -15,7 +15,9 @@ import {
   Fade,
   Grow,
   Skeleton,
+  useTheme,
 } from '@mui/material';
+import { alpha } from '@mui/material/styles';
 import SearchIcon from '@mui/icons-material/Search';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import ClearIcon from '@mui/icons-material/Clear';
@@ -139,23 +141,59 @@ function InitialState({ onTagClick }: { onTagClick: (keyword: string) => void })
 
 // 空狀態元件 - 無結果
 function NoResultState() {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
+
   return (
     <Fade in timeout={600}>
       <Box sx={{ textAlign: 'center', mt: 6 }}>
         <Box
           sx={{
-            width: 100,
-            height: 100,
-            borderRadius: '50%',
-            bgcolor: 'grey.100',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
+            position: 'relative',
+            width: 120,
+            height: 120,
             mx: 'auto',
-            mb: 2,
+            mb: 3,
           }}
         >
-          <SearchIcon sx={{ fontSize: 40, color: 'grey.400' }} />
+          {/* 背景圓形 */}
+          <Box
+            sx={{
+              position: 'absolute',
+              width: 120,
+              height: 120,
+              borderRadius: '50%',
+              bgcolor: isDark ? alpha(theme.palette.primary.main, 0.1) : 'action.hover',
+            }}
+          />
+          {/* 裝飾小圓 */}
+          <Box
+            sx={{
+              position: 'absolute',
+              width: 20,
+              height: 20,
+              borderRadius: '50%',
+              bgcolor: isDark ? alpha(theme.palette.primary.main, 0.2) : 'action.selected',
+              top: 5,
+              right: 5,
+              animation: 'float 3s ease-in-out infinite',
+              '@keyframes float': {
+                '0%, 100%': { transform: 'translateY(0)' },
+                '50%': { transform: 'translateY(-6px)' },
+              },
+            }}
+          />
+          {/* 搜尋圖標 */}
+          <Box
+            sx={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+            }}
+          >
+            <SearchIcon sx={{ fontSize: 48, color: 'text.secondary' }} />
+          </Box>
         </Box>
         <Typography variant="h6" fontWeight="bold" sx={{ mb: 1 }}>
           找不到符合的步道

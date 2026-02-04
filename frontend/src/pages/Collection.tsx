@@ -1,10 +1,59 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Box, Typography, IconButton, Skeleton } from '@mui/material';
+import { Box, Typography, IconButton, Skeleton, Fade, useTheme } from '@mui/material';
+import { alpha } from '@mui/material/styles';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 import { homeService } from '../services/home';
 import { TrailCard } from '../components/TrailCard';
 import type { CollectionDetail } from '../types';
+
+function EmptyCollectionState() {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
+
+  return (
+    <Fade in timeout={600}>
+      <Box sx={{ textAlign: 'center', py: 8, px: 4 }}>
+        <Box
+          sx={{
+            position: 'relative',
+            width: 120,
+            height: 120,
+            mx: 'auto',
+            mb: 3,
+          }}
+        >
+          <Box
+            sx={{
+              position: 'absolute',
+              width: 120,
+              height: 120,
+              borderRadius: '50%',
+              bgcolor: isDark ? alpha(theme.palette.primary.main, 0.1) : 'action.hover',
+            }}
+          />
+          <Box
+            sx={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+            }}
+          >
+            <FolderOpenIcon sx={{ fontSize: 48, color: 'text.secondary' }} />
+          </Box>
+        </Box>
+        <Typography variant="h6" fontWeight="bold" sx={{ mb: 1 }}>
+          這個精選集還沒有步道
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          稍後再來看看吧
+        </Typography>
+      </Box>
+    </Fade>
+  );
+}
 
 export function Collection() {
   const { id } = useParams<{ id: string }>();
@@ -92,9 +141,7 @@ export function Collection() {
             ))}
           </Box>
         ) : (
-          <Typography color="text.secondary" textAlign="center" sx={{ mt: 4 }}>
-            這個精選集還沒有步道
-          </Typography>
+          <EmptyCollectionState />
         )}
       </Box>
     </Box>

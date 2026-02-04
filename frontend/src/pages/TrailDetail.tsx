@@ -13,7 +13,16 @@ import {
   Alert,
   Button,
   Avatar,
+  keyframes,
 } from '@mui/material';
+
+const heartBeat = keyframes`
+  0% { transform: scale(1); }
+  25% { transform: scale(1.3); }
+  50% { transform: scale(1); }
+  75% { transform: scale(1.3); }
+  100% { transform: scale(1); }
+`;
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
@@ -202,12 +211,26 @@ export function TrailDetail() {
             <ShareIcon />
           </IconButton>
           <IconButton
-            sx={{ bgcolor: 'rgba(255,255,255,0.9)' }}
+            sx={{
+              bgcolor: 'rgba(255,255,255,0.9)',
+              transition: 'transform 0.2s ease',
+              '&:hover': {
+                transform: 'scale(1.1)',
+              },
+              '&:active': {
+                transform: 'scale(0.9)',
+              },
+            }}
             onClick={handleFavoriteToggle}
             disabled={isFavoriteLoading}
           >
             {trail.isFavorite ? (
-              <FavoriteIcon color="error" />
+              <FavoriteIcon
+                color="error"
+                sx={{
+                  animation: `${heartBeat} 0.6s ease-in-out`,
+                }}
+              />
             ) : (
               <FavoriteBorderIcon />
             )}

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Box, Typography, Alert, Fade, Grow, Button, Skeleton } from '@mui/material';
+import { Box, Typography, Alert, Fade, Grow, Button, Skeleton, useTheme } from '@mui/material';
+import { alpha } from '@mui/material/styles';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ExploreIcon from '@mui/icons-material/Explore';
 import { useNavigate } from 'react-router-dom';
@@ -9,6 +10,9 @@ import type { TrailListItem } from '../types';
 
 // 空狀態插圖元件
 function EmptyState({ onExplore }: { onExplore: () => void }) {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
+
   return (
     <Fade in timeout={800}>
       <Box
@@ -35,7 +39,9 @@ function EmptyState({ onExplore }: { onExplore: () => void }) {
               width: 160,
               height: 160,
               borderRadius: '50%',
-              background: 'linear-gradient(135deg, #FFE0E0 0%, #FFF0F0 100%)',
+              background: isDark
+                ? `linear-gradient(135deg, ${alpha('#E57373', 0.2)} 0%, ${alpha('#E57373', 0.1)} 100%)`
+                : 'linear-gradient(135deg, #FFE0E0 0%, #FFF0F0 100%)',
             }}
           />
           {/* 裝飾小圓 */}
@@ -45,7 +51,7 @@ function EmptyState({ onExplore }: { onExplore: () => void }) {
               width: 24,
               height: 24,
               borderRadius: '50%',
-              bgcolor: '#FFCDD2',
+              bgcolor: isDark ? alpha('#E57373', 0.3) : '#FFCDD2',
               top: 10,
               right: 10,
               animation: 'float 3s ease-in-out infinite',
@@ -61,7 +67,7 @@ function EmptyState({ onExplore }: { onExplore: () => void }) {
               width: 16,
               height: 16,
               borderRadius: '50%',
-              bgcolor: '#EF9A9A',
+              bgcolor: isDark ? alpha('#E57373', 0.4) : '#EF9A9A',
               bottom: 20,
               left: 5,
               animation: 'float 3s ease-in-out infinite 0.5s',
@@ -79,7 +85,7 @@ function EmptyState({ onExplore }: { onExplore: () => void }) {
             <FavoriteIcon
               sx={{
                 fontSize: 64,
-                color: '#E57373',
+                color: isDark ? '#EF5350' : '#E57373',
                 animation: 'pulse 2s ease-in-out infinite',
                 '@keyframes pulse': {
                   '0%, 100%': { transform: 'scale(1)' },

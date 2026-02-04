@@ -1,13 +1,22 @@
 import { useState } from 'react';
-import { Card, CardMedia, CardContent, Typography, Box, Chip, IconButton, Snackbar, Alert } from '@mui/material';
+import { Card, CardContent, Typography, Box, Chip, IconButton, Snackbar, Alert, keyframes } from '@mui/material';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+
+const heartBeat = keyframes`
+  0% { transform: scale(1); }
+  25% { transform: scale(1.3); }
+  50% { transform: scale(1); }
+  75% { transform: scale(1.3); }
+  100% { transform: scale(1); }
+`;
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import TerrainIcon from '@mui/icons-material/Terrain';
 import StarIcon from '@mui/icons-material/Star';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { favoriteService } from '../services/trails';
+import { ProgressiveImage } from './ProgressiveImage';
 import type { TrailListItem } from '../types';
 
 interface TrailCardProps {
@@ -76,24 +85,25 @@ export function TrailCard({ trail, onFavoriteToggle }: TrailCardProps) {
       sx={{
         display: 'flex',
         cursor: 'pointer',
-        transition: 'box-shadow 0.2s, transform 0.2s',
+        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
         '&:hover': {
-          boxShadow: 4,
-          transform: 'translateY(-2px)',
+          boxShadow: (theme) =>
+            theme.palette.mode === 'dark'
+              ? '0 8px 24px rgba(0,0,0,0.4)'
+              : '0 8px 24px rgba(0,0,0,0.15)',
+          transform: 'translateY(-4px) scale(1.01)',
+        },
+        '&:active': {
+          transform: 'translateY(-2px) scale(0.99)',
         },
       }}
       onClick={handleClick}
     >
-      <CardMedia
-        component="img"
-        sx={{
-          width: imageSize.width,
-          height: imageSize.height,
-          objectFit: 'cover',
-          flexShrink: 0,
-        }}
-        image={trail.coverImage || '/placeholder-trail.jpg'}
+      <ProgressiveImage
+        src={trail.coverImage || '/placeholder-trail.jpg'}
         alt={trail.title}
+        width={imageSize.width}
+        height={imageSize.height}
       />
       <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1, minWidth: 0 }}>
         <CardContent sx={{ flex: '1 0 auto', py: { xs: 1, sm: 1.5 }, px: { xs: 1.5, sm: 2 }, '&:last-child': { pb: { xs: 1, sm: 1.5 } } }}>
@@ -101,9 +111,30 @@ export function TrailCard({ trail, onFavoriteToggle }: TrailCardProps) {
             <Typography variant="subtitle1" fontWeight="bold" noWrap sx={{ flex: 1 }}>
               {trail.title}
             </Typography>
-            <IconButton size="small" onClick={handleFavoriteClick} disabled={isLoading} sx={{ ml: 0.5, p: 0.5 }}>
+            <IconButton
+              size="small"
+              onClick={handleFavoriteClick}
+              disabled={isLoading}
+              sx={{
+                ml: 0.5,
+                p: 0.5,
+                transition: 'transform 0.2s ease',
+                '&:hover': {
+                  transform: 'scale(1.2)',
+                },
+                '&:active': {
+                  transform: 'scale(0.9)',
+                },
+              }}
+            >
               {isFavorite ? (
-                <FavoriteIcon color="error" fontSize="small" />
+                <FavoriteIcon
+                  color="error"
+                  fontSize="small"
+                  sx={{
+                    animation: `${heartBeat} 0.6s ease-in-out`,
+                  }}
+                />
               ) : (
                 <FavoriteBorderIcon fontSize="small" />
               )}

@@ -15,7 +15,9 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  useTheme,
 } from '@mui/material';
+import { alpha } from '@mui/material/styles';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ExploreIcon from '@mui/icons-material/Explore';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
@@ -27,6 +29,9 @@ import { checkinService } from '../services/checkins';
 import type { Checkin, CheckinStats } from '../types';
 
 function EmptyState({ onExplore }: { onExplore: () => void }) {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
+
   return (
     <Fade in timeout={800}>
       <Box sx={{ textAlign: 'center', py: 8, px: 4 }}>
@@ -39,15 +44,48 @@ function EmptyState({ onExplore }: { onExplore: () => void }) {
             mb: 3,
           }}
         >
+          {/* 背景圓形 */}
           <Box
             sx={{
               position: 'absolute',
               width: 160,
               height: 160,
               borderRadius: '50%',
-              background: 'linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%)',
+              background: isDark
+                ? `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.2)} 0%, ${alpha(theme.palette.primary.main, 0.1)} 100%)`
+                : 'linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%)',
             }}
           />
+          {/* 裝飾小圓 */}
+          <Box
+            sx={{
+              position: 'absolute',
+              width: 24,
+              height: 24,
+              borderRadius: '50%',
+              bgcolor: isDark ? alpha(theme.palette.primary.main, 0.3) : '#A5D6A7',
+              top: 10,
+              right: 10,
+              animation: 'float 3s ease-in-out infinite',
+              '@keyframes float': {
+                '0%, 100%': { transform: 'translateY(0)' },
+                '50%': { transform: 'translateY(-8px)' },
+              },
+            }}
+          />
+          <Box
+            sx={{
+              position: 'absolute',
+              width: 16,
+              height: 16,
+              borderRadius: '50%',
+              bgcolor: isDark ? alpha(theme.palette.primary.main, 0.4) : '#81C784',
+              bottom: 20,
+              left: 5,
+              animation: 'float 3s ease-in-out infinite 0.5s',
+            }}
+          />
+          {/* 打卡圖標 */}
           <Box
             sx={{
               position: 'absolute',

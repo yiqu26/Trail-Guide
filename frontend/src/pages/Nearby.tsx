@@ -1,10 +1,75 @@
 import { useEffect, useState } from 'react';
-import { Box, Typography, CircularProgress, Button, Alert } from '@mui/material';
+import { Box, Typography, CircularProgress, Button, Alert, Fade, useTheme } from '@mui/material';
+import { alpha } from '@mui/material/styles';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import RefreshIcon from '@mui/icons-material/Refresh';
+import ExploreOffIcon from '@mui/icons-material/ExploreOff';
 import { trailService } from '../services/trails';
 import { TrailCard } from '../components/TrailCard';
 import type { NearbyTrail } from '../types';
+
+function NoNearbyState() {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
+
+  return (
+    <Fade in timeout={600}>
+      <Box sx={{ textAlign: 'center', py: 6, px: 4 }}>
+        <Box
+          sx={{
+            position: 'relative',
+            width: 120,
+            height: 120,
+            mx: 'auto',
+            mb: 3,
+          }}
+        >
+          <Box
+            sx={{
+              position: 'absolute',
+              width: 120,
+              height: 120,
+              borderRadius: '50%',
+              bgcolor: isDark ? alpha(theme.palette.warning.main, 0.1) : alpha('#FF9800', 0.1),
+            }}
+          />
+          <Box
+            sx={{
+              position: 'absolute',
+              width: 20,
+              height: 20,
+              borderRadius: '50%',
+              bgcolor: isDark ? alpha(theme.palette.warning.main, 0.2) : alpha('#FF9800', 0.2),
+              top: 5,
+              right: 10,
+              animation: 'float 3s ease-in-out infinite',
+              '@keyframes float': {
+                '0%, 100%': { transform: 'translateY(0)' },
+                '50%': { transform: 'translateY(-6px)' },
+              },
+            }}
+          />
+          <Box
+            sx={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+            }}
+          >
+            <ExploreOffIcon sx={{ fontSize: 48, color: isDark ? 'warning.light' : 'warning.main' }} />
+          </Box>
+        </Box>
+        <Typography variant="h6" fontWeight="bold" sx={{ mb: 1 }}>
+          附近沒有找到步道
+        </Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 260, mx: 'auto' }}>
+          100 公里內沒有收錄的步道，可以試試搜尋功能
+        </Typography>
+      </Box>
+    </Fade>
+  );
+}
 
 export function Nearby() {
   const [trails, setTrails] = useState<NearbyTrail[]>([]);
@@ -133,12 +198,7 @@ export function Nearby() {
           ))}
         </Box>
       ) : (
-        <Box sx={{ textAlign: 'center', mt: 4 }}>
-          <Typography color="text.secondary">附近 100 公里內沒有找到步道</Typography>
-          <Typography variant="caption" color="text.secondary">
-            可能是資料庫中沒有您所在地區的步道
-          </Typography>
-        </Box>
+        <NoNearbyState />
       )}
     </Box>
   );

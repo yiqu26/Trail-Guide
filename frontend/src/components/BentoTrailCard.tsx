@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Card, Box, Typography, Chip, IconButton, Snackbar, Alert } from '@mui/material';
+import { useState, useEffect } from 'react';
+import { Card, Box, Typography, Chip, IconButton, Snackbar, Alert, Skeleton } from '@mui/material';
 import { motion } from 'motion/react';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
@@ -26,11 +26,20 @@ export function BentoTrailCard({ trail, isLarge = false, onFavoriteToggle }: Ben
   const { isAuthenticated } = useAuth();
   const [isFavorite, setIsFavorite] = useState(trail.isFavorite);
   const [isLoading, setIsLoading] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
   const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: 'success' | 'error' | 'info' }>({
     open: false,
     message: '',
     severity: 'success',
   });
+
+  // Preload image
+  useEffect(() => {
+    const img = new Image();
+    img.src = trail.coverImage || '/placeholder-trail.jpg';
+    img.onload = () => setImageLoaded(true);
+    img.onerror = () => setImageLoaded(true);
+  }, [trail.coverImage]);
 
   const handleClick = () => {
     navigate(`/trail/${trail.id}`);
@@ -100,6 +109,21 @@ export function BentoTrailCard({ trail, isLarge = false, onFavoriteToggle }: Ben
             },
           }}
         >
+        {/* Skeleton placeholder */}
+        {!imageLoaded && (
+          <Skeleton
+            variant="rectangular"
+            animation="wave"
+            sx={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+            }}
+          />
+        )}
+
         {/* 背景圖 - 加入縮放動畫 */}
         <Box
           className="card-image"
@@ -112,7 +136,8 @@ export function BentoTrailCard({ trail, isLarge = false, onFavoriteToggle }: Ben
             backgroundImage: `url(${trail.coverImage || '/placeholder-trail.jpg'})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
-            transition: 'transform 0.4s ease',
+            transition: 'transform 0.4s ease, opacity 0.3s ease',
+            opacity: imageLoaded ? 1 : 0,
           }}
         />
 

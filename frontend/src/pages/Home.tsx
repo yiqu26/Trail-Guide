@@ -10,7 +10,9 @@ import {
   Paper,
   Button,
   Alert,
+  useTheme,
 } from '@mui/material';
+import { alpha } from '@mui/material/styles';
 import { motion } from 'motion/react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Pagination } from 'swiper/modules';
@@ -21,6 +23,7 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import { useNavigate } from 'react-router-dom';
 import { homeService } from '../services/home';
 import { BentoTrailCard } from '../components/BentoTrailCard';
+import { PullToRefresh } from '../components/PullToRefresh';
 import type { HomeData } from '../types';
 
 import 'swiper/swiper-bundle.css';
@@ -139,31 +142,31 @@ const CollectionIcons = {
   ),
 };
 
-// 根據精選集名稱返回對應的圖標和顏色
-const getCollectionStyle = (name: string): { icon: React.ReactNode; bgColor: string; iconColor: string } => {
+// 根據精選集名稱返回對應的圖標和主色調
+const getCollectionStyle = (name: string): { icon: React.ReactNode; color: string } => {
   if (name.includes('百岳') || name.includes('挑戰')) {
-    return { icon: CollectionIcons.mountain, bgColor: '#E8F5E9', iconColor: '#2E7D32' };
+    return { icon: CollectionIcons.mountain, color: '#2E7D32' };
   }
   if (name.includes('親子') || name.includes('同遊')) {
-    return { icon: CollectionIcons.family, bgColor: '#FFF3E0', iconColor: '#E65100' };
+    return { icon: CollectionIcons.family, color: '#E65100' };
   }
   if (name.includes('夜景') || name.includes('絕美')) {
-    return { icon: CollectionIcons.nightView, bgColor: '#E8EAF6', iconColor: '#3949AB' };
+    return { icon: CollectionIcons.nightView, color: '#3949AB' };
   }
   if (name.includes('瀑布') || name.includes('秘境')) {
-    return { icon: CollectionIcons.waterfall, bgColor: '#E0F7FA', iconColor: '#00838F' };
+    return { icon: CollectionIcons.waterfall, color: '#00838F' };
   }
   if (name.includes('森林') || name.includes('療癒')) {
-    return { icon: CollectionIcons.forest, bgColor: '#F1F8E9', iconColor: '#558B2F' };
+    return { icon: CollectionIcons.forest, color: '#558B2F' };
   }
   if (name.includes('海') || name.includes('風光') || name.includes('海濱')) {
-    return { icon: CollectionIcons.ocean, bgColor: '#E3F2FD', iconColor: '#1565C0' };
+    return { icon: CollectionIcons.ocean, color: '#1565C0' };
   }
   if (name.includes('新手') || name.includes('入門') || name.includes('推薦')) {
-    return { icon: CollectionIcons.beginner, bgColor: '#FBE9E7', iconColor: '#BF360C' };
+    return { icon: CollectionIcons.beginner, color: '#BF360C' };
   }
   // 預設
-  return { icon: CollectionIcons.default, bgColor: '#ECEFF1', iconColor: '#546E7A' };
+  return { icon: CollectionIcons.default, color: '#546E7A' };
 };
 
 export function Home() {
@@ -171,6 +174,7 @@ export function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const theme = useTheme();
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -235,9 +239,14 @@ export function Home() {
     );
   }
 
+  const handleRefresh = async () => {
+    await fetchData();
+  };
+
   return (
-    <Box sx={{ pb: 10 }}>
-      {/* Banner Swiper */}
+    <PullToRefresh onRefresh={handleRefresh}>
+      <Box sx={{ pb: 10 }}>
+        {/* Banner Swiper */}
       {homeData?.banners && homeData.banners.length > 0 && (
         <Swiper
           modules={[Autoplay, Pagination]}
@@ -341,17 +350,22 @@ export function Home() {
                           width: { xs: 60, md: 80 },
                           height: { xs: 60, md: 80 },
                           borderRadius: '50%',
-                          backgroundColor: style.bgColor,
+                          backgroundColor: alpha(style.color, theme.palette.mode === 'dark' ? 0.2 : 0.15),
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
                           mb: 1.5,
-                          boxShadow: '0 4px 12px rgba(0,0,0,0.12)',
-                          border: '3px solid white',
-                          color: style.iconColor,
-                          transition: 'box-shadow 0.2s ease',
+                          boxShadow: theme.palette.mode === 'dark'
+                            ? '0 4px 12px rgba(0,0,0,0.3)'
+                            : '0 4px 12px rgba(0,0,0,0.12)',
+                          border: 3,
+                          borderColor: 'background.paper',
+                          color: style.color,
+                          transition: 'box-shadow 0.2s ease, background-color 0.2s ease',
                           '&:hover': {
-                            boxShadow: '0 8px 24px rgba(0,0,0,0.18)',
+                            boxShadow: theme.palette.mode === 'dark'
+                              ? '0 8px 24px rgba(0,0,0,0.4)'
+                              : '0 8px 24px rgba(0,0,0,0.18)',
                           },
                           '& svg': {
                             width: { xs: 32, md: 40 },
@@ -555,6 +569,7 @@ export function Home() {
           </Box>
         </motion.div>
       )}
-    </Box>
+      </Box>
+    </PullToRefresh>
   );
 }

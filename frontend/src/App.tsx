@@ -10,6 +10,7 @@ import { PageTransition } from './components/PageTransition';
 import PWAUpdatePrompt from './components/PWAUpdatePrompt';
 import { LoadingProgress, SuspenseFallback } from './components/LoadingProgress';
 import { PageSkeleton } from './components/Skeletons';
+import { ScrollToTop } from './components/ScrollToTop';
 import { Home } from './pages/Home';
 
 // Lazy load pages
@@ -122,6 +123,7 @@ function AppRoutes() {
       <Suspense fallback={<LoadingFallback />}>
         <AnimatedRoutes />
       </Suspense>
+      <ScrollToTop />
       <BottomNav />
     </Box>
   );
