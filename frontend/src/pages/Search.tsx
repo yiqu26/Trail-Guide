@@ -22,10 +22,13 @@ import SearchIcon from '@mui/icons-material/Search';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import ClearIcon from '@mui/icons-material/Clear';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import HistoryIcon from '@mui/icons-material/History';
+import CloseIcon from '@mui/icons-material/Close';
 import PlaceIcon from '@mui/icons-material/Place';
 import TerrainIcon from '@mui/icons-material/Terrain';
 import { trailService, lookupService } from '../services/trails';
 import { TrailCard } from '../components/TrailCard';
+import { useSearchHistory } from '../hooks/useSearchHistory';
 import type { TrailListItem, TrailSearchParams, County, Classification } from '../types';
 
 const difficultyOptions = [
@@ -47,7 +50,14 @@ const popularTags = [
 ];
 
 // 空狀態元件 - 初始
-function InitialState({ onTagClick }: { onTagClick: (keyword: string) => void }) {
+interface InitialStateProps {
+  onTagClick: (keyword: string) => void;
+  history: string[];
+  onRemoveHistory: (keyword: string) => void;
+  onClearHistory: () => void;
+}
+
+function InitialState({ onTagClick, history, onRemoveHistory, onClearHistory }: InitialStateProps) {
   return (
     <Fade in timeout={600}>
       <Box sx={{ textAlign: 'center', mt: 6 }}>
@@ -104,6 +114,56 @@ function InitialState({ onTagClick }: { onTagClick: (keyword: string) => void })
         <Typography variant="body2" color="text.secondary" sx={{ mb: 4, maxWidth: 260, mx: 'auto' }}>
           輸入關鍵字搜尋，或使用篩選條件找到理想的步道
         </Typography>
+
+        {/* 最近搜尋 */}
+        {history.length > 0 && (
+          <Box sx={{ mt: 4 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1, mb: 2 }}>
+              <HistoryIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
+              <Typography variant="body2" color="text.secondary" fontWeight={500}>
+                最近搜尋
+              </Typography>
+              <Button
+                size="small"
+                onClick={onClearHistory}
+                sx={{ ml: 1, minWidth: 'auto', fontSize: '0.75rem', color: 'text.secondary' }}
+              >
+                清除
+              </Button>
+            </Box>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, justifyContent: 'center' }}>
+              {history.slice(0, 6).map((keyword) => (
+                <Chip
+                  key={keyword}
+                  label={keyword}
+                  onClick={() => onTagClick(keyword)}
+                  onDelete={() => onRemoveHistory(keyword)}
+                  deleteIcon={<CloseIcon sx={{ fontSize: '16px !important' }} />}
+                  sx={{
+                    bgcolor: 'background.paper',
+                    border: '1px solid',
+                    borderColor: 'grey.300',
+                    '&:hover': {
+                      bgcolor: 'primary.main',
+                      color: 'white',
+                      borderColor: 'primary.main',
+                      '& .MuiChip-deleteIcon': {
+                        color: 'white',
+                      },
+                    },
+                    transition: 'all 0.2s',
+                    '& .MuiChip-deleteIcon': {
+                      color: 'grey.500',
+                      '&:hover': {
+                        color: 'grey.700',
+                      },
+                    },
+                  }}
+                />
+              ))}
+            </Box>
+          </Box>
+        )}
 
         {/* 熱門搜尋 */}
         <Box sx={{ mt: 4 }}>
@@ -236,6 +296,9 @@ export function Search() {
   const [showFilters, setShowFilters] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
 
+  // Search history
+  const { history, addHistory, removeHistory, clearHistory } = useSearchHistory();
+
   // Filter states
   const [counties, setCounties] = useState<County[]>([]);
   const [classifications, setClassifications] = useState<Classification[]>([]);
@@ -269,6 +332,8 @@ export function Search() {
 
       if (finalKeyword.trim()) {
         params.keyword = finalKeyword.trim();
+        // 儲存到搜尋歷史
+        addHistory(finalKeyword.trim());
       }
       if (selectedCounty) {
         params.countyId = selectedCounty;
@@ -568,7 +633,12 @@ export function Search() {
         ) : hasSearched ? (
           <NoResultState />
         ) : (
-          <InitialState onTagClick={handleTagClick} />
+          <InitialState
+            onTagClick={handleTagClick}
+            history={history}
+            onRemoveHistory={removeHistory}
+            onClearHistory={clearHistory}
+          />
         )}
       </Box>
     </Box>

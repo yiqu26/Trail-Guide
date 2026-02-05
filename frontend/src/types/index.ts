@@ -194,6 +194,7 @@ export interface CreateCommentData {
   beauty?: number;
   content?: string;
   date?: string;
+  imageUrls?: string[];
 }
 
 // Checkin
@@ -286,4 +287,42 @@ export interface AchievementCategoryStats {
   totalCount: number;
   totalPoints: number;
   earnedPoints: number;
+}
+
+// My Comments (用戶自己的評論)
+export interface MyComment {
+  id: number;
+  trailId: number;
+  trailTitle: string;
+  trailCoverImage?: string;
+  trailLocation?: string;
+  star?: number;
+  difficulty?: number;
+  beauty?: number;
+  content?: string;
+  date?: string;
+  createdAt: string;
+  images: string[];
+  likeCount: number;
+}
+
+// Visited Trails (已去過的步道)
+export interface VisitedTrail {
+  id: number;
+  trailId: number;
+  trailTitle: string;
+  trailCoverImage?: string;
+  trailDifficulty?: number;
+  trailLocation?: string;
+  visitedAt?: string;
+  createdAt: string;
+}
+
+export interface VisitedCheck {
+  isVisited: boolean;
+  visitedAt?: string;
+}
+
+export interface VisitedStats {
+  totalCount: number;
 }

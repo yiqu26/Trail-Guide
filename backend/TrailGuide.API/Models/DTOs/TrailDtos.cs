@@ -123,6 +123,7 @@ public class CreateCommentDto
     public int? Beauty { get; set; }
     public string? Content { get; set; }
     public DateTime? Date { get; set; }
+    public List<string>? ImageUrls { get; set; }
 }
 
 public class CommentStatsDto

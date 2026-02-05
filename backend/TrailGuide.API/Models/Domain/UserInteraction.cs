@@ -52,3 +52,15 @@ public class UserLikeComment
     public User User { get; set; } = null!;
     public Comment Comment { get; set; } = null!;
 }
+
+public class VisitedTrail
+{
+    public int Id { get; set; }
+    public int UserId { get; set; }
+    public int TrailId { get; set; }
+    public DateTime? VisitedAt { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+    public User User { get; set; } = null!;
+    public Trail Trail { get; set; } = null!;
+}

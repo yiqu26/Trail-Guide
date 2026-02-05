@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   Box,
   Typography,
@@ -17,13 +17,17 @@ import {
   Chip,
   Snackbar,
   Alert,
+  CircularProgress,
 } from '@mui/material';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined';
 import EditIcon from '@mui/icons-material/Edit';
+import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
+import CloseIcon from '@mui/icons-material/Close';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { commentService } from '../services/comments';
+import { uploadImage } from '../services/cloudinary';
 import type { Comment, CommentStats, CreateCommentData } from '../types';
 
 interface CommentSectionProps {
@@ -51,6 +55,12 @@ export function CommentSection({ trailId }: CommentSectionProps) {
     content: '',
   });
 
+  // Image upload states
+  const [selectedImages, setSelectedImages] = useState<File[]>([]);
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -71,6 +81,39 @@ export function CommentSection({ trailId }: CommentSectionProps) {
     }
   };
 
+  const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (!files) return;
+
+    const newFiles = Array.from(files).slice(0, 5 - selectedImages.length); // Max 5 images
+    setSelectedImages([...selectedImages, ...newFiles]);
+
+    // Create preview URLs
+    const newPreviews = newFiles.map(file => URL.createObjectURL(file));
+    setImagePreviews([...imagePreviews, ...newPreviews]);
+
+    // Reset input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const handleRemoveImage = (index: number) => {
+    // Revoke blob URL to free memory
+    URL.revokeObjectURL(imagePreviews[index]);
+
+    setSelectedImages(selectedImages.filter((_, i) => i !== index));
+    setImagePreviews(imagePreviews.filter((_, i) => i !== index));
+  };
+
+  const resetForm = () => {
+    setNewComment({ star: 5, difficulty: 3, beauty: 4, content: '' });
+    // Clean up blob URLs
+    imagePreviews.forEach(url => URL.revokeObjectURL(url));
+    setSelectedImages([]);
+    setImagePreviews([]);
+  };
+
   const handleAddComment = async () => {
     if (!isAuthenticated) {
       navigate('/login');
@@ -78,10 +121,27 @@ export function CommentSection({ trailId }: CommentSectionProps) {
     }
 
     try {
-      const created = await commentService.createComment(trailId, newComment);
+      setIsUploading(true);
+
+      // Upload images to Cloudinary if any
+      let imageUrls: string[] = [];
+      if (selectedImages.length > 0) {
+        const uploadPromises = selectedImages.map(file =>
+          uploadImage(file, 'comments')
+        );
+        const results = await Promise.all(uploadPromises);
+        imageUrls = results.map(r => r.secure_url);
+      }
+
+      const commentData: CreateCommentData = {
+        ...newComment,
+        imageUrls: imageUrls.length > 0 ? imageUrls : undefined,
+      };
+
+      const created = await commentService.createComment(trailId, commentData);
       setComments([created, ...comments]);
       setShowAddDialog(false);
-      setNewComment({ star: 5, difficulty: 3, beauty: 4, content: '' });
+      resetForm();
       setSnackbar({ open: true, message: '評論發表成功', severity: 'success' });
       // Refresh stats
       const newStats = await commentService.getCommentStats(trailId);
@@ -90,6 +150,8 @@ export function CommentSection({ trailId }: CommentSectionProps) {
       const axiosError = error as { response?: { data?: { error?: string } } };
       const message = axiosError.response?.data?.error || '發表失敗，請稍後再試';
       setSnackbar({ open: true, message, severity: 'error' });
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -209,6 +271,27 @@ export function CommentSection({ trailId }: CommentSectionProps) {
                     </Typography>
                   )}
 
+                  {/* Comment Images */}
+                  {comment.images && comment.images.length > 0 && (
+                    <Box sx={{ display: 'flex', gap: 1, mt: 1.5, overflow: 'auto' }}>
+                      {comment.images.map((img, i) => (
+                        <Box
+                          key={i}
+                          component="img"
+                          src={img}
+                          alt=""
+                          sx={{
+                            width: 80,
+                            height: 80,
+                            objectFit: 'cover',
+                            borderRadius: 1,
+                            flexShrink: 0,
+                          }}
+                        />
+                      ))}
+                    </Box>
+                  )}
+
                   {/* Like button */}
                   <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
                     <IconButton size="small" onClick={() => handleLike(comment.id)}>
@@ -294,12 +377,92 @@ export function CommentSection({ trailId }: CommentSectionProps) {
               onChange={(e) => setNewComment({ ...newComment, content: e.target.value })}
               placeholder="分享你的步道體驗..."
             />
+
+            {/* Image Upload */}
+            <Box>
+              <Typography variant="subtitle2" gutterBottom>
+                照片 (選填，最多 5 張)
+              </Typography>
+
+              {/* Image Previews */}
+              {imagePreviews.length > 0 && (
+                <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 2 }}>
+                  {imagePreviews.map((preview, index) => (
+                    <Box
+                      key={index}
+                      sx={{
+                        position: 'relative',
+                        width: 80,
+                        height: 80,
+                        borderRadius: 1,
+                        overflow: 'hidden',
+                      }}
+                    >
+                      <Box
+                        component="img"
+                        src={preview}
+                        alt={`預覽 ${index + 1}`}
+                        sx={{
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover',
+                        }}
+                      />
+                      <IconButton
+                        size="small"
+                        onClick={() => handleRemoveImage(index)}
+                        sx={{
+                          position: 'absolute',
+                          top: 2,
+                          right: 2,
+                          bgcolor: 'rgba(0,0,0,0.5)',
+                          color: 'white',
+                          p: 0.25,
+                          '&:hover': { bgcolor: 'rgba(0,0,0,0.7)' },
+                        }}
+                      >
+                        <CloseIcon sx={{ fontSize: 16 }} />
+                      </IconButton>
+                    </Box>
+                  ))}
+                </Box>
+              )}
+
+              {/* Add Image Button */}
+              {selectedImages.length < 5 && (
+                <>
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    accept="image/*"
+                    multiple
+                    onChange={handleImageSelect}
+                    style={{ display: 'none' }}
+                  />
+                  <Button
+                    variant="outlined"
+                    startIcon={<AddPhotoAlternateIcon />}
+                    onClick={() => fileInputRef.current?.click()}
+                    size="small"
+                  >
+                    新增照片
+                  </Button>
+                </>
+              )}
+            </Box>
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setShowAddDialog(false)}>取消</Button>
-          <Button variant="contained" onClick={handleAddComment}>
-            發表
+          <Button onClick={() => { setShowAddDialog(false); resetForm(); }} disabled={isUploading}>
+            取消
+          </Button>
+          <Button
+            variant="contained"
+            onClick={handleAddComment}
+            disabled={isUploading}
+            startIcon={isUploading ? <CircularProgress size={16} color="inherit" /> : null}
+          >
+            {isUploading ? '發表中...' : '發表'}
           </Button>
         </DialogActions>
       </Dialog>

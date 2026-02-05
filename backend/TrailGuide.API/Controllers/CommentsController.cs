@@ -134,6 +134,24 @@ public class CommentsController : ControllerBase
         _context.Comments.Add(comment);
         await _context.SaveChangesAsync();
 
+        // Add images if provided
+        var imageUrls = new List<string>();
+        if (dto.ImageUrls != null && dto.ImageUrls.Count > 0)
+        {
+            for (int i = 0; i < dto.ImageUrls.Count; i++)
+            {
+                var image = new CommentImage
+                {
+                    CommentId = comment.Id,
+                    ImageUrl = dto.ImageUrls[i],
+                    SortOrder = i
+                };
+                _context.CommentImages.Add(image);
+                imageUrls.Add(dto.ImageUrls[i]);
+            }
+            await _context.SaveChangesAsync();
+        }
+
         // Update trail evaluation (average star rating)
         await UpdateTrailEvaluation(trailId);
 
@@ -149,7 +167,7 @@ public class CommentsController : ControllerBase
             Content = comment.Content,
             Date = comment.Date,
             CreatedAt = comment.CreatedAt,
-            Images = new List<string>(),
+            Images = imageUrls,
             LikeCount = 0,
             IsLiked = false
         };

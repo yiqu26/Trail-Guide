@@ -25,13 +25,13 @@ import HikingIcon from '@mui/icons-material/Hiking';
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import SettingsIcon from '@mui/icons-material/Settings';
+import BookmarkIcon from '@mui/icons-material/Bookmark';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { authService } from '../services/auth';
-import { checkinService } from '../services/checkins';
-import type { UpdateProfileData, CheckinStats } from '../types';
+import { visitedService } from '../services/visited';
+import type { UpdateProfileData } from '../types';
 
 // 統計卡片元件
 function StatCard({
@@ -186,7 +186,7 @@ function MenuItemRow({
         },
       }}
     >
-      <Box sx={{ color }}>{icon}</Box>
+      <Box sx={{ color, display: 'flex', alignItems: 'center' }}>{icon}</Box>
       <Typography sx={{ flex: 1, color }}>{label}</Typography>
       {showArrow && <ChevronRightIcon sx={{ color: 'grey.400' }} />}
     </Box>
@@ -213,14 +213,14 @@ export function Profile() {
     phoneNumber: user?.phoneNumber || '',
   });
 
-  // 打卡統計
-  const [checkinStats, setCheckinStats] = useState<CheckinStats | null>(null);
+  // 已去過統計
+  const [visitedCount, setVisitedCount] = useState<number>(0);
 
   // 進入頁面時刷新用戶數據（包括統計）
   useEffect(() => {
     refreshUser();
-    // 獲取打卡統計
-    checkinService.getMyStats().then(setCheckinStats).catch(console.error);
+    // 獲取已去過統計
+    visitedService.getStats().then(stats => setVisitedCount(stats.totalCount)).catch(console.error);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -403,42 +403,31 @@ export function Profile() {
         </Fade>
       </Box>
 
-      {/* 統計卡片 - 第一排 */}
+      {/* 統計卡片 */}
       <Box sx={{ display: 'flex', gap: 2, px: 3, mt: 3 }}>
         <StatCard
           icon={<CheckCircleIcon sx={{ color: '#2E7D32', fontSize: 24 }} />}
-          value={checkinStats?.totalCheckins || 0}
-          label="登山打卡"
+          value={visitedCount}
+          label="已去過"
           color="#2E7D32"
-          onClick={() => navigate('/my-checkins')}
+          onClick={() => navigate('/my-visited')}
           delay={100}
         />
         <StatCard
-          icon={<EmojiEventsIcon sx={{ color: '#FF8F00', fontSize: 24 }} />}
-          value={checkinStats?.achievementCount || 0}
-          label="成就徽章"
-          color="#FF8F00"
-          onClick={() => navigate('/achievements')}
-          delay={200}
-        />
-      </Box>
-
-      {/* 統計卡片 - 第二排 */}
-      <Box sx={{ display: 'flex', gap: 2, px: 3, mt: 2 }}>
-        <StatCard
-          icon={<FavoriteIcon sx={{ color: '#E53935', fontSize: 24 }} />}
+          icon={<BookmarkIcon sx={{ color: '#FF8F00', fontSize: 24 }} />}
           value={user?.stats?.favoritesCount || 0}
-          label="收藏步道"
-          color="#E53935"
+          label="想去"
+          color="#FF8F00"
           onClick={() => navigate('/favorites')}
-          delay={300}
+          delay={200}
         />
         <StatCard
           icon={<CommentIcon sx={{ color: '#1976D2', fontSize: 24 }} />}
           value={user?.stats?.commentsCount || 0}
-          label="發表評論"
+          label="評論"
           color="#1976D2"
-          delay={400}
+          onClick={() => navigate('/my-comments')}
+          delay={300}
         />
       </Box>
 
@@ -533,20 +522,20 @@ export function Profile() {
         >
           <MenuItemRow
             icon={<CheckCircleIcon />}
-            label="我的打卡紀錄"
-            onClick={() => navigate('/my-checkins')}
+            label="已去過的步道"
+            onClick={() => navigate('/my-visited')}
           />
           <Box sx={{ borderTop: '1px solid', borderColor: 'divider', mx: 2 }} />
           <MenuItemRow
-            icon={<EmojiEventsIcon />}
-            label="成就徽章"
-            onClick={() => navigate('/achievements')}
-          />
-          <Box sx={{ borderTop: '1px solid', borderColor: 'divider', mx: 2 }} />
-          <MenuItemRow
-            icon={<FavoriteIcon />}
-            label="我的收藏"
+            icon={<BookmarkIcon />}
+            label="口袋名單"
             onClick={() => navigate('/favorites')}
+          />
+          <Box sx={{ borderTop: '1px solid', borderColor: 'divider', mx: 2 }} />
+          <MenuItemRow
+            icon={<CommentIcon />}
+            label="我的評論"
+            onClick={() => navigate('/my-comments')}
           />
           <Box sx={{ borderTop: '1px solid', borderColor: 'divider', mx: 2 }} />
           <MenuItemRow

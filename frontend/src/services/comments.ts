@@ -1,5 +1,5 @@
 import api from './api';
-import type { Comment, CommentStats, CreateCommentData } from '../types';
+import type { Comment, CommentStats, CreateCommentData, MyComment } from '../types';
 
 export const commentService = {
   async getComments(trailId: number, page = 1, pageSize = 10): Promise<Comment[]> {
@@ -27,6 +27,11 @@ export const commentService = {
     const response = await api.post<{ likeCount: number; isLiked: boolean }>(
       `/trails/${trailId}/comments/${commentId}/like`
     );
+    return response.data;
+  },
+
+  async getMyComments(): Promise<MyComment[]> {
+    const response = await api.get<MyComment[]>('/mycomments');
     return response.data;
   },
 };

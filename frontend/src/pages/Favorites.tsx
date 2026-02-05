@@ -97,10 +97,10 @@ function EmptyState({ onExplore }: { onExplore: () => void }) {
         </Box>
 
         <Typography variant="h6" fontWeight="bold" sx={{ mb: 1 }}>
-          還沒有收藏的步道
+          還沒有想去的步道
         </Typography>
         <Typography variant="body2" color="text.secondary" sx={{ mb: 3, maxWidth: 280, mx: 'auto' }}>
-          探索台灣美麗的步道，點擊愛心就能收藏起來
+          探索台灣美麗的步道，點擊愛心加入口袋名單
         </Typography>
 
         <Button
@@ -225,11 +225,11 @@ export function Favorites() {
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1 }}>
               <FavoriteIcon sx={{ color: 'white', fontSize: 28 }} />
               <Typography variant="h5" fontWeight="bold" color="white">
-                我的收藏
+                口袋名單
               </Typography>
             </Box>
             <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.9)' }}>
-              {isLoading ? '載入中...' : `${trails.length} 條收藏的步道`}
+              {isLoading ? '載入中...' : `${trails.length} 條想去的步道`}
             </Typography>
           </Box>
         </Fade>

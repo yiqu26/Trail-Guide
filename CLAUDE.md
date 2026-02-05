@@ -1,6 +1,6 @@
 # Trail Guide - Claude 工作記錄
 
-> 最後更新: 2026-02-05
+> 最後更新: 2026-02-06
 
 ## 專案概述
 
@@ -118,22 +118,27 @@ Trail-Guide/
 - [x] 步道搜尋 (關鍵字、分類、縣市、難度)
 - [x] 步道詳情 + 地圖 + 入口標記
 - [x] GPS 附近步道
-- [x] 收藏功能
-- [x] 評論系統 (查看、點讚)
+- [x] 口袋名單 (收藏功能)
+- [x] 評論系統 (查看、發表、點讚)
 - [x] 個人資料頁面
 - [x] 錯誤處理與重試機制
 - [x] 響應式設計
 - [x] 第三方登入 (Google) ✅ 2026-01-28
-- [x] 登山打卡系統 ✅ 2026-02-03
-- [x] 成就徽章系統 ✅ 2026-02-03
 - [x] PWA 支援 ✅ 2026-02-03
-- [x] 打卡照片上傳與展示 ✅ 2026-02-05
+- [x] 搜尋歷史紀錄 ✅ 2026-02-06
+- [x] 已去過標記功能 ✅ 2026-02-06
+- [x] 我的評論頁面 ✅ 2026-02-06
+- [x] 評論圖片上傳 ✅ 2026-02-06
 
 ## 待完成功能
 
-- [ ] 成就分享到社群
 - [ ] 用戶頭像上傳 (需雲端儲存)
 - [ ] Facebook/Apple 登入 (申請較複雜，暫緩)
+
+## 已棄用功能
+
+- ~~登山打卡系統~~ (改為簡化的「已去過」標記)
+- ~~成就徽章系統~~ (產品定位調整為資訊平台)
 
 ---
 
@@ -152,10 +157,20 @@ Trail-Guide/
 ### 首頁
 - `GET /api/home` - Banner、精選集、熱門步道
 
-### 收藏
-- `GET /api/favorites` - 我的收藏
+### 口袋名單 (收藏)
+- `GET /api/favorites` - 我的口袋名單
 - `POST /api/favorites/{trailId}` - 加入
 - `DELETE /api/favorites/{trailId}` - 移除
+
+### 已去過
+- `GET /api/visitedtrails` - 已去過清單
+- `GET /api/visitedtrails/check/{trailId}` - 檢查是否已去過
+- `POST /api/visitedtrails/{trailId}` - 標記已去過
+- `DELETE /api/visitedtrails/{trailId}` - 取消標記
+- `GET /api/visitedtrails/stats` - 統計
+
+### 我的評論
+- `GET /api/mycomments` - 我的評論列表
 
 ---
 
@@ -169,6 +184,69 @@ Trail-Guide/
 ---
 
 ## 工作日誌
+
+### 2026-02-06
+
+**完成項目：產品定位調整與功能重構**
+
+1. **產品定位調整**
+   - 從「登山社群平台」調整為「步道資訊平台」
+   - 移除複雜的打卡/成就系統
+   - 專注於步道資訊 + 用戶評論
+
+2. **搜尋歷史紀錄**
+   - 新增 `hooks/useSearchHistory.ts` - localStorage 管理
+   - 搜尋頁面顯示最近搜尋紀錄
+   - 支援刪除單筆/清除全部
+
+3. **已去過功能** (取代打卡系統)
+   - 新增 `VisitedTrails` 資料表
+   - 新增 `VisitedTrailsController` - 標記/取消/查詢 API
+   - 新增 `MyVisited.tsx` - 已去過頁面
+   - `TrailDetail.tsx` - 簡化的「標記已去過」按鈕
+
+4. **我的評論功能**
+   - 新增 `MyCommentsController` - 取得用戶評論 API
+   - 新增 `MyComments.tsx` - 我的評論頁面
+
+5. **個人資料頁面重構**
+   - 統計卡片：已去過、想去、評論
+   - 選單：已去過的步道、口袋名單、我的評論、設定、登出
+   - 移除打卡/成就相關入口
+
+6. **收藏改名為「口袋名單」**
+   - `Favorites.tsx` 標題和文案調整
+
+**新增檔案：**
+- `database/postgres/005_visited_trails.sql`
+- `backend/.../Controllers/VisitedTrailsController.cs`
+- `backend/.../Controllers/MyCommentsController.cs`
+- `frontend/src/hooks/useSearchHistory.ts`
+- `frontend/src/services/visited.ts`
+- `frontend/src/pages/MyVisited.tsx`
+- `frontend/src/pages/MyComments.tsx`
+
+**修改檔案：**
+- `types/index.ts` - 新增 MyComment, VisitedTrail 類型
+- `services/comments.ts` - 新增 getMyComments
+- `pages/Profile.tsx` - 重構統計卡片和選單
+- `pages/TrailDetail.tsx` - 打卡 → 標記已去過
+- `pages/Favorites.tsx` - 收藏 → 口袋名單
+- `pages/Search.tsx` - 搜尋歷史紀錄
+- `App.tsx` - 新增路由
+
+7. **評論圖片上傳功能**
+   - `CommentSection.tsx` - 新增可選圖片上傳 (最多 5 張)
+   - 使用 Cloudinary 上傳
+   - 圖片預覽、刪除、上傳進度提示
+   - 評論列表顯示圖片
+   - `CreateCommentDto` 新增 `ImageUrls` 欄位
+   - `CommentsController.CreateComment` 儲存圖片到 CommentImages
+
+**下次可繼續：**
+- [ ] 用戶頭像上傳
+
+---
 
 ### 2026-02-05
 

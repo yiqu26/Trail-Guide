@@ -36,6 +36,7 @@ public class TrailGuideDbContext : DbContext
     public DbSet<Comment> Comments => Set<Comment>();
     public DbSet<CommentImage> CommentImages => Set<CommentImage>();
     public DbSet<UserLikeComment> UserLikeComments => Set<UserLikeComment>();
+    public DbSet<VisitedTrail> VisitedTrails => Set<VisitedTrail>();
 
     // 打卡與成就
     public DbSet<Checkin> Checkins => Set<Checkin>();
@@ -118,6 +119,9 @@ public class TrailGuideDbContext : DbContext
 
         modelBuilder.Entity<UserLikeComment>()
             .HasIndex(e => new { e.UserId, e.CommentId }).IsUnique();
+
+        modelBuilder.Entity<VisitedTrail>()
+            .HasIndex(e => new { e.UserId, e.TrailId }).IsUnique();
 
         // Checkin
         modelBuilder.Entity<Checkin>(entity =>

@@ -26,6 +26,8 @@ const DesignDemo = lazy(() => import('./pages/DesignDemo').then((m) => ({ defaul
 const MyCheckins = lazy(() => import('./pages/MyCheckins').then((m) => ({ default: m.MyCheckins })));
 const Achievements = lazy(() => import('./pages/Achievements').then((m) => ({ default: m.Achievements })));
 const Settings = lazy(() => import('./pages/Settings').then((m) => ({ default: m.Settings })));
+const MyVisited = lazy(() => import('./pages/MyVisited').then((m) => ({ default: m.MyVisited })));
+const MyComments = lazy(() => import('./pages/MyComments').then((m) => ({ default: m.MyComments })));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -108,6 +110,22 @@ function AnimatedRoutes() {
           element={
             <ProtectedRoute>
               <PageTransition><Settings /></PageTransition>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/my-visited"
+          element={
+            <ProtectedRoute>
+              <PageTransition><MyVisited /></PageTransition>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/my-comments"
+          element={
+            <ProtectedRoute>
+              <PageTransition><MyComments /></PageTransition>
             </ProtectedRoute>
           }
         />

@@ -12,7 +12,6 @@ import {
   Snackbar,
   Alert,
   Button,
-  Avatar,
   keyframes,
 } from '@mui/material';
 
@@ -32,17 +31,15 @@ import TerrainIcon from '@mui/icons-material/Terrain';
 import HeightIcon from '@mui/icons-material/Height';
 import StarIcon from '@mui/icons-material/Star';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import { useNavigate } from 'react-router-dom';
 import { trailService, favoriteService } from '../services/trails';
-import { checkinService } from '../services/checkins';
+import { visitedService } from '../services/visited';
 import { useAuth } from '../contexts/AuthContext';
 import { CommentSection } from '../components/CommentSection';
 import { TrailMap } from '../components/TrailMap';
-import { CheckinDialog } from '../components/CheckinDialog';
-import { CheckinImages } from '../components/CheckinImages';
 import { formatDuration } from '../utils/formatTime';
-import type { TrailDetail as TrailDetailType, Checkin } from '../types';
+import type { TrailDetail as TrailDetailType } from '../types';
 
 const difficultyLabels = ['', '入門', '簡單', '中等', '困難', '挑戰'];
 
@@ -56,9 +53,8 @@ export function TrailDetail() {
     message: '',
     severity: 'success',
   });
-  const [showCheckinDialog, setShowCheckinDialog] = useState(false);
-  const [checkins, setCheckins] = useState<Checkin[]>([]);
-  const [checkinsLoading, setCheckinsLoading] = useState(false);
+  const [isVisited, setIsVisited] = useState(false);
+  const [isVisitedLoading, setIsVisitedLoading] = useState(false);
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
 
@@ -79,35 +75,43 @@ export function TrailDetail() {
   }, [id]);
 
   useEffect(() => {
-    const fetchCheckins = async () => {
-      if (!id) return;
-      setCheckinsLoading(true);
+    const checkVisited = async () => {
+      if (!id || !isAuthenticated) return;
       try {
-        const data = await checkinService.getTrailCheckins(parseInt(id), 1, 5);
-        setCheckins(data);
+        const result = await visitedService.checkVisited(parseInt(id));
+        setIsVisited(result.isVisited);
       } catch (error) {
-        console.error('Failed to fetch checkins:', error);
-      } finally {
-        setCheckinsLoading(false);
+        console.error('Failed to check visited:', error);
       }
     };
 
-    fetchCheckins();
-  }, [id]);
+    checkVisited();
+  }, [id, isAuthenticated]);
 
-  const handleCheckinClick = () => {
+  const handleVisitedToggle = async () => {
+    if (!id) return;
+
     if (!isAuthenticated) {
       navigate('/login');
       return;
     }
-    setShowCheckinDialog(true);
-  };
 
-  const handleCheckinSuccess = () => {
-    setSnackbar({ open: true, message: '打卡成功！', severity: 'success' });
-    // Refresh checkins
-    if (id) {
-      checkinService.getTrailCheckins(parseInt(id), 1, 5).then(setCheckins);
+    setIsVisitedLoading(true);
+    try {
+      if (isVisited) {
+        await visitedService.removeVisited(parseInt(id));
+        setIsVisited(false);
+        setSnackbar({ open: true, message: '已取消標記', severity: 'success' });
+      } else {
+        await visitedService.markVisited(parseInt(id));
+        setIsVisited(true);
+        setSnackbar({ open: true, message: '已標記為去過', severity: 'success' });
+      }
+    } catch (error) {
+      console.error('Failed to toggle visited:', error);
+      setSnackbar({ open: true, message: '操作失敗，請稍後再試', severity: 'error' });
+    } finally {
+      setIsVisitedLoading(false);
     }
   };
 
@@ -381,108 +385,43 @@ export function TrailDetail() {
 
         <Divider sx={{ my: 2 }} />
 
-        {/* Checkin Section */}
+        {/* Visited Section */}
         <Box sx={{ mb: 3 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-            <Typography variant="subtitle1" fontWeight="bold">
-              登山打卡
-            </Typography>
-            <Button
-              variant="contained"
-              size="small"
-              startIcon={<CheckCircleIcon />}
-              onClick={handleCheckinClick}
-            >
-              打卡
-            </Button>
-          </Box>
-
-          {checkinsLoading ? (
-            <Box sx={{ display: 'flex', gap: 1 }}>
-              {[1, 2, 3].map((i) => (
-                <Skeleton key={i} variant="circular" width={40} height={40} />
-              ))}
-            </Box>
-          ) : checkins.length === 0 ? (
-            <Card sx={{ bgcolor: 'action.hover' }}>
-              <CardContent sx={{ textAlign: 'center', py: 3 }}>
-                <Typography color="text.secondary" variant="body2">
-                  還沒有人打卡
-                </Typography>
-                <Typography variant="caption" color="text.secondary">
-                  成為第一個完成這條步道的人！
-                </Typography>
-              </CardContent>
-            </Card>
-          ) : (
-            <Box>
-              {checkins.slice(0, 3).map((checkin) => (
-                <Box
-                  key={checkin.id}
-                  sx={{
-                    display: 'flex',
-                    gap: 1.5,
-                    py: 1.5,
-                    borderBottom: '1px solid',
-                    borderColor: 'divider',
-                  }}
-                >
-                  <Avatar src={checkin.userAvatar} sx={{ width: 36, height: 36 }}>
-                    {checkin.userName[0]}
-                  </Avatar>
-                  <Box sx={{ flex: 1, minWidth: 0 }}>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                      <Typography variant="body2" fontWeight="bold">
-                        {checkin.userName}
-                      </Typography>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                        {checkin.isLocationVerified && (
-                          <LocationOnIcon sx={{ fontSize: 14, color: 'success.main' }} />
-                        )}
-                        <Typography variant="caption" color="text.secondary">
-                          {new Date(checkin.checkinTime).toLocaleDateString('zh-TW')}
-                        </Typography>
-                      </Box>
-                    </Box>
-                    {checkin.note && (
-                      <Typography
-                        variant="body2"
-                        color="text.secondary"
-                        sx={{
-                          mt: 0.5,
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                          whiteSpace: 'nowrap',
-                        }}
-                      >
-                        {checkin.note}
-                      </Typography>
-                    )}
-                    {checkin.durationMinutes && (
-                      <Typography variant="caption" color="text.secondary">
-                        花費 {Math.floor(checkin.durationMinutes / 60)}h {checkin.durationMinutes % 60}m
-                      </Typography>
-                    )}
-                    {/* Checkin Photos */}
-                    {checkin.images && checkin.images.length > 0 && (
-                      <Box sx={{ mt: 1 }}>
-                        <CheckinImages images={checkin.images} height={56} />
-                      </Box>
-                    )}
-                  </Box>
+          <Card
+            sx={{
+              bgcolor: isVisited ? 'success.50' : 'action.hover',
+              border: isVisited ? '1px solid' : 'none',
+              borderColor: 'success.main',
+            }}
+          >
+            <CardContent sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', py: 2 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                {isVisited ? (
+                  <CheckCircleIcon sx={{ color: 'success.main', fontSize: 28 }} />
+                ) : (
+                  <CheckCircleOutlineIcon sx={{ color: 'text.secondary', fontSize: 28 }} />
+                )}
+                <Box>
+                  <Typography variant="subtitle2" fontWeight="bold">
+                    {isVisited ? '已去過這條步道' : '去過這條步道嗎？'}
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    {isVisited ? '點擊可取消標記' : '標記來記錄你的足跡'}
+                  </Typography>
                 </Box>
-              ))}
-              {checkins.length > 3 && (
-                <Typography
-                  variant="body2"
-                  color="primary"
-                  sx={{ mt: 1, textAlign: 'center', cursor: 'pointer' }}
-                >
-                  查看全部 {checkins.length} 筆打卡紀錄
-                </Typography>
-              )}
-            </Box>
-          )}
+              </Box>
+              <Button
+                variant={isVisited ? 'outlined' : 'contained'}
+                size="small"
+                color={isVisited ? 'success' : 'primary'}
+                onClick={handleVisitedToggle}
+                disabled={isVisitedLoading}
+                sx={{ minWidth: 80 }}
+              >
+                {isVisited ? '已去過' : '標記'}
+              </Button>
+            </CardContent>
+          </Card>
         </Box>
 
         <Divider sx={{ my: 2 }} />
@@ -504,18 +443,6 @@ export function TrailDetail() {
         </Alert>
       </Snackbar>
 
-      {/* Checkin Dialog */}
-      {trail && (
-        <CheckinDialog
-          open={showCheckinDialog}
-          onClose={() => setShowCheckinDialog(false)}
-          trailId={trail.id}
-          trailTitle={trail.title}
-          trailLat={trail.latitude}
-          trailLng={trail.longitude}
-          onSuccess={handleCheckinSuccess}
-        />
-      )}
     </Box>
   );
 }
