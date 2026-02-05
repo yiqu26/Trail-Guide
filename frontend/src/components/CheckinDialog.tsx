@@ -216,10 +216,15 @@ export function CheckinDialog({
   if (showAchievements && newAchievements.length > 0) {
     return (
       <Dialog open={open} onClose={handleAchievementClose} maxWidth="sm" fullWidth>
-        <DialogTitle sx={{ textAlign: 'center', pt: 4 }}>
-          <Typography variant="h5" color="primary" fontWeight="bold">
-            恭喜解鎖新成就！
-          </Typography>
+        <DialogTitle
+          sx={{
+            textAlign: 'center',
+            pt: 4,
+            color: 'primary.main',
+            fontWeight: 'bold',
+          }}
+        >
+          恭喜解鎖新成就！
         </DialogTitle>
         <DialogContent>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, py: 2 }}>
