@@ -1,6 +1,6 @@
 # Trail Guide - Claude 工作記錄
 
-> 最後更新: 2026-01-28 晚間
+> 最後更新: 2026-02-05
 
 ## 專案概述
 
@@ -127,10 +127,10 @@ Trail-Guide/
 - [x] 登山打卡系統 ✅ 2026-02-03
 - [x] 成就徽章系統 ✅ 2026-02-03
 - [x] PWA 支援 ✅ 2026-02-03
+- [x] 打卡照片上傳與展示 ✅ 2026-02-05
 
 ## 待完成功能
 
-- [ ] 打卡照片上傳 (需雲端儲存)
 - [ ] 成就分享到社群
 - [ ] 用戶頭像上傳 (需雲端儲存)
 - [ ] Facebook/Apple 登入 (申請較複雜，暫緩)
@@ -169,6 +169,36 @@ Trail-Guide/
 ---
 
 ## 工作日誌
+
+### 2026-02-05
+
+**完成項目：打卡照片展示與 UI 修正**
+
+1. **打卡照片展示功能**
+   - 新增 `CheckinImages.tsx` - Strava 風格橫向滑動縮圖條
+   - 新增 `ImageLightbox.tsx` - 全螢幕圖片檢視器 (支援左右滑動、鍵盤操作)
+   - `MyCheckins.tsx` - 打卡卡片顯示照片
+   - `TrailDetail.tsx` - 打卡區塊顯示照片
+   - 使用 Cloudinary URL 優化縮圖載入
+
+2. **UI 修正**
+   - `Search.tsx` - 暗黑模式難度 Chip 配色修正 (`white` → `background.paper`)
+   - `Login.tsx` - Google 登入按鈕改用 pill 形狀並置中
+   - `CheckinDialog.tsx` - 修正 HTML 結構錯誤 (h5 嵌套在 h2 內)
+
+**Git commits：**
+```
+b25277b feat: 打卡照片展示功能 - Lightbox 與縮圖組件
+078151b fix: UI 修正 - 暗黑模式、照片樣式、Google 按鈕
+64e359a fix: 修正 HTML 結構警告與 Google 按鈕錯誤
+```
+
+**下次可繼續：**
+- [ ] 成就分享到社群
+- [ ] 用戶頭像上傳
+- [ ] 測試線上環境打卡功能
+
+---
 
 ### 2026-02-04
 
