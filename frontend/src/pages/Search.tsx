@@ -474,11 +474,11 @@ export function Search() {
                         setSelectedDifficulty(selectedDifficulty === option.value ? '' : option.value)
                       }
                       sx={{
-                        bgcolor: selectedDifficulty === option.value ? option.color : 'white',
+                        bgcolor: selectedDifficulty === option.value ? option.color : 'background.paper',
                         color: selectedDifficulty === option.value ? 'white' : 'text.primary',
-                        borderColor: selectedDifficulty === option.value ? option.color : 'grey.300',
+                        borderColor: selectedDifficulty === option.value ? option.color : 'divider',
                         '&:hover': {
-                          bgcolor: selectedDifficulty === option.value ? option.color : 'grey.100',
+                          bgcolor: selectedDifficulty === option.value ? option.color : 'action.hover',
                         },
                       }}
                       size="small"

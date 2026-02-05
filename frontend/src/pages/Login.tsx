@@ -143,14 +143,22 @@ export function Login() {
 
       <Divider sx={{ my: 3 }}>或</Divider>
 
-      <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%', maxWidth: 400 }}>
+      {/* Google Login - use pill shape for modern look, centered */}
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          '& > div': { width: '100%' },
+          '& iframe': { margin: '0 auto' },
+        }}
+      >
         <GoogleLogin
           onSuccess={handleGoogleSuccess}
           onError={handleGoogleError}
           text={tab === 0 ? 'signin_with' : 'signup_with'}
-          shape="rectangular"
+          shape="pill"
           size="large"
-          width={320}
+          theme="outline"
         />
       </Box>
 

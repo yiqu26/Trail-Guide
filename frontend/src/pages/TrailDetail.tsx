@@ -466,7 +466,7 @@ export function TrailDetail() {
                     {/* Checkin Photos */}
                     {checkin.images && checkin.images.length > 0 && (
                       <Box sx={{ mt: 1 }}>
-                        <CheckinImages images={checkin.images} size={40} maxVisible={3} />
+                        <CheckinImages images={checkin.images} height={56} />
                       </Box>
                     )}
                   </Box>
