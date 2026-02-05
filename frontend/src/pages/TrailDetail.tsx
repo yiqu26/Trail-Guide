@@ -40,6 +40,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { CommentSection } from '../components/CommentSection';
 import { TrailMap } from '../components/TrailMap';
 import { CheckinDialog } from '../components/CheckinDialog';
+import { CheckinImages } from '../components/CheckinImages';
 import { formatDuration } from '../utils/formatTime';
 import type { TrailDetail as TrailDetailType, Checkin } from '../types';
 
@@ -461,6 +462,12 @@ export function TrailDetail() {
                       <Typography variant="caption" color="text.secondary">
                         花費 {Math.floor(checkin.durationMinutes / 60)}h {checkin.durationMinutes % 60}m
                       </Typography>
+                    )}
+                    {/* Checkin Photos */}
+                    {checkin.images && checkin.images.length > 0 && (
+                      <Box sx={{ mt: 1 }}>
+                        <CheckinImages images={checkin.images} size={40} maxVisible={3} />
+                      </Box>
                     )}
                   </Box>
                 </Box>

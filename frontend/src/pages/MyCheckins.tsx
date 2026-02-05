@@ -24,8 +24,10 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import PhotoLibraryIcon from '@mui/icons-material/PhotoLibrary';
 import { useNavigate } from 'react-router-dom';
 import { checkinService } from '../services/checkins';
+import { CheckinImages } from '../components/CheckinImages';
 import type { Checkin, CheckinStats } from '../types';
 
 function EmptyState({ onExplore }: { onExplore: () => void }) {
@@ -296,6 +298,14 @@ function CheckinCard({
                 >
                   {checkin.note}
                 </Typography>
+              )}
+
+              {/* Checkin Photos */}
+              {checkin.images && checkin.images.length > 0 && (
+                <Box sx={{ mt: 1.5, display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <PhotoLibraryIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
+                  <CheckinImages images={checkin.images} size={50} maxVisible={3} />
+                </Box>
               )}
             </Box>
           </Box>
