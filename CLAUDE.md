@@ -86,23 +86,23 @@ cloudflared tunnel run ngo-demo
 Trail-Guide/
 ├── frontend/                 # React 前端
 │   ├── src/
-│   │   ├── components/       # TrailCard, BentoTrailCard, TrailMap, BottomNav
-│   │   ├── pages/            # Home, Search, TrailDetail, Favorites, Profile, Nearby
-│   │   ├── services/         # api.ts, auth.ts, trails.ts, home.ts
-│   │   ├── contexts/         # AuthContext
+│   │   ├── components/       # TrailCard, CommentSection, ImageLightbox, BottomNav
+│   │   ├── pages/            # Home, Search, TrailDetail, Favorites, Profile, MyVisited, MyComments
+│   │   ├── services/         # api.ts, auth.ts, trails.ts, comments.ts, visited.ts, cloudinary.ts
+│   │   ├── contexts/         # AuthContext, ThemeContext
+│   │   ├── hooks/            # useSearchHistory.ts
 │   │   └── types/
 │   ├── .env.development      # API_BASE_URL=localhost:5274
-│   └── vite.config.ts        # port: 5174
+│   └── vite.config.ts        # port: 5174, PWA 配置
 │
 ├── backend/TrailGuide.API/
-│   ├── Controllers/          # Auth, Trails, Home, Favorites, Comments
-│   ├── Models/Domain/        # Trail, User, Collection, Comment, Favorite
+│   ├── Controllers/          # Auth, Trails, Home, Favorites, Comments, VisitedTrails, MyComments
+│   ├── Models/Domain/        # Trail, User, Collection, Comment, Favorite, VisitedTrail
 │   ├── Services/             # JwtService
 │   └── Data/                 # TrailGuideDbContext
 │
 ├── database/
-│   ├── postgres/             # PostgreSQL 版本 (現用)
-│   └── *.sql                 # SQL Server 版本
+│   └── postgres/             # PostgreSQL 版本 (現用)
 │
 ├── docker-compose.yml        # PostgreSQL 容器
 ├── render.yaml               # Render 部署配置
@@ -257,35 +257,49 @@ Trail-Guide/
    - 刪除前顯示確認對話框
    - 編輯時可修改評分、內容、圖片
 
+10. **評論照片 Lightbox**
+    - 點擊評論照片可全螢幕放大
+    - 支援左右滑動、鍵盤操作
+
+11. **Bug 修復**
+    - `TrailCard.tsx` - 修復 chips undefined 錯誤
+    - `MyComments.tsx` - 修復路由路徑錯誤 (`/trails/` → `/trail/`)
+
+12. **代碼清理** (刪除 4,473 行)
+    - 刪除已棄用的打卡/成就系統相關代碼
+    - 後端：CheckinsController, AchievementsController, AchievementService
+    - 後端：CheckinAchievement models, DTOs
+    - 前端：CheckinDialog, AchievementCard, CheckinImages 組件
+    - 前端：MyCheckins, Achievements, DesignDemo 頁面
+    - 前端：checkins.ts, achievements.ts 服務
+    - 資料庫：舊版 SQL Server 腳本
+    - 修復相關 TypeScript 錯誤
+
+**Git commits：**
+```
+ce0ac34 refactor: 清理未使用的打卡與成就系統代碼
+```
+
+**下次可繼續：**
+- [ ] 線上環境測試 (Vercel + Render)
+- [ ] Facebook/Apple 登入
+- [ ] 評論排序 (最新/最熱門)
+- [ ] 步道收藏分類/資料夾
+
 ---
 
 ### 2026-02-05
 
-**完成項目：打卡照片展示與 UI 修正**
+**完成項目：UI 修正與 Lightbox 組件**
 
-1. **打卡照片展示功能**
-   - 新增 `CheckinImages.tsx` - Strava 風格橫向滑動縮圖條
-   - 新增 `ImageLightbox.tsx` - 全螢幕圖片檢視器 (支援左右滑動、鍵盤操作)
-   - `MyCheckins.tsx` - 打卡卡片顯示照片
-   - `TrailDetail.tsx` - 打卡區塊顯示照片
-   - 使用 Cloudinary URL 優化縮圖載入
+1. **ImageLightbox 組件**
+   - 新增 `ImageLightbox.tsx` - 全螢幕圖片檢視器
+   - 支援左右滑動、鍵盤操作
+   - 用於評論照片放大檢視
 
 2. **UI 修正**
-   - `Search.tsx` - 暗黑模式難度 Chip 配色修正 (`white` → `background.paper`)
+   - `Search.tsx` - 暗黑模式難度 Chip 配色修正
    - `Login.tsx` - Google 登入按鈕改用 pill 形狀並置中
-   - `CheckinDialog.tsx` - 修正 HTML 結構錯誤 (h5 嵌套在 h2 內)
-
-**Git commits：**
-```
-b25277b feat: 打卡照片展示功能 - Lightbox 與縮圖組件
-078151b fix: UI 修正 - 暗黑模式、照片樣式、Google 按鈕
-64e359a fix: 修正 HTML 結構警告與 Google 按鈕錯誤
-```
-
-**下次可繼續：**
-- [ ] 成就分享到社群
-- [ ] 用戶頭像上傳
-- [ ] 測試線上環境打卡功能
 
 ---
 
@@ -336,94 +350,29 @@ b25277b feat: 打卡照片展示功能 - Lightbox 與縮圖組件
    - 下拉刷新功能 (新增 `PullToRefresh.tsx`)
    - 底部導航動畫 (彈跳 + 滑動指示線)
 
-**Git commits：**
-```
-b95acbe feat: 優化載入體驗 - 頂部進度條 + 骨架屏
-465a72c feat: 新增 PWA 支援 - 可安裝到手機桌面
-f77a720 feat: 新增設定頁面與暗黑模式支援
-a51999c fix: 修正暗黑模式下的配色問題
-4f29674 fix: 修正暗黑模式下新消息、打卡、評論區塊配色
-55169da feat: UI/UX 設計優化 - 動畫、空狀態、視覺一致性
-```
-
-**下次可繼續：**
-- [ ] 測試打卡功能 (需重啟後端)
-- [ ] 打卡照片上傳 (需 Cloudinary)
-- [ ] 成就分享到社群
-- [ ] 用戶頭像上傳
-
 ---
 
 ### 2026-02-03
 
-**完成項目：登山打卡與成就徽章系統**
+**完成項目：PWA 支援**
 
-後端 (ASP.NET Core)：
-- `database/postgres/003_checkin_achievement.sql` - 打卡與成就資料表
-- `database/postgres/004_seed_achievements.sql` - 預設成就種子資料 (37 個成就)
-- `Models/Domain/CheckinAchievement.cs` - Checkin, CheckinImage, Achievement, UserAchievement
-- `Models/DTOs/CheckinAchievementDtos.cs` - 所有 API 請求/回應 DTO
-- `Services/AchievementService.cs` - 成就檢查與解鎖邏輯
-- `Controllers/CheckinsController.cs` - 打卡 CRUD API
-- `Controllers/AchievementsController.cs` - 成就查詢 API
-
-前端 (React + TypeScript)：
-- `types/index.ts` - 新增 Checkin, Achievement 相關類型
-- `services/checkins.ts` - 打卡 API 服務
-- `services/achievements.ts` - 成就 API 服務
-- `components/CheckinDialog.tsx` - 打卡彈窗 (GPS 驗證、心得、時間)
-- `components/AchievementCard.tsx` - 成就卡片組件
-- `pages/MyCheckins.tsx` - 我的打卡紀錄頁面
-- `pages/Achievements.tsx` - 成就徽章頁面
-- `pages/TrailDetail.tsx` - 新增打卡按鈕和打卡紀錄區塊
-- `pages/Profile.tsx` - 新增統計卡片和選單入口
-- `App.tsx` - 新增路由 /my-checkins, /achievements
-
-**Git commits：**
-```
-1a8a974 feat: 新增登山打卡與成就徽章系統
-```
-
-**PWA 支援：**
 - 安裝 `vite-plugin-pwa`
 - 配置 `vite.config.ts` - manifest、緩存策略
 - 新增 `PWAUpdatePrompt.tsx` - 更新提示組件
 - 新增 app icons (192x192, 512x512)
-- 更新 `index.html` - meta 標籤、apple-touch-icon
+- 可安裝到手機桌面
+- 離線緩存 (圖片 7 天、API 1 小時)
 
-**Git commits：**
-```
-465a72c feat: 新增 PWA 支援 - 可安裝到手機桌面
-```
-
-**下次可繼續：**
-- [ ] 打卡照片上傳 (需 Cloudinary)
-- [ ] 成就分享到社群
-- [ ] 用戶頭像上傳
-- [ ] 重啟後端測試打卡功能
+> 注：同日開發的打卡/成就系統已於 2026-02-06 移除，改用簡化的「已去過」標記功能。
 
 ---
 
 ### 2026-01-28
 
-**完成項目：**
-- ✅ Google OAuth 登入功能
-  - 整合 `@react-oauth/google` 套件
-  - 設定 Google Cloud Console OAuth 2.0
-  - 前端 Login 頁面新增 Google 登入按鈕
-  - 環境變數：`VITE_GOOGLE_CLIENT_ID`
-- ✅ 修復 Profile 頁面性別顯示 bug（null 判斷）
-- ✅ 修復所有 ESLint 錯誤和警告（7 個問題）
-- ✅ 更新文檔
+**完成項目：Google OAuth 登入**
 
-**Git commits：**
-```
-8c624f7 fix: 修復 ESLint 錯誤和警告
-a54067c feat: 實現 Google OAuth 登入功能
-```
-
-**下次可繼續：**
-- [ ] 用戶頭像上傳（需 Cloudinary 或其他雲端儲存）
-- [ ] PWA 支援（讓 App 可安裝到手機）
-- [ ] UI/UX 細節優化
-- [ ] 線上環境測試 Google 登入（需更新 Vercel 環境變數）
+- 整合 `@react-oauth/google` 套件
+- 設定 Google Cloud Console OAuth 2.0
+- 前端 Login 頁面新增 Google 登入按鈕
+- 環境變數：`VITE_GOOGLE_CLIENT_ID`
+- 修復 Profile 頁面性別顯示 bug
