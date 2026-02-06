@@ -185,7 +185,7 @@ export function TrailCard({ trail, onFavoriteToggle }: TrailCardProps) {
             )}
           </Box>
 
-          {trail.chips.length > 0 && (
+          {trail.chips && trail.chips.length > 0 && (
             <Box sx={{ display: 'flex', gap: 0.5, mt: 0.5, flexWrap: 'wrap' }}>
               {trail.chips.slice(0, 3).map((chip) => (
                 <Chip

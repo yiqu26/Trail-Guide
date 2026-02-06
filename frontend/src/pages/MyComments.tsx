@@ -151,7 +151,7 @@ export function MyComments() {
                       boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
                     },
                   }}
-                  onClick={() => navigate(`/trails/${comment.trailId}`)}
+                  onClick={() => navigate(`/trail/${comment.trailId}`)}
                 >
                   <CardContent>
                     {/* 步道資訊 */}
