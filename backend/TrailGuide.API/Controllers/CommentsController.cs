@@ -175,6 +175,84 @@ public class CommentsController : ControllerBase
         return CreatedAtAction(nameof(GetComments), new { trailId }, result);
     }
 
+    [HttpPut("{commentId}")]
+    [Authorize]
+    public async Task<ActionResult<CommentListDto>> UpdateComment(int trailId, int commentId, [FromBody] CreateCommentDto dto)
+    {
+        var userId = GetCurrentUserId();
+        if (!userId.HasValue)
+        {
+            return Unauthorized(new { error = "User not authenticated" });
+        }
+
+        var comment = await _context.Comments
+            .Include(c => c.User)
+            .Include(c => c.Images)
+            .Include(c => c.Likes)
+            .FirstOrDefaultAsync(c => c.Id == commentId && c.TrailId == trailId);
+
+        if (comment == null)
+        {
+            return NotFound(new { error = "Comment not found" });
+        }
+
+        if (comment.UserId != userId)
+        {
+            return Forbid();
+        }
+
+        // Update fields
+        comment.Star = dto.Star;
+        comment.Difficulty = dto.Difficulty;
+        comment.Beauty = dto.Beauty;
+        comment.Content = dto.Content;
+        comment.Date = dto.Date ?? comment.Date;
+        comment.UpdatedAt = DateTime.UtcNow;
+
+        // Update images if provided
+        if (dto.ImageUrls != null)
+        {
+            // Remove old images
+            var oldImages = await _context.CommentImages.Where(i => i.CommentId == commentId).ToListAsync();
+            _context.CommentImages.RemoveRange(oldImages);
+
+            // Add new images
+            for (int i = 0; i < dto.ImageUrls.Count; i++)
+            {
+                _context.CommentImages.Add(new CommentImage
+                {
+                    CommentId = comment.Id,
+                    ImageUrl = dto.ImageUrls[i],
+                    SortOrder = i
+                });
+            }
+        }
+
+        await _context.SaveChangesAsync();
+
+        // Update trail evaluation
+        await UpdateTrailEvaluation(trailId);
+
+        var result = new CommentListDto
+        {
+            Id = comment.Id,
+            UserId = comment.UserId,
+            UserName = comment.User?.Name ?? "匿名用戶",
+            UserAvatar = comment.User?.Avatar,
+            Star = comment.Star,
+            Difficulty = comment.Difficulty,
+            Beauty = comment.Beauty,
+            Content = comment.Content,
+            Date = comment.Date,
+            CreatedAt = comment.CreatedAt,
+            Images = dto.ImageUrls ?? comment.Images.OrderBy(i => i.SortOrder).Select(i => i.ImageUrl).ToList(),
+            LikeCount = comment.Likes.Count,
+            IsLiked = comment.Likes.Any(l => l.UserId == userId)
+        };
+
+        return Ok(result);
+    }
+
     [HttpDelete("{commentId}")]
     [Authorize]
     public async Task<ActionResult> DeleteComment(int trailId, int commentId)

@@ -22,8 +22,14 @@ import {
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined';
 import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 import CloseIcon from '@mui/icons-material/Close';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { commentService } from '../services/comments';
@@ -61,6 +67,11 @@ export function CommentSection({ trailId }: CommentSectionProps) {
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Edit/Delete states
+  const [editingComment, setEditingComment] = useState<Comment | null>(null);
+  const [menuAnchor, setMenuAnchor] = useState<{ el: HTMLElement; commentId: number } | null>(null);
+  const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null);
+
   useEffect(() => {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -91,7 +102,7 @@ export function CommentSection({ trailId }: CommentSectionProps) {
     const validFiles: File[] = [];
     const errors: string[] = [];
 
-    Array.from(files).slice(0, 5 - selectedImages.length).forEach(file => {
+    Array.from(files).slice(0, 5 - imagePreviews.length).forEach(file => {
       if (!allowedTypes.includes(file.type)) {
         errors.push(`${file.name}: 不支援的格式 (請使用 JPG、PNG、GIF 或 WebP)`);
         return;
@@ -120,17 +131,24 @@ export function CommentSection({ trailId }: CommentSectionProps) {
   };
 
   const handleRemoveImage = (index: number) => {
-    // Revoke blob URL to free memory
-    URL.revokeObjectURL(imagePreviews[index]);
-
-    setSelectedImages(selectedImages.filter((_, i) => i !== index));
+    const url = imagePreviews[index];
+    // Only revoke blob URLs (not http URLs from existing images)
+    if (url.startsWith('blob:')) {
+      URL.revokeObjectURL(url);
+      // Also remove from selectedImages if it's a new file
+      const blobUrls = imagePreviews.filter(u => u.startsWith('blob:'));
+      const blobIndex = blobUrls.indexOf(url);
+      if (blobIndex >= 0) {
+        setSelectedImages(selectedImages.filter((_, i) => i !== blobIndex));
+      }
+    }
     setImagePreviews(imagePreviews.filter((_, i) => i !== index));
   };
 
   const resetForm = () => {
     setNewComment({ star: 5, difficulty: 3, beauty: 4, content: '' });
-    // Clean up blob URLs
-    imagePreviews.forEach(url => URL.revokeObjectURL(url));
+    // Clean up blob URLs only
+    imagePreviews.filter(url => url.startsWith('blob:')).forEach(url => URL.revokeObjectURL(url));
     setSelectedImages([]);
     setImagePreviews([]);
   };
@@ -191,6 +209,103 @@ export function CommentSection({ trailId }: CommentSectionProps) {
       ));
     } catch (error) {
       console.error('Failed to like comment:', error);
+    }
+  };
+
+  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>, commentId: number) => {
+    setMenuAnchor({ el: event.currentTarget, commentId });
+  };
+
+  const handleMenuClose = () => {
+    setMenuAnchor(null);
+  };
+
+  const handleEditClick = (comment: Comment) => {
+    setEditingComment(comment);
+    setNewComment({
+      star: comment.star,
+      difficulty: comment.difficulty,
+      beauty: comment.beauty,
+      content: comment.content || '',
+    });
+    // Set existing images as previews (URLs, not files)
+    setImagePreviews(comment.images || []);
+    setSelectedImages([]); // No new files selected yet
+    setShowAddDialog(true);
+    handleMenuClose();
+  };
+
+  const handleDeleteClick = (commentId: number) => {
+    setDeleteConfirmId(commentId);
+    handleMenuClose();
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deleteConfirmId) return;
+
+    try {
+      await commentService.deleteComment(trailId, deleteConfirmId);
+      setComments(comments.filter(c => c.id !== deleteConfirmId));
+      setSnackbar({ open: true, message: '評論已刪除', severity: 'success' });
+      // Refresh stats
+      const newStats = await commentService.getCommentStats(trailId);
+      setStats(newStats);
+    } catch (error) {
+      console.error('Failed to delete comment:', error);
+      setSnackbar({ open: true, message: '刪除失敗，請稍後再試', severity: 'error' });
+    } finally {
+      setDeleteConfirmId(null);
+    }
+  };
+
+  const handleSaveComment = async () => {
+    if (!isAuthenticated) {
+      navigate('/login');
+      return;
+    }
+
+    try {
+      setIsUploading(true);
+
+      // Upload new images to Cloudinary if any
+      let imageUrls: string[] = [...imagePreviews.filter(url => url.startsWith('http'))]; // Keep existing URLs
+      if (selectedImages.length > 0) {
+        const uploadPromises = selectedImages.map(file =>
+          uploadImage(file, 'comments')
+        );
+        const results = await Promise.all(uploadPromises);
+        imageUrls = [...imageUrls, ...results.map(r => r.secure_url)];
+      }
+
+      const commentData: CreateCommentData = {
+        ...newComment,
+        imageUrls: imageUrls.length > 0 ? imageUrls : undefined,
+      };
+
+      if (editingComment) {
+        // Update existing comment
+        const updated = await commentService.updateComment(trailId, editingComment.id, commentData);
+        setComments(comments.map(c => c.id === editingComment.id ? updated : c));
+        setSnackbar({ open: true, message: '評論已更新', severity: 'success' });
+      } else {
+        // Create new comment
+        const created = await commentService.createComment(trailId, commentData);
+        setComments([created, ...comments]);
+        setSnackbar({ open: true, message: '評論發表成功', severity: 'success' });
+      }
+
+      setShowAddDialog(false);
+      setEditingComment(null);
+      resetForm();
+      // Refresh stats
+      const newStats = await commentService.getCommentStats(trailId);
+      setStats(newStats);
+    } catch (error) {
+      const axiosError = error as { response?: { data?: { error?: string } } };
+      const message = axiosError.response?.data?.error || '操作失敗，請稍後再試';
+      setSnackbar({ open: true, message, severity: 'error' });
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -259,9 +374,19 @@ export function CommentSection({ trailId }: CommentSectionProps) {
                       </Typography>
                       <Rating value={comment.star || 0} size="small" readOnly />
                     </Box>
-                    <Typography variant="caption" color="text.secondary">
-                      {new Date(comment.createdAt).toLocaleDateString('zh-TW')}
-                    </Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                      <Typography variant="caption" color="text.secondary">
+                        {new Date(comment.createdAt).toLocaleDateString('zh-TW')}
+                      </Typography>
+                      {comment.userId === user?.id && (
+                        <IconButton
+                          size="small"
+                          onClick={(e) => handleMenuOpen(e, comment.id)}
+                        >
+                          <MoreVertIcon fontSize="small" />
+                        </IconButton>
+                      )}
+                    </Box>
                   </Box>
 
                   {/* Chips for difficulty and beauty */}
@@ -336,9 +461,9 @@ export function CommentSection({ trailId }: CommentSectionProps) {
         ))
       )}
 
-      {/* Add Comment Dialog */}
-      <Dialog open={showAddDialog} onClose={() => setShowAddDialog(false)} fullWidth maxWidth="sm">
-        <DialogTitle>發表評論</DialogTitle>
+      {/* Add/Edit Comment Dialog */}
+      <Dialog open={showAddDialog} onClose={() => { setShowAddDialog(false); setEditingComment(null); resetForm(); }} fullWidth maxWidth="sm">
+        <DialogTitle>{editingComment ? '編輯評論' : '發表評論'}</DialogTitle>
         <DialogContent>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, mt: 1 }}>
             {/* Overall Rating */}
@@ -450,7 +575,7 @@ export function CommentSection({ trailId }: CommentSectionProps) {
               )}
 
               {/* Add Image Button */}
-              {selectedImages.length < 5 && (
+              {imagePreviews.length < 5 && (
                 <>
                   <input
                     type="file"
@@ -474,16 +599,53 @@ export function CommentSection({ trailId }: CommentSectionProps) {
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => { setShowAddDialog(false); resetForm(); }} disabled={isUploading}>
+          <Button onClick={() => { setShowAddDialog(false); setEditingComment(null); resetForm(); }} disabled={isUploading}>
             取消
           </Button>
           <Button
             variant="contained"
-            onClick={handleAddComment}
+            onClick={handleSaveComment}
             disabled={isUploading}
             startIcon={isUploading ? <CircularProgress size={16} color="inherit" /> : null}
           >
-            {isUploading ? '發表中...' : '發表'}
+            {isUploading ? '處理中...' : (editingComment ? '儲存' : '發表')}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Comment Menu */}
+      <Menu
+        anchorEl={menuAnchor?.el}
+        open={Boolean(menuAnchor)}
+        onClose={handleMenuClose}
+      >
+        <MenuItem onClick={() => {
+          const comment = comments.find(c => c.id === menuAnchor?.commentId);
+          if (comment) handleEditClick(comment);
+        }}>
+          <ListItemIcon>
+            <EditIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>編輯</ListItemText>
+        </MenuItem>
+        <MenuItem onClick={() => menuAnchor && handleDeleteClick(menuAnchor.commentId)}>
+          <ListItemIcon>
+            <DeleteIcon fontSize="small" color="error" />
+          </ListItemIcon>
+          <ListItemText sx={{ color: 'error.main' }}>刪除</ListItemText>
+        </MenuItem>
+      </Menu>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={deleteConfirmId !== null} onClose={() => setDeleteConfirmId(null)}>
+        <DialogTitle>確認刪除</DialogTitle>
+        <DialogContent>
+          <Typography>確定要刪除這則評論嗎？此操作無法復原。</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDeleteConfirmId(null)}>取消</Button>
+          <Button color="error" variant="contained" onClick={handleDeleteConfirm}>
+            刪除
           </Button>
         </DialogActions>
       </Dialog>

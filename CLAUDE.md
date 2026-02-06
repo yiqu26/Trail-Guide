@@ -130,10 +130,10 @@ Trail-Guide/
 - [x] 我的評論頁面 ✅ 2026-02-06
 - [x] 評論圖片上傳 ✅ 2026-02-06
 - [x] 用戶頭像上傳 ✅ 2026-02-06
+- [x] 評論編輯/刪除 ✅ 2026-02-06
 
 ## 待完成功能
 
-- [ ] 評論編輯/刪除
 - [ ] 步道分享功能
 - [ ] Facebook/Apple 登入 (申請較複雜，暫緩)
 
@@ -250,6 +250,13 @@ Trail-Guide/
    - 支援 JPG、PNG、GIF、WebP (上限 5MB)
    - 上傳到 Cloudinary (avatars 資料夾)
    - 上傳中顯示 loading 效果
+
+9. **評論編輯/刪除功能**
+   - 後端新增 `PUT /api/trails/{trailId}/comments/{commentId}` 端點
+   - 前端 `CommentSection.tsx` - 用戶可編輯/刪除自己的評論
+   - 三點選單 (MoreVert) 顯示編輯/刪除選項
+   - 刪除前顯示確認對話框
+   - 編輯時可修改評分、內容、圖片
 
 ---
 

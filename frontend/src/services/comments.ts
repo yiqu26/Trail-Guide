@@ -19,6 +19,11 @@ export const commentService = {
     return response.data;
   },
 
+  async updateComment(trailId: number, commentId: number, data: CreateCommentData): Promise<Comment> {
+    const response = await api.put<Comment>(`/trails/${trailId}/comments/${commentId}`, data);
+    return response.data;
+  },
+
   async deleteComment(trailId: number, commentId: number): Promise<void> {
     await api.delete(`/trails/${trailId}/comments/${commentId}`);
   },
