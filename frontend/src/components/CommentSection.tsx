@@ -34,6 +34,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { commentService } from '../services/comments';
 import { uploadImage } from '../services/cloudinary';
+import { ImageLightbox } from './ImageLightbox';
 import type { Comment, CommentStats, CreateCommentData } from '../types';
 
 interface CommentSectionProps {
@@ -71,6 +72,11 @@ export function CommentSection({ trailId }: CommentSectionProps) {
   const [editingComment, setEditingComment] = useState<Comment | null>(null);
   const [menuAnchor, setMenuAnchor] = useState<{ el: HTMLElement; commentId: number } | null>(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null);
+
+  // Lightbox states
+  const [lightboxImages, setLightboxImages] = useState<string[]>([]);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -309,6 +315,12 @@ export function CommentSection({ trailId }: CommentSectionProps) {
     }
   };
 
+  const handleImageClick = (images: string[], index: number) => {
+    setLightboxImages(images);
+    setLightboxIndex(index);
+    setLightboxOpen(true);
+  };
+
   const hasUserCommented = comments.some(c => c.userId === user?.id);
 
   if (isLoading) {
@@ -426,12 +438,19 @@ export function CommentSection({ trailId }: CommentSectionProps) {
                           component="img"
                           src={img}
                           alt=""
+                          onClick={() => handleImageClick(comment.images, i)}
                           sx={{
                             width: 80,
                             height: 80,
                             objectFit: 'cover',
                             borderRadius: 1,
                             flexShrink: 0,
+                            cursor: 'pointer',
+                            transition: 'transform 0.2s, opacity 0.2s',
+                            '&:hover': {
+                              transform: 'scale(1.05)',
+                              opacity: 0.9,
+                            },
                           }}
                         />
                       ))}
@@ -661,6 +680,14 @@ export function CommentSection({ trailId }: CommentSectionProps) {
           {snackbar.message}
         </Alert>
       </Snackbar>
+
+      {/* Image Lightbox */}
+      <ImageLightbox
+        images={lightboxImages}
+        open={lightboxOpen}
+        initialIndex={lightboxIndex}
+        onClose={() => setLightboxOpen(false)}
+      />
     </Box>
   );
 }
