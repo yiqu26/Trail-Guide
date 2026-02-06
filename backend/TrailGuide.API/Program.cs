@@ -71,7 +71,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 // Services
 builder.Services.AddScoped<IJwtService, JwtService>();
-builder.Services.AddScoped<IAchievementService, AchievementService>();
 
 // CORS - 從環境變數讀取允許的來源
 var allowedOrigins = builder.Configuration["AllowedOrigins"]?.Split(',') ?? Array.Empty<string>();

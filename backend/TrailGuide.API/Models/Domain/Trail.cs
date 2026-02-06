@@ -37,5 +37,4 @@ public class Trail
     public ICollection<Comment> Comments { get; set; } = new List<Comment>();
     public ICollection<Announcement> Announcements { get; set; } = new List<Announcement>();
     public ICollection<Attraction> Attractions { get; set; } = new List<Attraction>();
-    public ICollection<Checkin> Checkins { get; set; } = new List<Checkin>();
 }

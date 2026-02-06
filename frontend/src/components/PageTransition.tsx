@@ -24,8 +24,8 @@ const pageVariants = {
 };
 
 const pageTransition = {
-  type: 'tween',
-  ease: [0.4, 0, 0.2, 1], // Material Design easing
+  type: 'tween' as const,
+  ease: [0.4, 0, 0.2, 1] as [number, number, number, number], // Material Design easing
   duration: 0.3,
 };
 

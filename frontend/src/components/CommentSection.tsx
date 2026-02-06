@@ -159,47 +159,6 @@ export function CommentSection({ trailId }: CommentSectionProps) {
     setImagePreviews([]);
   };
 
-  const handleAddComment = async () => {
-    if (!isAuthenticated) {
-      navigate('/login');
-      return;
-    }
-
-    try {
-      setIsUploading(true);
-
-      // Upload images to Cloudinary if any
-      let imageUrls: string[] = [];
-      if (selectedImages.length > 0) {
-        const uploadPromises = selectedImages.map(file =>
-          uploadImage(file, 'comments')
-        );
-        const results = await Promise.all(uploadPromises);
-        imageUrls = results.map(r => r.secure_url);
-      }
-
-      const commentData: CreateCommentData = {
-        ...newComment,
-        imageUrls: imageUrls.length > 0 ? imageUrls : undefined,
-      };
-
-      const created = await commentService.createComment(trailId, commentData);
-      setComments([created, ...comments]);
-      setShowAddDialog(false);
-      resetForm();
-      setSnackbar({ open: true, message: '評論發表成功', severity: 'success' });
-      // Refresh stats
-      const newStats = await commentService.getCommentStats(trailId);
-      setStats(newStats);
-    } catch (error) {
-      const axiosError = error as { response?: { data?: { error?: string } } };
-      const message = axiosError.response?.data?.error || '發表失敗，請稍後再試';
-      setSnackbar({ open: true, message, severity: 'error' });
-    } finally {
-      setIsUploading(false);
-    }
-  };
-
   const handleLike = async (commentId: number) => {
     if (!isAuthenticated) {
       navigate('/login');

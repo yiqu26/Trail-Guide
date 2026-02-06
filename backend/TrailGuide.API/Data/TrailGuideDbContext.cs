@@ -38,12 +38,6 @@ public class TrailGuideDbContext : DbContext
     public DbSet<UserLikeComment> UserLikeComments => Set<UserLikeComment>();
     public DbSet<VisitedTrail> VisitedTrails => Set<VisitedTrail>();
 
-    // 打卡與成就
-    public DbSet<Checkin> Checkins => Set<Checkin>();
-    public DbSet<CheckinImage> CheckinImages => Set<CheckinImage>();
-    public DbSet<Achievement> Achievements => Set<Achievement>();
-    public DbSet<UserAchievement> UserAchievements => Set<UserAchievement>();
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -122,29 +116,5 @@ public class TrailGuideDbContext : DbContext
 
         modelBuilder.Entity<VisitedTrail>()
             .HasIndex(e => new { e.UserId, e.TrailId }).IsUnique();
-
-        // Checkin
-        modelBuilder.Entity<Checkin>(entity =>
-        {
-            entity.Property(e => e.Latitude).HasColumnType("decimal(10,7)");
-            entity.Property(e => e.Longitude).HasColumnType("decimal(10,7)");
-            entity.Property(e => e.DistanceFromTrail).HasColumnType("decimal(10,2)");
-            entity.HasIndex(e => e.UserId);
-            entity.HasIndex(e => e.TrailId);
-            entity.HasIndex(e => e.CheckinTime);
-        });
-
-        // Achievement
-        modelBuilder.Entity<Achievement>(entity =>
-        {
-            entity.HasIndex(e => e.Code).IsUnique();
-            entity.HasIndex(e => e.Category);
-            entity.HasIndex(e => e.IsHidden);
-            entity.Property(e => e.ConditionValue).HasColumnType("jsonb");
-        });
-
-        // UserAchievement
-        modelBuilder.Entity<UserAchievement>()
-            .HasIndex(e => new { e.UserId, e.AchievementId }).IsUnique();
     }
 }

@@ -35,6 +35,4 @@ public class User
     public CountryCode? CountryCode { get; set; }
     public ICollection<Favorite> Favorites { get; set; } = new List<Favorite>();
     public ICollection<Comment> Comments { get; set; } = new List<Comment>();
-    public ICollection<Checkin> Checkins { get; set; } = new List<Checkin>();
-    public ICollection<UserAchievement> UserAchievements { get; set; } = new List<UserAchievement>();
 }

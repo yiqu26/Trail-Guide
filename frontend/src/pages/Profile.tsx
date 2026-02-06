@@ -20,7 +20,6 @@ import EditIcon from '@mui/icons-material/Edit';
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 import LogoutIcon from '@mui/icons-material/Logout';
-import FavoriteIcon from '@mui/icons-material/Favorite';
 import CommentIcon from '@mui/icons-material/Comment';
 import HikingIcon from '@mui/icons-material/Hiking';
 import CameraAltIcon from '@mui/icons-material/CameraAlt';

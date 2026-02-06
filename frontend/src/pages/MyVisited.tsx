@@ -151,7 +151,9 @@ export function MyVisited() {
                       title: item.trailTitle,
                       coverImage: item.trailCoverImage,
                       difficulty: item.trailDifficulty,
-                      location: item.trailLocation,
+                      locationName: item.trailLocation,
+                      chips: [],
+                      isFavorite: false,
                     }}
                   />
                   {item.visitedAt && (

@@ -22,9 +22,6 @@ const Favorites = lazy(() => import('./pages/Favorites').then((m) => ({ default:
 const Profile = lazy(() => import('./pages/Profile').then((m) => ({ default: m.Profile })));
 const Login = lazy(() => import('./pages/Login').then((m) => ({ default: m.Login })));
 const Collection = lazy(() => import('./pages/Collection').then((m) => ({ default: m.Collection })));
-const DesignDemo = lazy(() => import('./pages/DesignDemo').then((m) => ({ default: m.DesignDemo })));
-const MyCheckins = lazy(() => import('./pages/MyCheckins').then((m) => ({ default: m.MyCheckins })));
-const Achievements = lazy(() => import('./pages/Achievements').then((m) => ({ default: m.Achievements })));
 const Settings = lazy(() => import('./pages/Settings').then((m) => ({ default: m.Settings })));
 const MyVisited = lazy(() => import('./pages/MyVisited').then((m) => ({ default: m.MyVisited })));
 const MyComments = lazy(() => import('./pages/MyComments').then((m) => ({ default: m.MyComments })));
@@ -71,7 +68,6 @@ function AnimatedRoutes() {
         <Route path="/trail/:id" element={<PageTransition><TrailDetail /></PageTransition>} />
         <Route path="/nearby" element={<PageTransition><Nearby /></PageTransition>} />
         <Route path="/collection/:id" element={<PageTransition><Collection /></PageTransition>} />
-        <Route path="/design-demo" element={<PageTransition><DesignDemo /></PageTransition>} />
         <Route path="/login" element={<PageTransition><Login /></PageTransition>} />
         <Route
           path="/favorites"
@@ -86,22 +82,6 @@ function AnimatedRoutes() {
           element={
             <ProtectedRoute>
               <PageTransition><Profile /></PageTransition>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/my-checkins"
-          element={
-            <ProtectedRoute>
-              <PageTransition><MyCheckins /></PageTransition>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/achievements"
-          element={
-            <ProtectedRoute>
-              <PageTransition><Achievements /></PageTransition>
             </ProtectedRoute>
           }
         />
