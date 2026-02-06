@@ -129,10 +129,12 @@ Trail-Guide/
 - [x] 已去過標記功能 ✅ 2026-02-06
 - [x] 我的評論頁面 ✅ 2026-02-06
 - [x] 評論圖片上傳 ✅ 2026-02-06
+- [x] 用戶頭像上傳 ✅ 2026-02-06
 
 ## 待完成功能
 
-- [ ] 用戶頭像上傳 (需雲端儲存)
+- [ ] 評論編輯/刪除
+- [ ] 步道分享功能
 - [ ] Facebook/Apple 登入 (申請較複雜，暫緩)
 
 ## 已棄用功能
@@ -243,8 +245,11 @@ Trail-Guide/
    - `CreateCommentDto` 新增 `ImageUrls` 欄位
    - `CommentsController.CreateComment` 儲存圖片到 CommentImages
 
-**下次可繼續：**
-- [ ] 用戶頭像上傳
+8. **用戶頭像上傳功能**
+   - `Profile.tsx` - 點擊頭像選擇圖片
+   - 支援 JPG、PNG、GIF、WebP (上限 5MB)
+   - 上傳到 Cloudinary (avatars 資料夾)
+   - 上傳中顯示 loading 效果
 
 ---
 

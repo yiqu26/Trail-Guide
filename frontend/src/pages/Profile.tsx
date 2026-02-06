@@ -14,6 +14,7 @@ import {
   Fade,
   Grow,
   Skeleton,
+  CircularProgress,
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import CheckIcon from '@mui/icons-material/Check';
@@ -31,6 +32,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { authService } from '../services/auth';
 import { visitedService } from '../services/visited';
+import { uploadImage } from '../services/cloudinary';
 import type { UpdateProfileData } from '../types';
 
 // 統計卡片元件
@@ -200,6 +202,7 @@ export function Profile() {
 
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
   const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: 'success' | 'error' }>({
     open: false,
     message: '',
@@ -264,8 +267,42 @@ export function Profile() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // TODO: 實作頭像上傳
-    setSnackbar({ open: true, message: '頭像上傳功能開發中', severity: 'info' as 'success' });
+    // 驗證格式
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      setSnackbar({ open: true, message: '請選擇 JPG、PNG、GIF 或 WebP 格式的圖片', severity: 'error' });
+      return;
+    }
+
+    // 驗證大小 (5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      setSnackbar({ open: true, message: '圖片大小不能超過 5MB', severity: 'error' });
+      return;
+    }
+
+    try {
+      setIsUploadingAvatar(true);
+
+      // 上傳到 Cloudinary
+      const result = await uploadImage(file, 'avatars');
+
+      // 更新用戶資料
+      await authService.updateProfile({ avatar: result.secure_url });
+
+      // 刷新用戶資料
+      await refreshUser();
+
+      setSnackbar({ open: true, message: '頭像更新成功', severity: 'success' });
+    } catch (error) {
+      console.error('Avatar upload failed:', error);
+      setSnackbar({ open: true, message: '頭像上傳失敗，請稍後再試', severity: 'error' });
+    } finally {
+      setIsUploadingAvatar(false);
+      // 清空 input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
   };
 
   const genderDisplay = (gender: boolean | undefined | null) => {
@@ -349,25 +386,40 @@ export function Profile() {
           <Box sx={{ position: 'relative' }}>
             <Avatar
               src={user?.avatar}
-              onClick={handleAvatarClick}
+              onClick={isUploadingAvatar ? undefined : handleAvatarClick}
               sx={{
                 width: 120,
                 height: 120,
                 border: '4px solid white',
                 boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
-                cursor: 'pointer',
+                cursor: isUploadingAvatar ? 'default' : 'pointer',
                 fontSize: 48,
                 bgcolor: 'primary.main',
                 transition: 'transform 0.3s',
-                '&:hover': {
+                opacity: isUploadingAvatar ? 0.7 : 1,
+                '&:hover': isUploadingAvatar ? {} : {
                   transform: 'scale(1.05)',
                 },
               }}
             >
               {user?.name?.[0] || <HikingIcon sx={{ fontSize: 48 }} />}
             </Avatar>
+            {isUploadingAvatar && (
+              <CircularProgress
+                size={40}
+                sx={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  marginTop: '-20px',
+                  marginLeft: '-20px',
+                  color: 'white',
+                }}
+              />
+            )}
             <IconButton
               onClick={handleAvatarClick}
+              disabled={isUploadingAvatar}
               sx={{
                 position: 'absolute',
                 bottom: 0,
@@ -383,7 +435,7 @@ export function Profile() {
             <input
               ref={fileInputRef}
               type="file"
-              accept="image/*"
+              accept="image/jpeg,image/png,image/gif,image/webp"
               hidden
               onChange={handleAvatarChange}
             />
