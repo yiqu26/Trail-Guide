@@ -85,12 +85,33 @@ export function CommentSection({ trailId }: CommentSectionProps) {
     const files = event.target.files;
     if (!files) return;
 
-    const newFiles = Array.from(files).slice(0, 5 - selectedImages.length); // Max 5 images
-    setSelectedImages([...selectedImages, ...newFiles]);
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    const maxSize = 10 * 1024 * 1024; // 10MB
 
-    // Create preview URLs
-    const newPreviews = newFiles.map(file => URL.createObjectURL(file));
-    setImagePreviews([...imagePreviews, ...newPreviews]);
+    const validFiles: File[] = [];
+    const errors: string[] = [];
+
+    Array.from(files).slice(0, 5 - selectedImages.length).forEach(file => {
+      if (!allowedTypes.includes(file.type)) {
+        errors.push(`${file.name}: 不支援的格式 (請使用 JPG、PNG、GIF 或 WebP)`);
+        return;
+      }
+      if (file.size > maxSize) {
+        errors.push(`${file.name}: 檔案過大 (上限 10MB)`);
+        return;
+      }
+      validFiles.push(file);
+    });
+
+    if (errors.length > 0) {
+      setSnackbar({ open: true, message: errors[0], severity: 'error' });
+    }
+
+    if (validFiles.length > 0) {
+      setSelectedImages([...selectedImages, ...validFiles]);
+      const newPreviews = validFiles.map(file => URL.createObjectURL(file));
+      setImagePreviews([...imagePreviews, ...newPreviews]);
+    }
 
     // Reset input
     if (fileInputRef.current) {
@@ -434,7 +455,7 @@ export function CommentSection({ trailId }: CommentSectionProps) {
                   <input
                     type="file"
                     ref={fileInputRef}
-                    accept="image/*"
+                    accept="image/jpeg,image/png,image/gif,image/webp"
                     multiple
                     onChange={handleImageSelect}
                     style={{ display: 'none' }}
