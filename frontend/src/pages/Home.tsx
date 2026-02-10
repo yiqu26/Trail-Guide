@@ -13,7 +13,6 @@ import {
   useTheme,
 } from '@mui/material';
 import { alpha } from '@mui/material/styles';
-import { motion } from 'motion/react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Pagination } from 'swiper/modules';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
@@ -27,21 +26,6 @@ import { PullToRefresh } from '../components/PullToRefresh';
 import type { HomeData } from '../types';
 
 import 'swiper/swiper-bundle.css';
-
-// 動畫配置
-const fadeInUp = {
-  initial: { opacity: 0, y: 30 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.5, ease: 'easeOut' },
-};
-
-const staggerContainer = {
-  animate: {
-    transition: {
-      staggerChildren: 0.1,
-    },
-  },
-};
 
 // 自定義 SVG 圖標組件
 const CollectionIcons = {
@@ -290,11 +274,6 @@ export function Home() {
 
       {/* Collections - Icon with Background Style */}
       {homeData?.collections && homeData.collections.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-        >
           <Box
             sx={{
               py: { xs: 3, md: 4 },
@@ -305,10 +284,6 @@ export function Home() {
             }}
           >
             <Box
-              component={motion.div}
-              variants={staggerContainer}
-              initial="initial"
-              animate="animate"
               sx={{
                 maxWidth: 1600,
                 mx: 'auto',
@@ -322,18 +297,13 @@ export function Home() {
                 scrollbarWidth: 'none',
               }}
             >
-              {homeData.collections.map((collection, index) => {
+              {homeData.collections.map((collection) => {
                 const style = getCollectionStyle(collection.name);
                 return (
-                  <motion.div
+                  <Box
                     key={collection.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4, delay: index * 0.08 }}
-                    whileHover={{ y: -6, scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
                     onClick={() => navigate(`/collection/${collection.id}`)}
-                    style={{ cursor: 'pointer' }}
+                    sx={{ cursor: 'pointer' }}
                   >
                     <Box
                       sx={{
@@ -389,27 +359,16 @@ export function Home() {
                         {collection.name}
                       </Typography>
                     </Box>
-                  </motion.div>
+                  </Box>
                 );
               })}
             </Box>
           </Box>
-        </motion.div>
       )}
 
       {/* Popular Trails - Bento Grid */}
       {homeData?.popularTrails && homeData.popularTrails.length > 0 && (
-        <motion.div
-          initial="initial"
-          whileInView="animate"
-          viewport={{ once: true, margin: '-50px' }}
-          variants={{
-            initial: { opacity: 0 },
-            animate: { opacity: 1, transition: { staggerChildren: 0.1 } },
-          }}
-        >
           <Box sx={{ px: { xs: 2, sm: 3, md: 4, lg: 6 }, py: 3, maxWidth: 1600, mx: 'auto' }}>
-            <motion.div variants={fadeInUp}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2.5 }}>
                 <Typography variant="h6" fontWeight="bold">
                   熱門步道
@@ -418,7 +377,6 @@ export function Home() {
                   <ChevronRightIcon />
                 </IconButton>
               </Box>
-            </motion.div>
             {/* Bento Grid Layout - 響應式 */}
             <Box
               sx={{
@@ -438,62 +396,40 @@ export function Home() {
             >
               {/* 大卡片 - 佔據 2x2 */}
               {homeData.popularTrails[0] && (
-                <motion.div
-                  variants={fadeInUp}
-                  style={{ gridColumn: 'span 2', gridRow: 'span 2' }}
-                >
+                <Box sx={{ gridColumn: 'span 2', gridRow: 'span 2' }}>
                   <BentoTrailCard trail={homeData.popularTrails[0]} isLarge />
-                </motion.div>
+                </Box>
               )}
               {/* 小卡片 1-4 (所有尺寸都顯示) */}
               {homeData.popularTrails[1] && (
-                <motion.div variants={fadeInUp}>
                   <BentoTrailCard trail={homeData.popularTrails[1]} />
-                </motion.div>
               )}
               {homeData.popularTrails[2] && (
-                <motion.div variants={fadeInUp}>
                   <BentoTrailCard trail={homeData.popularTrails[2]} />
-                </motion.div>
               )}
               {homeData.popularTrails[3] && (
-                <motion.div variants={fadeInUp}>
                   <BentoTrailCard trail={homeData.popularTrails[3]} />
-                </motion.div>
               )}
               {homeData.popularTrails[4] && (
-                <motion.div variants={fadeInUp}>
                   <BentoTrailCard trail={homeData.popularTrails[4]} />
-                </motion.div>
               )}
               {/* 小卡片 5-6 (僅桌面版顯示) */}
               {homeData.popularTrails[5] && (
                 <Box sx={{ display: { xs: 'none', lg: 'block' }, height: '100%' }}>
-                  <motion.div variants={fadeInUp} style={{ height: '100%' }}>
                     <BentoTrailCard trail={homeData.popularTrails[5]} />
-                  </motion.div>
                 </Box>
               )}
               {homeData.popularTrails[6] && (
                 <Box sx={{ display: { xs: 'none', lg: 'block' }, height: '100%' }}>
-                  <motion.div variants={fadeInUp} style={{ height: '100%' }}>
                     <BentoTrailCard trail={homeData.popularTrails[6]} />
-                  </motion.div>
                 </Box>
               )}
             </Box>
           </Box>
-        </motion.div>
       )}
 
       {/* Announcements */}
       {homeData?.announcements && homeData.announcements.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-50px' }}
-          transition={{ duration: 0.5 }}
-        >
           <Box sx={{ px: { xs: 2, sm: 3, md: 4, lg: 6 }, maxWidth: 1600, mx: 'auto', width: '100%' }}>
             <Paper
               elevation={0}
@@ -514,15 +450,8 @@ export function Home() {
               </Box>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
                 {homeData.announcements.map((announcement, index) => (
-                  <motion.div
-                    key={announcement.id}
-                    initial={{ opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.4, delay: index * 0.1 }}
-                    whileHover={announcement.link ? { x: 4, scale: 1.01 } : {}}
-                  >
                     <Card
+                      key={announcement.id}
                       elevation={1}
                       sx={{
                         cursor: announcement.link ? 'pointer' : 'default',
@@ -562,12 +491,10 @@ export function Home() {
                         </Box>
                       </CardContent>
                     </Card>
-                  </motion.div>
                 ))}
               </Box>
             </Paper>
           </Box>
-        </motion.div>
       )}
       </Box>
     </PullToRefresh>

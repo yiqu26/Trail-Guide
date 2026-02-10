@@ -31,7 +31,7 @@ const difficultyColors = ['', '#4caf50', '#8bc34a', '#ff9800', '#f44336', '#9c27
 export function TrailCard({ trail, onFavoriteToggle }: TrailCardProps) {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
-  const [isFavorite, setIsFavorite] = useState(trail.isFavorite);
+  const [isFavorite, setIsFavorite] = useState(isAuthenticated && trail.isFavorite);
   const [isLoading, setIsLoading] = useState(false);
   const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: 'success' | 'error' | 'info' }>({
     open: false,
