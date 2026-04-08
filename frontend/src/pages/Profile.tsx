@@ -61,7 +61,9 @@ function StatCard({
           borderRadius: 3,
           bgcolor: 'background.paper',
           backdropFilter: 'blur(10px)',
-          boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+          boxShadow: '0 2px 12px rgba(27,67,50,0.08)',
+        border: '1px solid',
+        borderColor: 'divider',
           cursor: onClick ? 'pointer' : 'default',
           transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
           '&:hover': onClick ? {
@@ -329,53 +331,55 @@ export function Profile() {
 
   return (
     <Box sx={{ pb: 10, minHeight: '100vh', bgcolor: 'background.default' }}>
-      {/* 頂部漸層背景 */}
+      {/* 頂部背景 */}
       <Box
         sx={{
           position: 'relative',
-          height: 200,
-          background: 'linear-gradient(135deg, #2E7D32 0%, #66BB6A 50%, #81C784 100%)',
+          height: 190,
+          background: (theme) => theme.palette.mode === 'dark'
+            ? 'linear-gradient(160deg, #0D2818 0%, #1B4332 60%, #0A1410 100%)'
+            : 'linear-gradient(160deg, #1B4332 0%, #2D6A4F 60%, #52796F 100%)',
           overflow: 'hidden',
         }}
       >
-        {/* 裝飾圓形 */}
+        {/* Topographic decorative lines */}
         <Box
           sx={{
-            position: 'absolute',
-            width: 200,
-            height: 200,
-            borderRadius: '50%',
-            bgcolor: 'rgba(255,255,255,0.1)',
-            top: -50,
-            right: -30,
+            position: 'absolute', inset: 0,
+            backgroundImage: `repeating-linear-gradient(
+              100deg,
+              transparent,
+              transparent 40px,
+              rgba(255,255,255,0.04) 40px,
+              rgba(255,255,255,0.04) 41px
+            )`,
           }}
         />
         <Box
           sx={{
             position: 'absolute',
-            width: 120,
-            height: 120,
-            borderRadius: '50%',
-            bgcolor: 'rgba(255,255,255,0.08)',
-            bottom: 20,
-            left: -40,
+            width: 220, height: 220, borderRadius: '50%',
+            border: '1px solid rgba(255,255,255,0.06)',
+            top: -80, right: -60,
           }}
         />
-
-        {/* 頁面標題 */}
+        <Box
+          sx={{
+            position: 'absolute',
+            width: 140, height: 140, borderRadius: '50%',
+            border: '1px solid rgba(255,255,255,0.05)',
+            bottom: -40, left: -40,
+          }}
+        />
         <Fade in timeout={600}>
-          <Typography
-            variant="h5"
-            fontWeight="bold"
-            sx={{
-              color: 'white',
-              position: 'absolute',
-              top: 20,
-              left: 20,
-            }}
-          >
-            個人檔案
-          </Typography>
+          <Box sx={{ position: 'absolute', top: 20, left: 20 }}>
+            <Typography sx={{ fontSize: '0.6rem', letterSpacing: '0.25em', color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', mb: 0.5 }}>
+              Trail Guide
+            </Typography>
+            <Typography variant="h5" sx={{ color: 'white', fontFamily: '"Noto Serif TC", serif' }}>
+              個人檔案
+            </Typography>
+          </Box>
         </Fade>
       </Box>
 
@@ -572,25 +576,25 @@ export function Profile() {
           }}
         >
           <MenuItemRow
-            icon={<CheckCircleIcon />}
+            icon={<CheckCircleIcon sx={{ color: 'success.main' }} />}
             label="已去過的步道"
             onClick={() => navigate('/my-visited')}
           />
           <Box sx={{ borderTop: '1px solid', borderColor: 'divider', mx: 2 }} />
           <MenuItemRow
-            icon={<BookmarkIcon />}
+            icon={<BookmarkIcon sx={{ color: 'warning.main' }} />}
             label="口袋名單"
             onClick={() => navigate('/favorites')}
           />
           <Box sx={{ borderTop: '1px solid', borderColor: 'divider', mx: 2 }} />
           <MenuItemRow
-            icon={<CommentIcon />}
+            icon={<CommentIcon sx={{ color: 'primary.light' }} />}
             label="我的評論"
             onClick={() => navigate('/my-comments')}
           />
           <Box sx={{ borderTop: '1px solid', borderColor: 'divider', mx: 2 }} />
           <MenuItemRow
-            icon={<SettingsIcon />}
+            icon={<SettingsIcon sx={{ color: 'text.secondary' }} />}
             label="設定"
             onClick={() => navigate('/settings')}
           />

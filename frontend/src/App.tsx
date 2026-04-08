@@ -116,13 +116,34 @@ function AnimatedRoutes() {
 
 function AppRoutes() {
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
-      <LoadingProgress />
-      <Suspense fallback={<LoadingFallback />}>
-        <AnimatedRoutes />
-      </Suspense>
-      <ScrollToTop />
-      <BottomNav />
+    <Box
+      sx={{
+        minHeight: '100vh',
+        bgcolor: { xs: 'background.default', md: '#1a2f22' },
+        display: { md: 'flex' },
+        justifyContent: { md: 'center' },
+      }}
+    >
+      {/* Phone shell on desktop */}
+      <Box
+        sx={{
+          width: '100%',
+          maxWidth: { md: 430 },
+          minHeight: '100vh',
+          bgcolor: 'background.default',
+          position: 'relative',
+          boxShadow: {
+            md: '0 0 0 1px rgba(255,255,255,0.06), 0 8px 60px rgba(0,0,0,0.6)',
+          },
+        }}
+      >
+        <LoadingProgress />
+        <Suspense fallback={<LoadingFallback />}>
+          <AnimatedRoutes />
+        </Suspense>
+        <ScrollToTop />
+        <BottomNav />
+      </Box>
     </Box>
   );
 }

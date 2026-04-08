@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react';
 import {
   Box,
   Typography,
@@ -15,8 +14,8 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import CommentIcon from '@mui/icons-material/Comment';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import { useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { commentService } from '../services/comments';
-import type { MyComment } from '../types';
 
 // 空狀態元件
 function EmptyState() {
@@ -78,52 +77,24 @@ function LoadingSkeleton() {
 
 export function MyComments() {
   const navigate = useNavigate();
-  const [comments, setComments] = useState<MyComment[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    loadComments();
-  }, []);
-
-  const loadComments = async () => {
-    try {
-      const data = await commentService.getMyComments();
-      setComments(data);
-    } catch (error) {
-      console.error('Failed to load comments:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const { data: comments = [], isLoading } = useQuery({
+    queryKey: ['myComments'],
+    queryFn: commentService.getMyComments,
+  });
 
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', pb: 10 }}>
       {/* Header */}
-      <Box
-        sx={{
-          bgcolor: 'background.paper',
-          pt: 2,
-          pb: 2,
-          px: 2,
-          display: 'flex',
-          alignItems: 'center',
-          gap: 1,
-          boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-          position: 'sticky',
-          top: 0,
-          zIndex: 10,
-        }}
-      >
-        <IconButton onClick={() => navigate(-1)}>
-          <ArrowBackIcon />
-        </IconButton>
-        <CommentIcon sx={{ color: 'primary.main' }} />
-        <Typography variant="h6" fontWeight="bold">
-          我的評論
-        </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ ml: 'auto' }}>
-          {comments.length} 則
-        </Typography>
+      <Box sx={{ bgcolor: 'background.paper', borderBottom: '1px solid', borderColor: 'divider', position: 'sticky', top: 0, zIndex: 10 }}>
+        <Box sx={{ height: 3, bgcolor: 'primary.light' }} />
+        <Box sx={{ px: 2, pt: 2, pb: 1.5, display: 'flex', alignItems: 'center', gap: 1.5 }}>
+          <IconButton onClick={() => navigate(-1)} size="small" edge="start">
+            <ArrowBackIcon />
+          </IconButton>
+          <CommentIcon sx={{ color: 'primary.light', fontSize: 20 }} />
+          <Typography variant="h6" sx={{ flex: 1 }}>我的評論</Typography>
+          <Typography variant="caption" color="text.secondary">{comments.length} 則</Typography>
+        </Box>
       </Box>
 
       {/* Content */}

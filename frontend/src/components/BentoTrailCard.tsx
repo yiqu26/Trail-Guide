@@ -144,7 +144,9 @@ export function BentoTrailCard({ trail, isLarge = false, onFavoriteToggle }: Ben
             left: 0,
             right: 0,
             bottom: 0,
-            background: 'linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0) 30%, rgba(0,0,0,0.7) 100%)',
+            background: isLarge
+              ? 'linear-gradient(180deg, rgba(0,0,0,0.08) 0%, rgba(0,0,0,0) 25%, rgba(10,20,16,0.78) 100%)'
+              : 'linear-gradient(180deg, rgba(0,0,0,0.06) 0%, rgba(0,0,0,0) 30%, rgba(10,20,16,0.72) 100%)',
             transition: 'background 0.3s ease',
           }}
         />
@@ -207,17 +209,17 @@ export function BentoTrailCard({ trail, isLarge = false, onFavoriteToggle }: Ben
           )}
 
           <Typography
-            variant={isLarge ? 'h6' : 'subtitle2'}
-            fontWeight="bold"
+            variant={isLarge ? 'h5' : 'subtitle2'}
             sx={{
-              textShadow: '0 2px 4px rgba(0,0,0,0.5)',
+              fontFamily: isLarge ? '"Noto Serif TC", serif' : 'inherit',
+              fontWeight: isLarge ? 600 : 700,
+              textShadow: '0 2px 8px rgba(0,0,0,0.5)',
               mb: isLarge ? 1 : 0.5,
-              lineHeight: 1.3,
+              lineHeight: 1.25,
               display: '-webkit-box',
               WebkitLineClamp: isLarge ? 2 : 1,
               WebkitBoxOrient: 'vertical',
               overflow: 'hidden',
-              fontSize: isLarge ? '1.25rem' : undefined,
             }}
           >
             {trail.title}

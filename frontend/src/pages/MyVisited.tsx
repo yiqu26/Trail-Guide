@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react';
 import {
   Box,
   Typography,
@@ -11,9 +10,9 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import TerrainIcon from '@mui/icons-material/Terrain';
 import { useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { visitedService } from '../services/visited';
 import { TrailCard } from '../components/TrailCard';
-import type { VisitedTrail } from '../types';
 
 // 空狀態元件
 function EmptyState() {
@@ -75,52 +74,24 @@ function LoadingSkeleton() {
 
 export function MyVisited() {
   const navigate = useNavigate();
-  const [visited, setVisited] = useState<VisitedTrail[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    loadVisited();
-  }, []);
-
-  const loadVisited = async () => {
-    try {
-      const data = await visitedService.getMyVisited();
-      setVisited(data);
-    } catch (error) {
-      console.error('Failed to load visited trails:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const { data: visited = [], isLoading } = useQuery({
+    queryKey: ['myVisited'],
+    queryFn: visitedService.getMyVisited,
+  });
 
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', pb: 10 }}>
       {/* Header */}
-      <Box
-        sx={{
-          bgcolor: 'background.paper',
-          pt: 2,
-          pb: 2,
-          px: 2,
-          display: 'flex',
-          alignItems: 'center',
-          gap: 1,
-          boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-          position: 'sticky',
-          top: 0,
-          zIndex: 10,
-        }}
-      >
-        <IconButton onClick={() => navigate(-1)}>
-          <ArrowBackIcon />
-        </IconButton>
-        <CheckCircleIcon sx={{ color: 'primary.main' }} />
-        <Typography variant="h6" fontWeight="bold">
-          已去過的步道
-        </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ ml: 'auto' }}>
-          {visited.length} 條
-        </Typography>
+      <Box sx={{ bgcolor: 'background.paper', borderBottom: '1px solid', borderColor: 'divider', position: 'sticky', top: 0, zIndex: 10 }}>
+        <Box sx={{ height: 3, bgcolor: 'success.main' }} />
+        <Box sx={{ px: 2, pt: 2, pb: 1.5, display: 'flex', alignItems: 'center', gap: 1.5 }}>
+          <IconButton onClick={() => navigate(-1)} size="small" edge="start">
+            <ArrowBackIcon />
+          </IconButton>
+          <CheckCircleIcon sx={{ color: 'success.main', fontSize: 20 }} />
+          <Typography variant="h6" sx={{ flex: 1 }}>已去過的步道</Typography>
+          <Typography variant="caption" color="text.secondary">{visited.length} 條</Typography>
+        </Box>
       </Box>
 
       {/* Content */}

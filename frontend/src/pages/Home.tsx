@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import {
   Box,
   Typography,
@@ -20,10 +19,10 @@ import CampaignIcon from '@mui/icons-material/Campaign';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import { useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { homeService } from '../services/home';
 import { BentoTrailCard } from '../components/BentoTrailCard';
 import { PullToRefresh } from '../components/PullToRefresh';
-import type { HomeData } from '../types';
 
 import 'swiper/swiper-bundle.css';
 
@@ -154,45 +153,35 @@ const getCollectionStyle = (name: string): { icon: React.ReactNode; color: strin
 };
 
 export function Home() {
-  const [homeData, setHomeData] = useState<HomeData | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   const theme = useTheme();
-
-  const fetchData = async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const data = await homeService.getHomeData();
-      setHomeData(data);
-    } catch (err) {
-      console.error('Failed to fetch home data:', err);
-      setError('無法載入資料，伺服器可能正在啟動中');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
+  const { data: homeData, isLoading, isError, refetch } = useQuery({
+    queryKey: ['home'],
+    queryFn: homeService.getHomeData,
+  });
 
   if (isLoading) {
     return (
-      <Box sx={{ p: 2 }}>
-        <Skeleton variant="rectangular" height={180} sx={{ borderRadius: 2, mb: 2 }} />
-        <Skeleton variant="text" width="40%" />
-        <Box sx={{ display: 'flex', gap: 2, mt: 1, overflow: 'hidden' }}>
-          {[1, 2, 3].map((i) => (
-            <Skeleton key={i} variant="rectangular" width={100} height={100} sx={{ borderRadius: 2 }} />
-          ))}
+      <Box>
+        <Box sx={{ px: 3, pt: 3, pb: 2.5, borderBottom: '1px solid', borderColor: 'divider' }}>
+          <Skeleton variant="text" width={80} height={14} sx={{ mb: 1 }} />
+          <Skeleton variant="text" width="55%" height={40} />
+          <Skeleton variant="text" width="35%" height={18} sx={{ mt: 0.5 }} />
+        </Box>
+        <Skeleton variant="rectangular" height={240} />
+        <Box sx={{ p: 2 }}>
+          <Skeleton variant="text" width="30%" height={28} sx={{ mb: 2 }} />
+          <Box sx={{ display: 'flex', gap: 2, overflow: 'hidden' }}>
+            {[1, 2, 3].map((i) => (
+              <Skeleton key={i} variant="rectangular" width={90} height={90} sx={{ borderRadius: 2, flexShrink: 0 }} />
+            ))}
+          </Box>
         </Box>
       </Box>
     );
   }
 
-  if (error) {
+  if (isError) {
     return (
       <Box
         sx={{
@@ -206,7 +195,7 @@ export function Home() {
         }}
       >
         <Alert severity="warning" sx={{ mb: 3, maxWidth: 400 }}>
-          {error}
+          無法載入資料，伺服器可能正在啟動中
         </Alert>
         <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
           首次載入可能需要 30 秒左右，請稍候再試
@@ -214,7 +203,7 @@ export function Home() {
         <Button
           variant="contained"
           startIcon={<RefreshIcon />}
-          onClick={fetchData}
+          onClick={() => refetch()}
           sx={{ borderRadius: 2 }}
         >
           重新載入
@@ -224,12 +213,47 @@ export function Home() {
   }
 
   const handleRefresh = async () => {
-    await fetchData();
+    await refetch();
   };
 
   return (
     <PullToRefresh onRefresh={handleRefresh}>
       <Box sx={{ pb: 10 }}>
+
+        {/* Masthead */}
+        <Box
+          sx={{
+            px: 3,
+            pt: 3,
+            pb: 2.5,
+            bgcolor: 'background.paper',
+            borderBottom: '1px solid',
+            borderColor: 'divider',
+          }}
+        >
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 0.75 }}>
+            <Box sx={{ height: '1px', width: 24, bgcolor: 'primary.main', opacity: 0.4 }} />
+            <Typography
+              sx={{
+                fontSize: '0.6rem',
+                fontWeight: 700,
+                letterSpacing: '0.3em',
+                color: 'primary.main',
+                textTransform: 'uppercase',
+              }}
+            >
+              Trail Guide
+            </Typography>
+            <Box sx={{ height: '1px', flex: 1, bgcolor: 'divider' }} />
+          </Box>
+          <Typography variant="h4" sx={{ lineHeight: 1.2, mb: 0.5 }}>
+            探索台灣山林
+          </Typography>
+          <Typography variant="caption" color="text.secondary" sx={{ letterSpacing: '0.06em' }}>
+            台灣步道資訊平台
+          </Typography>
+        </Box>
+
         {/* Banner Swiper */}
       {homeData?.banners && homeData.banners.length > 0 && (
         <Swiper
@@ -237,7 +261,7 @@ export function Home() {
           autoplay={{ delay: 4000 }}
           pagination={{ clickable: true }}
           loop
-          style={{ height: 200 }}
+          style={{ height: 240 }}
         >
           {homeData.banners.map((banner) => (
             <SwiperSlide key={banner.id}>
@@ -258,12 +282,17 @@ export function Home() {
                       bottom: 0,
                       left: 0,
                       right: 0,
-                      background: 'linear-gradient(transparent, rgba(0,0,0,0.7))',
-                      p: 2,
+                      background: 'linear-gradient(transparent, rgba(10,20,16,0.85))',
+                      p: 2.5,
                       color: 'white',
                     }}
                   >
-                    <Typography variant="h6">{banner.title}</Typography>
+                    <Typography
+                      variant="h5"
+                      sx={{ fontFamily: '"Noto Serif TC", serif', fontWeight: 600, textShadow: '0 2px 8px rgba(0,0,0,0.4)' }}
+                    >
+                      {banner.title}
+                    </Typography>
                   </Box>
                 )}
               </Box>
@@ -277,7 +306,7 @@ export function Home() {
           <Box
             sx={{
               py: { xs: 3, md: 4 },
-              px: { xs: 2, sm: 3, md: 4, lg: 6 },
+              px: { xs: 2, sm: 3, md: 2 },
               bgcolor: 'background.default',
               borderBottom: 1,
               borderColor: 'divider',
@@ -368,29 +397,30 @@ export function Home() {
 
       {/* Popular Trails - Bento Grid */}
       {homeData?.popularTrails && homeData.popularTrails.length > 0 && (
-          <Box sx={{ px: { xs: 2, sm: 3, md: 4, lg: 6 }, py: 3, maxWidth: 1600, mx: 'auto' }}>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2.5 }}>
-                <Typography variant="h6" fontWeight="bold">
+          <Box sx={{ px: { xs: 2, sm: 3, md: 2 }, py: 3, maxWidth: 1600, mx: 'auto' }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2.5 }}>
+                <Typography variant="h5">
                   熱門步道
                 </Typography>
+                <Box sx={{ flex: 1, height: '1px', bgcolor: 'divider' }} />
                 <IconButton size="small" onClick={() => navigate('/search')}>
                   <ChevronRightIcon />
                 </IconButton>
               </Box>
-            {/* Bento Grid Layout - 響應式 */}
+            {/* Bento Grid Layout - 手機版佈局 (container 固定 430px，sm 用平板版) */}
             <Box
               sx={{
                 display: 'grid',
-                gap: { xs: 1.5, sm: 2, md: 2.5 },
+                gap: 1.5,
                 gridTemplateColumns: {
-                  xs: 'repeat(2, 1fr)',      // 手機: 2 欄
-                  sm: 'repeat(4, 1fr)',      // 平板: 4 欄
-                  lg: 'repeat(6, 1fr)',      // 桌面: 6 欄
+                  xs: 'repeat(2, 1fr)',   // 手機: 2 欄
+                  sm: 'repeat(4, 1fr)',   // 平板 (600-899px): 4 欄
+                  md: 'repeat(2, 1fr)',   // 桌面手機殼: 回到 2 欄
                 },
                 gridTemplateRows: {
-                  xs: 'repeat(3, 150px)',    // 手機: 3 排
-                  sm: 'repeat(2, 180px)',    // 平板: 2 排
-                  lg: 'repeat(2, 200px)',    // 桌面: 2 排，更高
+                  xs: 'repeat(3, 150px)',
+                  sm: 'repeat(2, 180px)',
+                  md: 'repeat(3, 150px)',
                 },
               }}
             >
@@ -400,7 +430,6 @@ export function Home() {
                   <BentoTrailCard trail={homeData.popularTrails[0]} isLarge />
                 </Box>
               )}
-              {/* 小卡片 1-4 (所有尺寸都顯示) */}
               {homeData.popularTrails[1] && (
                   <BentoTrailCard trail={homeData.popularTrails[1]} />
               )}
@@ -413,24 +442,13 @@ export function Home() {
               {homeData.popularTrails[4] && (
                   <BentoTrailCard trail={homeData.popularTrails[4]} />
               )}
-              {/* 小卡片 5-6 (僅桌面版顯示) */}
-              {homeData.popularTrails[5] && (
-                <Box sx={{ display: { xs: 'none', lg: 'block' }, height: '100%' }}>
-                    <BentoTrailCard trail={homeData.popularTrails[5]} />
-                </Box>
-              )}
-              {homeData.popularTrails[6] && (
-                <Box sx={{ display: { xs: 'none', lg: 'block' }, height: '100%' }}>
-                    <BentoTrailCard trail={homeData.popularTrails[6]} />
-                </Box>
-              )}
             </Box>
           </Box>
       )}
 
       {/* Announcements */}
       {homeData?.announcements && homeData.announcements.length > 0 && (
-          <Box sx={{ px: { xs: 2, sm: 3, md: 4, lg: 6 }, maxWidth: 1600, mx: 'auto', width: '100%' }}>
+          <Box sx={{ px: { xs: 2, sm: 3, md: 2 }, maxWidth: 1600, mx: 'auto', width: '100%' }}>
             <Paper
               elevation={0}
               sx={{
@@ -442,11 +460,10 @@ export function Home() {
                 borderColor: 'divider',
               }}
             >
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-                <CampaignIcon sx={{ color: 'primary.main' }} />
-                <Typography variant="h6" fontWeight="bold">
-                  最新消息
-                </Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2.5 }}>
+                <CampaignIcon sx={{ color: 'secondary.main', fontSize: 20 }} />
+                <Typography variant="h6">最新消息</Typography>
+                <Box sx={{ flex: 1, height: '1px', bgcolor: 'divider' }} />
               </Box>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
                 {homeData.announcements.map((announcement, index) => (

@@ -5,8 +5,8 @@ import {
   LightMode as LightModeIcon,
   Brightness6 as Brightness6Icon,
   Info as InfoIcon,
-  Description as DescriptionIcon,
   Security as SecurityIcon,
+  Description as DescriptionIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useThemeMode } from '../contexts/ThemeContext';
@@ -16,14 +16,9 @@ export function Settings() {
   const { mode, setMode, isDark } = useThemeMode();
 
   const handleThemeChange = () => {
-    // 循环切换：light -> dark -> system -> light
-    if (mode === 'light') {
-      setMode('dark');
-    } else if (mode === 'dark') {
-      setMode('system');
-    } else {
-      setMode('light');
-    }
+    if (mode === 'light') setMode('dark');
+    else if (mode === 'dark') setMode('system');
+    else setMode('light');
   };
 
   const getThemeIcon = () => {
@@ -40,74 +35,58 @@ export function Settings() {
 
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', pb: 10 }}>
-      {/* 顶部栏 */}
-      <Box
-        sx={{
-          bgcolor: 'background.paper',
-          px: 2,
-          py: 1.5,
-          display: 'flex',
-          alignItems: 'center',
-          gap: 1,
-          borderBottom: 1,
-          borderColor: 'divider',
-        }}
-      >
-        <IconButton onClick={() => navigate(-1)} edge="start">
-          <ArrowBackIcon />
-        </IconButton>
-        <Typography variant="h6" fontWeight={600}>
-          設定
-        </Typography>
+      {/* Header */}
+      <Box sx={{ bgcolor: 'background.paper', borderBottom: '1px solid', borderColor: 'divider' }}>
+        <Box sx={{ height: 3, bgcolor: 'secondary.main' }} />
+        <Box sx={{ px: 2, pt: 2, pb: 1.5, display: 'flex', alignItems: 'center', gap: 1.5 }}>
+          <IconButton onClick={() => navigate(-1)} size="small" edge="start">
+            <ArrowBackIcon />
+          </IconButton>
+          <Typography variant="h6" sx={{ flex: 1 }}>設定</Typography>
+        </Box>
       </Box>
 
       <Box sx={{ p: 2 }}>
-        {/* 显示设置 */}
+        {/* 顯示設定 */}
         <Typography
-          variant="subtitle2"
-          color="text.secondary"
-          sx={{ px: 2, py: 1, fontWeight: 600 }}
+          variant="overline"
+          sx={{ px: 1, display: 'block', mb: 1, color: 'text.secondary' }}
         >
           顯示
         </Typography>
-        <Paper sx={{ borderRadius: 3, overflow: 'hidden' }}>
+        <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', overflow: 'hidden' }}>
           <List disablePadding>
-            <ListItem
-              component="div"
-              onClick={handleThemeChange}
-              sx={{ cursor: 'pointer' }}
-            >
-              <ListItemIcon>{getThemeIcon()}</ListItemIcon>
+            <ListItem component="div" onClick={handleThemeChange} sx={{ cursor: 'pointer' }}>
+              <ListItemIcon sx={{ color: 'primary.main', minWidth: 40 }}>
+                {getThemeIcon()}
+              </ListItemIcon>
               <ListItemText
                 primary="外觀模式"
                 secondary={getThemeText()}
+                primaryTypographyProps={{ fontWeight: 500 }}
               />
-              <Switch
-                checked={isDark}
-                onChange={handleThemeChange}
-                color="primary"
-              />
+              <Switch checked={isDark} onChange={handleThemeChange} color="primary" size="small" />
             </ListItem>
           </List>
         </Paper>
 
-        {/* 关于 */}
+        {/* 關於 */}
         <Typography
-          variant="subtitle2"
-          color="text.secondary"
-          sx={{ px: 2, py: 1, mt: 3, fontWeight: 600 }}
+          variant="overline"
+          sx={{ px: 1, display: 'block', mt: 3, mb: 1, color: 'text.secondary' }}
         >
           關於
         </Typography>
-        <Paper sx={{ borderRadius: 3, overflow: 'hidden' }}>
+        <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', overflow: 'hidden' }}>
           <List disablePadding>
             <ListItem>
-              <ListItemIcon>
-                <InfoIcon />
+              <ListItemIcon sx={{ color: 'text.secondary', minWidth: 40 }}>
+                <InfoIcon fontSize="small" />
               </ListItemIcon>
               <ListItemText
                 primary="版本"
                 secondary="1.0.0"
+                primaryTypographyProps={{ fontWeight: 500 }}
               />
             </ListItem>
             <Divider component="li" />
@@ -116,10 +95,10 @@ export function Settings() {
               href="/privacy"
               sx={{ cursor: 'pointer', color: 'inherit', textDecoration: 'none' }}
             >
-              <ListItemIcon>
-                <SecurityIcon />
+              <ListItemIcon sx={{ color: 'text.secondary', minWidth: 40 }}>
+                <SecurityIcon fontSize="small" />
               </ListItemIcon>
-              <ListItemText primary="隱私政策" />
+              <ListItemText primary="隱私政策" primaryTypographyProps={{ fontWeight: 500 }} />
             </ListItem>
             <Divider component="li" />
             <ListItem
@@ -127,21 +106,28 @@ export function Settings() {
               href="/terms"
               sx={{ cursor: 'pointer', color: 'inherit', textDecoration: 'none' }}
             >
-              <ListItemIcon>
-                <DescriptionIcon />
+              <ListItemIcon sx={{ color: 'text.secondary', minWidth: 40 }}>
+                <DescriptionIcon fontSize="small" />
               </ListItemIcon>
-              <ListItemText primary="服務條款" />
+              <ListItemText primary="服務條款" primaryTypographyProps={{ fontWeight: 500 }} />
             </ListItem>
           </List>
         </Paper>
 
-        {/* 底部信息 */}
-        <Box sx={{ textAlign: 'center', mt: 4, color: 'text.secondary' }}>
-          <Typography variant="body2">
-            Trail Guide 步道導覽
+        {/* 署名 */}
+        <Box sx={{ textAlign: 'center', mt: 6, mb: 2 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, justifyContent: 'center', mb: 1.5 }}>
+            <Box sx={{ height: '1px', width: 32, bgcolor: 'divider' }} />
+            <Typography sx={{ fontSize: '0.6rem', letterSpacing: '0.2em', color: 'text.secondary', textTransform: 'uppercase' }}>
+              Trail Guide
+            </Typography>
+            <Box sx={{ height: '1px', width: 32, bgcolor: 'divider' }} />
+          </Box>
+          <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
+            台灣步道資訊平台
           </Typography>
-          <Typography variant="caption">
-            Made with React + ASP.NET Core
+          <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.5, opacity: 0.6 }}>
+            React 19 · ASP.NET Core 8 · PostgreSQL
           </Typography>
         </Box>
       </Box>

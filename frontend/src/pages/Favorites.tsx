@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react';
 import { Box, Typography, Alert, Fade, Grow, Button, Skeleton, useTheme } from '@mui/material';
 import { alpha } from '@mui/material/styles';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ExploreIcon from '@mui/icons-material/Explore';
 import { useNavigate } from 'react-router-dom';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { favoriteService } from '../services/trails';
 import { TrailCard } from '../components/TrailCard';
 import type { TrailListItem } from '../types';
@@ -153,30 +153,17 @@ function LoadingSkeleton() {
 
 export function Favorites() {
   const navigate = useNavigate();
-  const [trails, setTrails] = useState<TrailListItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const queryClient = useQueryClient();
+  const { data: trails = [], isLoading, isError } = useQuery({
+    queryKey: ['favorites'],
+    queryFn: favoriteService.getMyFavorites,
+  });
 
-  const fetchFavorites = async () => {
-    try {
-      setError(null);
-      const data = await favoriteService.getMyFavorites();
-      setTrails(data);
-    } catch (err) {
-      console.error('Failed to fetch favorites:', err);
-      setError('無法載入收藏列表，請重新登入後再試');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchFavorites();
-  }, []);
-
-  // TrailCard 會處理 API 呼叫，這裡只需要更新列表
+  // TrailCard 會處理 API 呼叫，這裡只需要更新 cache
   const handleFavoriteToggle = (trailId: number) => {
-    setTrails(trails.filter((t) => t.id !== trailId));
+    queryClient.setQueryData<TrailListItem[]>(['favorites'], (old) =>
+      old?.filter((t) => t.id !== trailId) ?? []
+    );
   };
 
   const handleExplore = () => {
@@ -185,61 +172,25 @@ export function Favorites() {
 
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', pb: 10 }}>
-      {/* 頂部 Header */}
-      <Box
-        sx={{
-          position: 'relative',
-          pt: 4,
-          pb: 8,
-          px: 3,
-          background: 'linear-gradient(135deg, #E53935 0%, #EF5350 50%, #EF9A9A 100%)',
-          overflow: 'hidden',
-        }}
-      >
-        {/* 裝飾元素 */}
-        <Box
-          sx={{
-            position: 'absolute',
-            width: 150,
-            height: 150,
-            borderRadius: '50%',
-            bgcolor: 'rgba(255,255,255,0.1)',
-            top: -40,
-            right: -30,
-          }}
-        />
-        <Box
-          sx={{
-            position: 'absolute',
-            width: 80,
-            height: 80,
-            borderRadius: '50%',
-            bgcolor: 'rgba(255,255,255,0.08)',
-            bottom: 20,
-            left: -20,
-          }}
-        />
-
-        <Fade in timeout={600}>
-          <Box>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1 }}>
-              <FavoriteIcon sx={{ color: 'white', fontSize: 28 }} />
-              <Typography variant="h5" fontWeight="bold" color="white">
-                口袋名單
-              </Typography>
-            </Box>
-            <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.9)' }}>
-              {isLoading ? '載入中...' : `${trails.length} 條想去的步道`}
-            </Typography>
+      {/* Header */}
+      <Box sx={{ bgcolor: 'background.paper', borderBottom: '1px solid', borderColor: 'divider' }}>
+        <Box sx={{ height: 3, bgcolor: 'error.main' }} />
+        <Box sx={{ px: 3, pt: 2.5, pb: 2 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 0.5 }}>
+            <FavoriteIcon sx={{ color: 'error.main', fontSize: 22 }} />
+            <Typography variant="h5">口袋名單</Typography>
           </Box>
-        </Fade>
+          <Typography variant="caption" color="text.secondary">
+            {isLoading ? '載入中...' : `${trails.length} 條想去的步道`}
+          </Typography>
+        </Box>
       </Box>
 
       {/* 內容區 */}
-      <Box sx={{ px: 2, pt: 3, pb: 2 }}>
-        {error && (
+      <Box sx={{ px: 2, pt: 2.5, pb: 2 }}>
+        {isError && (
           <Alert severity="error" sx={{ mb: 2, borderRadius: 2 }}>
-            {error}
+            無法載入收藏列表，請重新登入後再試
           </Alert>
         )}
 
@@ -275,7 +226,7 @@ export function Favorites() {
               </Grow>
             ))}
           </Box>
-        ) : !error ? (
+        ) : !isError ? (
           <EmptyState onExplore={handleExplore} />
         ) : null}
       </Box>

@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import type { ReactNode } from 'react';
-import { ThemeProvider as MuiThemeProvider, createTheme } from '@mui/material';
+import { ThemeProvider as MuiThemeProvider, createTheme, GlobalStyles } from '@mui/material';
 
 type ThemeMode = 'light' | 'dark' | 'system';
 
@@ -12,143 +12,125 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | null>(null);
 
-// 統一的設計規範
-const designTokens = {
-  borderRadius: {
-    small: 8,
-    medium: 12,
-    large: 16,
-    xl: 24,
-  },
-  shadows: {
-    card: {
-      light: '0 2px 8px rgba(0,0,0,0.08)',
-      dark: '0 2px 8px rgba(0,0,0,0.3)',
-    },
-    cardHover: {
-      light: '0 8px 24px rgba(0,0,0,0.12)',
-      dark: '0 8px 24px rgba(0,0,0,0.4)',
-    },
-    fab: {
-      light: '0 4px 12px rgba(0,0,0,0.15)',
-      dark: '0 4px 12px rgba(0,0,0,0.4)',
-    },
-  },
-};
+const serif = '"Noto Serif TC", Georgia, serif';
+const sans = '"DM Sans", "Noto Sans TC", system-ui, sans-serif';
 
-// 基础主题配置
 const getTheme = (isDark: boolean) =>
   createTheme({
     palette: {
       mode: isDark ? 'dark' : 'light',
       primary: {
-        main: '#2e7d32',
-        light: '#4caf50',
-        dark: '#1b5e20',
+        main: '#1B4332',
+        light: '#52796F',
+        dark: '#0D2818',
+        contrastText: '#ffffff',
       },
       secondary: {
-        main: '#ff9800',
-        light: '#ffb74d',
-        dark: '#f57c00',
+        main: '#C8872A',
+        light: '#E0A85A',
+        dark: '#9A6118',
+        contrastText: '#ffffff',
       },
-      error: {
-        main: '#f44336',
-      },
-      warning: {
-        main: '#ff9800',
-      },
-      success: {
-        main: '#4caf50',
-      },
+      error: { main: '#C62828' },
+      warning: { main: '#C8872A' },
+      success: { main: '#2E7D32' },
       background: isDark
-        ? {
-            default: '#121212',
-            paper: '#1e1e1e',
-          }
-        : {
-            default: '#f5f5f5',
-            paper: '#ffffff',
-          },
+        ? { default: '#0A1410', paper: '#132219' }
+        : { default: '#F5F2ED', paper: '#FEFCF8' },
+      text: isDark
+        ? { primary: '#EAE6DF', secondary: '#9CAF9A' }
+        : { primary: '#1A2A1C', secondary: '#5A7060' },
+      divider: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.07)',
     },
-    shape: {
-      borderRadius: designTokens.borderRadius.medium,
-    },
+    shape: { borderRadius: 10 },
     typography: {
-      fontFamily: [
-        '-apple-system',
-        'BlinkMacSystemFont',
-        '"Segoe UI"',
-        'Roboto',
-        '"Noto Sans TC"',
-        'sans-serif',
-      ].join(','),
+      fontFamily: sans,
+      h1: { fontFamily: serif, fontWeight: 700, letterSpacing: '-0.02em' },
+      h2: { fontFamily: serif, fontWeight: 700, letterSpacing: '-0.015em' },
+      h3: { fontFamily: serif, fontWeight: 600, letterSpacing: '-0.01em' },
+      h4: { fontFamily: serif, fontWeight: 600, letterSpacing: '-0.01em' },
+      h5: { fontFamily: serif, fontWeight: 600, letterSpacing: '-0.005em' },
+      h6: { fontFamily: sans, fontWeight: 600 },
+      subtitle1: { fontWeight: 500 },
+      subtitle2: { fontWeight: 600 },
+      button: { fontFamily: sans, fontWeight: 500, letterSpacing: '0.01em' },
+      overline: { fontFamily: sans, fontWeight: 700, letterSpacing: '0.15em' },
     },
     components: {
+      MuiCssBaseline: {
+        styleOverrides: {
+          '*, *::before, *::after': { boxSizing: 'border-box' },
+        },
+      },
       MuiCard: {
         styleOverrides: {
           root: {
-            borderRadius: designTokens.borderRadius.medium,
+            borderRadius: 12,
             boxShadow: isDark
-              ? designTokens.shadows.card.dark
-              : designTokens.shadows.card.light,
+              ? '0 2px 12px rgba(0,0,0,0.4)'
+              : '0 2px 12px rgba(26,42,28,0.08)',
           },
         },
       },
       MuiPaper: {
         styleOverrides: {
-          rounded: {
-            borderRadius: designTokens.borderRadius.medium,
-          },
+          rounded: { borderRadius: 12 },
         },
       },
       MuiButton: {
         styleOverrides: {
           root: {
-            borderRadius: designTokens.borderRadius.small,
+            borderRadius: 8,
             textTransform: 'none',
+            fontWeight: 500,
           },
           contained: {
             boxShadow: 'none',
             '&:hover': {
               boxShadow: isDark
-                ? '0 4px 12px rgba(0,0,0,0.3)'
-                : '0 4px 12px rgba(46, 125, 50, 0.3)',
+                ? '0 4px 16px rgba(0,0,0,0.4)'
+                : '0 4px 16px rgba(27,67,50,0.25)',
             },
           },
         },
       },
       MuiChip: {
         styleOverrides: {
-          root: {
-            borderRadius: designTokens.borderRadius.small,
-          },
-        },
-      },
-      MuiFab: {
-        styleOverrides: {
-          root: {
-            boxShadow: isDark
-              ? designTokens.shadows.fab.dark
-              : designTokens.shadows.fab.light,
-          },
+          root: { borderRadius: 6, fontWeight: 500 },
         },
       },
       MuiDialog: {
         styleOverrides: {
-          paper: {
-            borderRadius: designTokens.borderRadius.large,
-          },
+          paper: { borderRadius: 16 },
         },
       },
       MuiAlert: {
         styleOverrides: {
+          root: { borderRadius: 8 },
+        },
+      },
+      MuiTextField: {
+        styleOverrides: {
           root: {
-            borderRadius: designTokens.borderRadius.small,
+            '& .MuiOutlinedInput-root': { borderRadius: 10 },
           },
         },
       },
     },
   });
+
+const globalStyles = (isDark: boolean) => ({
+  'html': { scrollBehavior: 'smooth' },
+  '::-webkit-scrollbar': { width: '5px', height: '5px' },
+  '::-webkit-scrollbar-track': { background: 'transparent' },
+  '::-webkit-scrollbar-thumb': {
+    background: isDark ? 'rgba(255,255,255,0.15)' : 'rgba(27,67,50,0.2)',
+    borderRadius: '4px',
+  },
+  '::-webkit-scrollbar-thumb:hover': {
+    background: isDark ? 'rgba(255,255,255,0.25)' : 'rgba(27,67,50,0.35)',
+  },
+});
 
 export function ThemeContextProvider({ children }: { children: ReactNode }) {
   const [mode, setModeState] = useState<ThemeMode>(() => {
@@ -156,7 +138,6 @@ export function ThemeContextProvider({ children }: { children: ReactNode }) {
     return (saved as ThemeMode) || 'system';
   });
 
-  // 计算实际是否为暗黑模式
   const isDark = useMemo(() => {
     if (mode === 'system') {
       return window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -164,18 +145,12 @@ export function ThemeContextProvider({ children }: { children: ReactNode }) {
     return mode === 'dark';
   }, [mode]);
 
-  // 监听系统主题变化
   useEffect(() => {
     if (mode !== 'system') return;
-
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    const handleChange = () => {
-      // 强制重新渲染
-      setModeState('system');
-    };
-
-    mediaQuery.addEventListener('change', handleChange);
-    return () => mediaQuery.removeEventListener('change', handleChange);
+    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+    const handle = () => setModeState('system');
+    mq.addEventListener('change', handle);
+    return () => mq.removeEventListener('change', handle);
   }, [mode]);
 
   const setMode = (newMode: ThemeMode) => {
@@ -187,15 +162,16 @@ export function ThemeContextProvider({ children }: { children: ReactNode }) {
 
   return (
     <ThemeContext.Provider value={{ mode, setMode, isDark }}>
-      <MuiThemeProvider theme={theme}>{children}</MuiThemeProvider>
+      <MuiThemeProvider theme={theme}>
+        <GlobalStyles styles={globalStyles(isDark)} />
+        {children}
+      </MuiThemeProvider>
     </ThemeContext.Provider>
   );
 }
 
 export function useThemeMode() {
   const context = useContext(ThemeContext);
-  if (!context) {
-    throw new Error('useThemeMode must be used within ThemeContextProvider');
-  }
+  if (!context) throw new Error('useThemeMode must be used within ThemeContextProvider');
   return context;
 }

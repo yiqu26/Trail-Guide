@@ -382,15 +382,16 @@ export function Search() {
       <Box
         sx={{
           bgcolor: 'background.paper',
-          pt: 2,
           pb: 2,
           px: 2,
-          boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+          borderBottom: '1px solid',
+          borderColor: 'divider',
           position: 'sticky',
           top: 0,
           zIndex: 10,
         }}
       >
+        <Box sx={{ height: 3, mx: -2, mb: 2, bgcolor: 'primary.main' }} />
         {/* 搜尋輸入框 */}
         <TextField
           fullWidth
@@ -594,15 +595,11 @@ export function Search() {
         ) : trails.length > 0 ? (
           <Box sx={{ maxWidth: 1200, mx: 'auto' }}>
             <Fade in timeout={400}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-                <Typography variant="body2" color="text.secondary">
-                  找到
-                </Typography>
-                <Typography variant="body2" fontWeight="bold" color="primary">
-                  {trails.length}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  條步道
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
+                <Typography variant="h6">搜尋結果</Typography>
+                <Box sx={{ flex: 1, height: '1px', bgcolor: 'divider' }} />
+                <Typography variant="caption" color="text.secondary">
+                  共 <Box component="span" sx={{ color: 'primary.main', fontWeight: 700 }}>{trails.length}</Box> 條步道
                 </Typography>
               </Box>
             </Fade>
