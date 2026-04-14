@@ -1,21 +1,18 @@
 import {
   Box,
   Typography,
-  Card,
-  CardContent,
   Skeleton,
   IconButton,
   Chip,
-  Paper,
   Button,
   Alert,
   useTheme,
 } from '@mui/material';
 import { alpha } from '@mui/material/styles';
+import { Footprints, Users, Moon, Droplets, Sunrise, Mountain, Trees } from 'lucide-react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Pagination } from 'swiper/modules';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import CampaignIcon from '@mui/icons-material/Campaign';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import { useNavigate } from 'react-router-dom';
@@ -26,130 +23,31 @@ import { PullToRefresh } from '../components/PullToRefresh';
 
 import 'swiper/swiper-bundle.css';
 
-// 自定義 SVG 圖標組件
-const CollectionIcons = {
-  // 新手入門 - 路標指示牌
-  beginner: (
-    <svg viewBox="0 0 48 48" fill="none" width="32" height="32">
-      <path d="M24 4v40M20 44h8" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/>
-      <path d="M24 8l16 6-16 6V8z" fill="currentColor" opacity="0.9"/>
-      <path d="M24 22l-14 5 14 5v-10z" fill="currentColor" opacity="0.6"/>
-    </svg>
-  ),
-  // 親子同遊 - 大小手牽手
-  family: (
-    <svg viewBox="0 0 48 48" fill="none" width="32" height="32">
-      <circle cx="16" cy="12" r="5" fill="currentColor"/>
-      <circle cx="34" cy="16" r="3.5" fill="currentColor" opacity="0.7"/>
-      <path d="M16 19c-5 0-9 4-9 9v8h18v-8c0-5-4-9-9-9z" fill="currentColor" opacity="0.8"/>
-      <path d="M34 21c-3.5 0-6 2.5-6 6v6h12v-6c0-3.5-2.5-6-6-6z" fill="currentColor" opacity="0.5"/>
-      <path d="M22 30h6" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
-    </svg>
-  ),
-  // 夜景步道 - 星空下的山稜線
-  nightView: (
-    <svg viewBox="0 0 48 48" fill="none" width="32" height="32">
-      {/* 星星 */}
-      <path d="M12 8l1.5 3 3.5.5-2.5 2.5.5 3.5-3-1.5-3 1.5.5-3.5-2.5-2.5 3.5-.5L12 8z" fill="currentColor" opacity="0.9"/>
-      <path d="M32 6l1 2 2.5.3-1.8 1.7.4 2.5-2.1-1-2.1 1 .4-2.5-1.8-1.7 2.5-.3 1-2z" fill="currentColor" opacity="0.7"/>
-      <circle cx="40" cy="14" r="1.5" fill="currentColor" opacity="0.5"/>
-      <circle cx="24" cy="10" r="1" fill="currentColor" opacity="0.4"/>
-      <circle cx="6" cy="18" r="1" fill="currentColor" opacity="0.4"/>
-      {/* 山稜線 */}
-      <path d="M0 44l12-20 8 10 8-14 8 12 12-8v24H0z" fill="currentColor" opacity="0.7"/>
-      <path d="M0 44l16-14 10 6 12-12 10 6v14H0z" fill="currentColor" opacity="0.4"/>
-    </svg>
-  ),
-  // 瀑布秘境
-  waterfall: (
-    <svg viewBox="0 0 64 64" width="32" height="32">
-      <defs>
-        <linearGradient id="waterGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="#B3E5FC" stopOpacity="1" />
-          <stop offset="100%" stopColor="#81D4FA" stopOpacity="1" />
-        </linearGradient>
-      </defs>
-      {/* 左側瀑布 */}
-      <g transform="translate(14, 4)">
-        <rect fill="#FFF9C4" x="0" y="48" width="16" height="8" rx="2"/>
-        <rect fill="url(#waterGradient)" x="1" y="6" width="14" height="44"/>
-        <path d="M1,30 L15,30 L15,45 C15,45 10,42 8,45 C6,48 1,45 1,45 L1,30 Z" fill="#455A64" opacity="0.3"/>
-        <rect fill="#FFF9C4" x="0" y="0" width="16" height="8" rx="2"/>
-        <circle fill="#DCE775" cx="8" cy="2" r="3"/>
-      </g>
-      {/* 右側瀑布 */}
-      <g transform="translate(34, 4)">
-        <rect fill="#FFF9C4" x="0" y="48" width="16" height="8" rx="2"/>
-        <rect fill="url(#waterGradient)" x="1" y="6" width="14" height="44"/>
-        <path d="M1,30 L15,30 L15,45 C15,45 10,42 8,45 C6,48 1,45 1,45 L1,30 Z" fill="#455A64" opacity="0.3" transform="translate(8, 37.5) scale(-1, 1) translate(-8, -37.5)"/>
-        <rect fill="#FFF9C4" x="0" y="0" width="16" height="8" rx="2"/>
-        <circle fill="#DCE775" cx="8" cy="2" r="3"/>
-      </g>
-    </svg>
-  ),
-  // 海濱風光 - 海浪與太陽
-  ocean: (
-    <svg viewBox="0 0 48 48" fill="none" width="32" height="32">
-      <circle cx="36" cy="12" r="6" fill="currentColor" opacity="0.9"/>
-      <path d="M28 12h-4M36 4v-2M44 12h2M42 6l1.5-1.5M42 18l1.5 1.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" opacity="0.6"/>
-      <path d="M4 28c4-4 8-4 12 0s8 4 12 0 8-4 12 0" stroke="currentColor" strokeWidth="3" strokeLinecap="round" opacity="0.8"/>
-      <path d="M4 36c4-4 8-4 12 0s8 4 12 0 8-4 12 0" stroke="currentColor" strokeWidth="3" strokeLinecap="round" opacity="0.6"/>
-      <path d="M4 44c4-4 8-4 12 0s8 4 12 0 8-4 12 0" stroke="currentColor" strokeWidth="3" strokeLinecap="round" opacity="0.4"/>
-    </svg>
-  ),
-  // 百岳挑戰 - 山峰與旗幟
-  mountain: (
-    <svg viewBox="0 0 48 48" fill="none" width="32" height="32">
-      <path d="M4 42L18 14l8 12 6-8 12 24H4z" fill="currentColor" opacity="0.6"/>
-      <path d="M14 42L24 24l10 18H14z" fill="currentColor" opacity="0.9"/>
-      <path d="M24 24V8" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-      <path d="M24 8l8 5-8 3V8z" fill="currentColor"/>
-    </svg>
-  ),
-  // 森林療癒 - 樹木
-  forest: (
-    <svg viewBox="0 0 48 48" fill="none" width="32" height="32">
-      <path d="M24 4l12 16H12L24 4z" fill="currentColor" opacity="0.5"/>
-      <path d="M24 12l10 14H14l10-14z" fill="currentColor" opacity="0.7"/>
-      <path d="M24 20l8 12H16l8-12z" fill="currentColor" opacity="0.9"/>
-      <rect x="22" y="32" width="4" height="12" fill="currentColor" opacity="0.8"/>
-    </svg>
-  ),
-  // 預設 - 登山步道
-  default: (
-    <svg viewBox="0 0 48 48" fill="none" width="32" height="32">
-      <path d="M8 40l14-28 6 12 6-8 6 24H8z" fill="currentColor" opacity="0.5"/>
-      <circle cx="22" cy="8" r="4" fill="currentColor"/>
-      <path d="M18 16l-6 24M22 14l4 8-2 18M26 16l8 8" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" opacity="0.8"/>
-    </svg>
-  ),
-};
-
 // 根據精選集名稱返回對應的圖標和主色調
 const getCollectionStyle = (name: string): { icon: React.ReactNode; color: string } => {
+  const iconProps = { size: 30, strokeWidth: 1.6, 'aria-hidden': true };
   if (name.includes('百岳') || name.includes('挑戰')) {
-    return { icon: CollectionIcons.mountain, color: '#2E7D32' };
+    return { icon: <Mountain {...iconProps} />, color: '#2E7D32' };
   }
   if (name.includes('親子') || name.includes('同遊')) {
-    return { icon: CollectionIcons.family, color: '#E65100' };
+    return { icon: <Users {...iconProps} />, color: '#D84315' };
   }
   if (name.includes('夜景') || name.includes('絕美')) {
-    return { icon: CollectionIcons.nightView, color: '#3949AB' };
+    return { icon: <Moon {...iconProps} />, color: '#3949AB' };
   }
   if (name.includes('瀑布') || name.includes('秘境')) {
-    return { icon: CollectionIcons.waterfall, color: '#00838F' };
+    return { icon: <Droplets {...iconProps} />, color: '#00838F' };
   }
   if (name.includes('森林') || name.includes('療癒')) {
-    return { icon: CollectionIcons.forest, color: '#558B2F' };
+    return { icon: <Trees {...iconProps} />, color: '#558B2F' };
   }
   if (name.includes('海') || name.includes('風光') || name.includes('海濱')) {
-    return { icon: CollectionIcons.ocean, color: '#1565C0' };
+    return { icon: <Sunrise {...iconProps} />, color: '#1565C0' };
   }
   if (name.includes('新手') || name.includes('入門') || name.includes('推薦')) {
-    return { icon: CollectionIcons.beginner, color: '#BF360C' };
+    return { icon: <Footprints {...iconProps} />, color: '#BF360C' };
   }
-  // 預設
-  return { icon: CollectionIcons.default, color: '#546E7A' };
+  return { icon: <Mountain {...iconProps} />, color: '#546E7A' };
 };
 
 export function Home() {
@@ -220,9 +118,10 @@ export function Home() {
     <PullToRefresh onRefresh={handleRefresh}>
       <Box sx={{ pb: 10 }}>
 
-        {/* Masthead */}
+        {/* Masthead - mobile only (PC has TopNav) */}
         <Box
           sx={{
+            display: { xs: 'block', md: 'none' },
             px: 3,
             pt: 3,
             pb: 2.5,
@@ -256,146 +155,100 @@ export function Home() {
 
         {/* Banner Swiper */}
       {homeData?.banners && homeData.banners.length > 0 && (
-        <Swiper
-          modules={[Autoplay, Pagination]}
-          autoplay={{ delay: 4000 }}
-          pagination={{ clickable: true }}
-          loop
-          style={{ height: 240 }}
+        <Box
+          sx={{
+            height: { xs: 260, sm: 340, md: 480 },
+            position: 'relative',
+            '& .swiper': { height: '100%' },
+            '& .swiper-pagination': { bottom: '18px' },
+            '& .swiper-pagination-bullet': {
+              width: 6, height: 6,
+              bgcolor: 'rgba(255,255,255,0.45)',
+              opacity: 1, mx: '3px',
+              transition: 'all 0.25s',
+            },
+            '& .swiper-pagination-bullet-active': {
+              width: 22, height: 6,
+              borderRadius: '3px',
+              bgcolor: 'white',
+            },
+          }}
         >
-          {homeData.banners.map((banner) => (
-            <SwiperSlide key={banner.id}>
-              <Box
-                sx={{
-                  height: '100%',
-                  backgroundImage: `url(${banner.imageUrl})`,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                  cursor: banner.link ? 'pointer' : 'default',
-                }}
-                onClick={() => banner.link && navigate(banner.link)}
-              >
-                {banner.title && (
+          <Swiper
+            modules={[Autoplay, Pagination]}
+            autoplay={{ delay: 5000, disableOnInteraction: false }}
+            pagination={{ clickable: true }}
+            loop
+          >
+            {homeData.banners.map((banner, index) => (
+              <SwiperSlide key={banner.id}>
+                <Box
+                  sx={{
+                    height: '100%',
+                    position: 'relative',
+                    cursor: banner.link ? 'pointer' : 'default',
+                    overflow: 'hidden',
+                  }}
+                  onClick={() => banner.link && navigate(banner.link)}
+                >
                   <Box
+                    component="img"
+                    src={banner.imageUrl}
+                    alt={banner.title || '步道景觀'}
                     sx={{
                       position: 'absolute',
-                      bottom: 0,
-                      left: 0,
-                      right: 0,
-                      background: 'linear-gradient(transparent, rgba(10,20,16,0.85))',
-                      p: 2.5,
-                      color: 'white',
+                      inset: 0,
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover',
+                      objectPosition: ['center 65%', 'center 65%', 'center 30%'][index] ?? 'center 50%',
+                      display: 'block',
                     }}
-                  >
-                    <Typography
-                      variant="h5"
-                      sx={{ fontFamily: '"Noto Serif TC", serif', fontWeight: 600, textShadow: '0 2px 8px rgba(0,0,0,0.4)' }}
-                    >
-                      {banner.title}
-                    </Typography>
-                  </Box>
-                )}
-              </Box>
-            </SwiperSlide>
-          ))}
-        </Swiper>
-      )}
+                  />
+                  {/* Cinematic multi-stop gradient */}
+                  <Box sx={{
+                    position: 'absolute', inset: 0, pointerEvents: 'none',
+                    background: 'linear-gradient(to bottom, rgba(0,0,0,0.08) 0%, transparent 35%, rgba(10,20,16,0.6) 70%, rgba(10,20,16,0.88) 100%)',
+                  }} />
 
-      {/* Collections - Icon with Background Style */}
-      {homeData?.collections && homeData.collections.length > 0 && (
-          <Box
-            sx={{
-              py: { xs: 3, md: 4 },
-              px: { xs: 2, sm: 3, md: 2 },
-              bgcolor: 'background.default',
-              borderBottom: 1,
-              borderColor: 'divider',
-            }}
-          >
-            <Box
-              sx={{
-                maxWidth: 1600,
-                mx: 'auto',
-                display: 'flex',
-                justifyContent: { xs: 'space-between', md: 'center' },
-                overflowX: 'auto',
-                gap: { xs: 2, sm: 3, md: 5, lg: 8 },
-                pb: 1,
-                '&::-webkit-scrollbar': { display: 'none' },
-                msOverflowStyle: 'none',
-                scrollbarWidth: 'none',
-              }}
-            >
-              {homeData.collections.map((collection) => {
-                const style = getCollectionStyle(collection.name);
-                return (
-                  <Box
-                    key={collection.id}
-                    onClick={() => navigate(`/collection/${collection.id}`)}
-                    sx={{ cursor: 'pointer' }}
-                  >
-                    <Box
-                      sx={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        minWidth: { xs: 70, md: 90 },
-                        flex: '0 0 auto',
-                      }}
-                    >
-                      {/* Icon Container with Background */}
-                      <Box
-                        sx={{
-                          width: { xs: 60, md: 80 },
-                          height: { xs: 60, md: 80 },
-                          borderRadius: '50%',
-                          backgroundColor: alpha(style.color, theme.palette.mode === 'dark' ? 0.2 : 0.15),
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          mb: 1.5,
-                          boxShadow: theme.palette.mode === 'dark'
-                            ? '0 4px 12px rgba(0,0,0,0.3)'
-                            : '0 4px 12px rgba(0,0,0,0.12)',
-                          border: 3,
-                          borderColor: 'background.paper',
-                          color: style.color,
-                          transition: 'box-shadow 0.2s ease, background-color 0.2s ease',
-                          '&:hover': {
-                            boxShadow: theme.palette.mode === 'dark'
-                              ? '0 8px 24px rgba(0,0,0,0.4)'
-                              : '0 8px 24px rgba(0,0,0,0.18)',
-                          },
-                          '& svg': {
-                            width: { xs: 32, md: 40 },
-                            height: { xs: 32, md: 40 },
-                          },
-                        }}
-                      >
-                        {style.icon}
-                      </Box>
-                      {/* Label */}
-                      <Typography
-                        sx={{
-                          textAlign: 'center',
-                          fontSize: { xs: '12px', md: '14px' },
-                          fontWeight: 600,
-                          lineHeight: 1.3,
-                          color: 'text.primary',
-                          maxWidth: { xs: 80, md: 100 },
-                        }}
-                      >
-                        {collection.name}
+                  {/* Content */}
+                  <Box sx={{
+                    position: 'absolute', bottom: 0, left: 0, right: 0,
+                    p: { xs: 2.5, md: 4 }, pb: { xs: 5, md: 6 },
+                  }}>
+                    {/* Eyebrow */}
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.2, mb: { xs: 0.8, md: 1.2 } }}>
+                      <Box sx={{ width: 18, height: 1.5, bgcolor: 'rgba(255,255,255,0.5)', borderRadius: 1 }} />
+                      <Typography sx={{
+                        fontSize: '0.6rem', letterSpacing: '0.22em',
+                        textTransform: 'uppercase', color: 'rgba(255,255,255,0.6)',
+                      }}>
+                        Trail Guide
                       </Typography>
                     </Box>
+
+                    {banner.title && (
+                      <Typography sx={{
+                        fontFamily: '"Noto Serif TC", serif',
+                        fontWeight: 700,
+                        fontSize: { xs: '1.35rem', md: '1.9rem' },
+                        lineHeight: 1.25,
+                        color: 'white',
+                        textShadow: '0 2px 20px rgba(0,0,0,0.35)',
+                        maxWidth: { md: 560 },
+                      }}>
+                        {banner.title}
+                      </Typography>
+                    )}
                   </Box>
-                );
-              })}
-            </Box>
-          </Box>
+                </Box>
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </Box>
       )}
 
-      {/* Popular Trails - Bento Grid */}
+      {/* Popular Trails - Bento Grid (moved before collections) */}
       {homeData?.popularTrails && homeData.popularTrails.length > 0 && (
           <Box sx={{ px: { xs: 2, sm: 3, md: 2 }, py: 3, maxWidth: 1600, mx: 'auto' }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2.5 }}>
@@ -407,111 +260,195 @@ export function Home() {
                   <ChevronRightIcon />
                 </IconButton>
               </Box>
-            {/* Bento Grid Layout - 手機版佈局 (container 固定 430px，sm 用平板版) */}
             <Box
               sx={{
                 display: 'grid',
                 gap: 1.5,
                 gridTemplateColumns: {
-                  xs: 'repeat(2, 1fr)',   // 手機: 2 欄
-                  sm: 'repeat(4, 1fr)',   // 平板 (600-899px): 4 欄
-                  md: 'repeat(2, 1fr)',   // 桌面手機殼: 回到 2 欄
+                  xs: 'repeat(2, 1fr)',
+                  sm: 'repeat(4, 1fr)',
+                  md: 'repeat(4, 1fr)',
                 },
                 gridTemplateRows: {
-                  xs: 'repeat(3, 150px)',
-                  sm: 'repeat(2, 180px)',
-                  md: 'repeat(3, 150px)',
+                  xs: 'repeat(3, 168px)',
+                  sm: 'repeat(2, 200px)',
+                  md: 'repeat(2, 250px)',
+                },
+                gridAutoRows: {
+                  xs: '168px',
+                  sm: '200px',
+                  md: '250px',
                 },
               }}
             >
-              {/* 大卡片 - 佔據 2x2 */}
               {homeData.popularTrails[0] && (
                 <Box sx={{ gridColumn: 'span 2', gridRow: 'span 2' }}>
                   <BentoTrailCard trail={homeData.popularTrails[0]} isLarge />
                 </Box>
               )}
-              {homeData.popularTrails[1] && (
-                  <BentoTrailCard trail={homeData.popularTrails[1]} />
-              )}
-              {homeData.popularTrails[2] && (
-                  <BentoTrailCard trail={homeData.popularTrails[2]} />
-              )}
-              {homeData.popularTrails[3] && (
-                  <BentoTrailCard trail={homeData.popularTrails[3]} />
-              )}
-              {homeData.popularTrails[4] && (
-                  <BentoTrailCard trail={homeData.popularTrails[4]} />
-              )}
+              {homeData.popularTrails[1] && <BentoTrailCard trail={homeData.popularTrails[1]} />}
+              {homeData.popularTrails[2] && <BentoTrailCard trail={homeData.popularTrails[2]} />}
+              {homeData.popularTrails[3] && <BentoTrailCard trail={homeData.popularTrails[3]} />}
+              {homeData.popularTrails[4] && <BentoTrailCard trail={homeData.popularTrails[4]} />}
             </Box>
           </Box>
       )}
 
+      {/* Collections */}
+      {homeData?.collections && homeData.collections.length > 0 && (
+        <Box sx={{ px: { xs: 2, sm: 3, md: 2 }, pt: 3, pb: 1, maxWidth: 1600, mx: 'auto' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2.5 }}>
+            <Typography variant="h5">精選集</Typography>
+            <Box sx={{ flex: 1, height: '1px', bgcolor: 'divider' }} />
+            <IconButton size="small" onClick={() => navigate('/search')}>
+              <ChevronRightIcon />
+            </IconButton>
+          </Box>
+          <Box
+            sx={{
+              display: 'flex',
+              overflowX: 'auto',
+              gap: { xs: 2, sm: 3, md: 4 },
+              pb: 1,
+              '&::-webkit-scrollbar': { display: 'none' },
+              msOverflowStyle: 'none',
+              scrollbarWidth: 'none',
+            }}
+          >
+            {homeData.collections.map((collection) => {
+              const style = getCollectionStyle(collection.name);
+              return (
+                <Box
+                  key={collection.id}
+                  onClick={() => navigate(`/collection/${collection.id}`)}
+                  sx={{
+                    cursor: 'pointer',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    flex: '0 0 auto',
+                    minWidth: { xs: 68, md: 84 },
+                  }}
+                >
+                  <Box
+                    sx={{
+                      width: { xs: 60, md: 74 },
+                      height: { xs: 60, md: 74 },
+                      borderRadius: '16px',
+                      backgroundColor: alpha(style.color, theme.palette.mode === 'dark' ? 0.18 : 0.1),
+                      border: '1px solid',
+                      borderColor: alpha(style.color, theme.palette.mode === 'dark' ? 0.28 : 0.18),
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      mb: 1.25,
+                      color: style.color,
+                      transition: 'transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease',
+                      '&:hover': {
+                        transform: 'translateY(-3px)',
+                        backgroundColor: alpha(style.color, theme.palette.mode === 'dark' ? 0.26 : 0.16),
+                        boxShadow: `0 8px 20px ${alpha(style.color, 0.22)}`,
+                      },
+                    }}
+                  >
+                    {style.icon}
+                  </Box>
+                  <Typography
+                    sx={{
+                      textAlign: 'center',
+                      fontSize: { xs: '11.5px', md: '13px' },
+                      fontWeight: 600,
+                      lineHeight: 1.3,
+                      color: 'text.primary',
+                      maxWidth: { xs: 72, md: 88 },
+                    }}
+                  >
+                    {collection.name}
+                  </Typography>
+                </Box>
+              );
+            })}
+          </Box>
+        </Box>
+      )}
+
       {/* Announcements */}
       {homeData?.announcements && homeData.announcements.length > 0 && (
-          <Box sx={{ px: { xs: 2, sm: 3, md: 2 }, maxWidth: 1600, mx: 'auto', width: '100%' }}>
-            <Paper
-              elevation={0}
-              sx={{
-                mb: 3,
-                p: { xs: 2, sm: 3 },
-                borderRadius: 3,
-                bgcolor: 'background.paper',
-                border: 1,
-                borderColor: 'divider',
-              }}
+        <Box sx={{ px: { xs: 2, sm: 3, md: 2 }, pt: 2.5, pb: 3, maxWidth: 1600, mx: 'auto', width: '100%' }}>
+          {/* Section header */}
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+            <Typography variant="h5">最新消息</Typography>
+            <Box sx={{ flex: 1, height: '1px', bgcolor: 'divider' }} />
+            <Button
+              size="small"
+              endIcon={<ChevronRightIcon sx={{ fontSize: '14px !important' }} />}
+              sx={{ fontSize: '0.8rem', color: 'text.secondary', minWidth: 0 }}
             >
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2.5 }}>
-                <CampaignIcon sx={{ color: 'secondary.main', fontSize: 20 }} />
-                <Typography variant="h6">最新消息</Typography>
-                <Box sx={{ flex: 1, height: '1px', bgcolor: 'divider' }} />
-              </Box>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-                {homeData.announcements.map((announcement, index) => (
-                    <Card
-                      key={announcement.id}
-                      elevation={1}
-                      sx={{
-                        cursor: announcement.link ? 'pointer' : 'default',
-                        borderLeft: '4px solid',
-                        borderLeftColor: index === 0 ? 'primary.main' : 'grey.300',
-                      }}
-                      onClick={() => announcement.link && window.open(announcement.link, '_blank')}
-                    >
-                      <CardContent sx={{ py: 1.5, px: 2, '&:last-child': { pb: 1.5 } }}>
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                          <Box sx={{ flex: 1 }}>
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
-                              {index === 0 && (
-                                <Chip
-                                  label="NEW"
-                                  size="small"
-                                  color="primary"
-                                  sx={{ height: 20, fontSize: '0.65rem', fontWeight: 'bold' }}
-                                />
-                              )}
-                              <Typography variant="caption" color="text.secondary">
-                                {announcement.date && new Date(announcement.date).toLocaleDateString('zh-TW')}
-                              </Typography>
-                            </Box>
-                            <Typography variant="subtitle2" fontWeight="medium" sx={{ lineHeight: 1.4 }}>
-                              {announcement.title}
-                            </Typography>
-                            {announcement.source && (
-                              <Typography variant="caption" color="text.secondary">
-                                來源：{announcement.source}
-                              </Typography>
-                            )}
-                          </Box>
-                          {announcement.link && (
-                            <OpenInNewIcon sx={{ fontSize: 16, color: 'text.secondary', ml: 1, mt: 0.5 }} />
-                          )}
-                        </Box>
-                      </CardContent>
-                    </Card>
-                ))}
-              </Box>
-            </Paper>
+              查看全部
+            </Button>
           </Box>
+
+          {/* Items */}
+          <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+            {homeData.announcements.slice(0, 3).map((announcement, index) => (
+              <Box
+                key={announcement.id}
+                onClick={() => announcement.link && window.open(announcement.link, '_blank')}
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 2,
+                  py: 1.6,
+                  borderBottom: index < Math.min(homeData.announcements.length, 3) - 1 ? '1px solid' : 'none',
+                  borderColor: 'divider',
+                  cursor: announcement.link ? 'pointer' : 'default',
+                  borderRadius: 1,
+                  px: 1,
+                  mx: -1,
+                  '&:hover': announcement.link
+                    ? { bgcolor: 'action.hover' }
+                    : {},
+                  transition: 'background 0.15s',
+                }}
+              >
+                {/* Index number */}
+                <Typography sx={{
+                  fontSize: '0.72rem',
+                  fontWeight: 700,
+                  color: index === 0 ? 'primary.main' : 'text.disabled',
+                  width: 18,
+                  flexShrink: 0,
+                  textAlign: 'center',
+                  fontVariantNumeric: 'tabular-nums',
+                }}>
+                  {String(index + 1).padStart(2, '0')}
+                </Typography>
+
+                {/* Title */}
+                <Typography sx={{
+                  flex: 1,
+                  fontSize: '0.9rem',
+                  fontWeight: index === 0 ? 600 : 400,
+                  lineHeight: 1.45,
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                  color: index === 0 ? 'text.primary' : 'text.secondary',
+                }}>
+                  {announcement.title}
+                </Typography>
+
+                {/* Date */}
+                <Typography sx={{ fontSize: '0.75rem', color: 'text.disabled', flexShrink: 0 }}>
+                  {announcement.date && new Date(announcement.date).toLocaleDateString('zh-TW', { month: 'numeric', day: 'numeric' })}
+                </Typography>
+                {announcement.link && (
+                  <OpenInNewIcon sx={{ fontSize: 13, color: 'text.disabled', flexShrink: 0 }} />
+                )}
+              </Box>
+            ))}
+          </Box>
+        </Box>
       )}
       </Box>
     </PullToRefresh>

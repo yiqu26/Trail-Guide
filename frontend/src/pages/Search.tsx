@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import {
   Box,
   TextField,
@@ -28,8 +28,10 @@ import PlaceIcon from '@mui/icons-material/Place';
 import TerrainIcon from '@mui/icons-material/Terrain';
 import { trailService, lookupService } from '../services/trails';
 import { TrailCard } from '../components/TrailCard';
+import { PCTrailCard } from '../components/PCTrailCard';
+import { SearchMap } from '../components/SearchMap';
 import { useSearchHistory } from '../hooks/useSearchHistory';
-import type { TrailListItem, TrailSearchParams, County, Classification } from '../types';
+import type { TrailListItem, TrailSearchParams, County, Classification, TrailDetail } from '../types';
 
 const difficultyOptions = [
   { value: 1, label: '入門', color: '#4CAF50' },
@@ -153,9 +155,9 @@ function InitialState({ onTagClick, history, onRemoveHistory, onClearHistory }: 
                     },
                     transition: 'all 0.2s',
                     '& .MuiChip-deleteIcon': {
-                      color: 'grey.500',
+                      color: 'text.secondary',
                       '&:hover': {
-                        color: 'grey.700',
+                        color: 'text.primary',
                       },
                     },
                   }}
@@ -368,6 +370,23 @@ export function Search() {
 
   const hasActiveFilters = selectedCounty || selectedClassification || selectedDifficulty;
 
+  // PC map: active trail on hover
+  const [activeTrailId, setActiveTrailId] = useState<number | null>(null);
+  const [activeTrailDetail, setActiveTrailDetail] = useState<TrailDetail | null>(null);
+  const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleCardHover = useCallback((id: number | null) => {
+    if (hoverTimer.current) clearTimeout(hoverTimer.current);
+    if (!id) { setActiveTrailId(null); return; }
+    setActiveTrailId(id);
+    hoverTimer.current = setTimeout(async () => {
+      try {
+        const detail = await trailService.getTrailById(id);
+        setActiveTrailDetail(detail);
+      } catch { /* ignore */ }
+    }, 300);
+  }, []);
+
   const getActiveFilterCount = () => {
     let count = 0;
     if (selectedCounty) count++;
@@ -376,8 +395,134 @@ export function Search() {
     return count;
   };
 
+  // PC layout filter bar
+  const PCFilters = (
+    <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'center', flexWrap: 'wrap' }}>
+      <FormControl size="small" sx={{ minWidth: 120 }}>
+        <InputLabel>縣市</InputLabel>
+        <Select value={selectedCounty} label="縣市"
+          onChange={(e) => setSelectedCounty(e.target.value as number | '')}
+          sx={{ borderRadius: 2 }}>
+          <MenuItem value="">全部</MenuItem>
+          {counties.map((c) => <MenuItem key={c.id} value={c.id}>{c.name}</MenuItem>)}
+        </Select>
+      </FormControl>
+      <FormControl size="small" sx={{ minWidth: 130 }}>
+        <InputLabel>步道類型</InputLabel>
+        <Select value={selectedClassification} label="步道類型"
+          onChange={(e) => setSelectedClassification(e.target.value as number | '')}
+          sx={{ borderRadius: 2 }}>
+          <MenuItem value="">全部</MenuItem>
+          {classifications.map((c) => <MenuItem key={c.id} value={c.id}>{c.name}</MenuItem>)}
+        </Select>
+      </FormControl>
+      <Box sx={{ display: 'flex', gap: 0.8 }}>
+        {difficultyOptions.map((opt) => (
+          <Chip key={opt.value} label={opt.label} size="small"
+            variant={selectedDifficulty === opt.value ? 'filled' : 'outlined'}
+            onClick={() => setSelectedDifficulty(selectedDifficulty === opt.value ? '' : opt.value)}
+            sx={{
+              bgcolor: selectedDifficulty === opt.value ? opt.color : 'transparent',
+              color: selectedDifficulty === opt.value ? 'white' : 'text.secondary',
+              borderColor: selectedDifficulty === opt.value ? opt.color : 'divider',
+              fontSize: '0.72rem',
+            }}
+          />
+        ))}
+      </Box>
+      {hasActiveFilters && (
+        <Button size="small" startIcon={<ClearIcon />} onClick={handleClearFilters}
+          sx={{ color: 'text.secondary', fontSize: '0.75rem' }}>
+          清除
+        </Button>
+      )}
+    </Box>
+  );
+
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', pb: 10 }}>
+    <>
+    {/* ── PC Layout (md+) ───────────────────────── */}
+    <Box sx={{ display: { xs: 'none', md: 'flex' }, flexDirection: 'column', height: 'calc(100vh - 64px)' }}>
+      {/* PC Filter + Search bar */}
+      <Box sx={{
+        px: 3, py: 1.5,
+        borderBottom: '1px solid',
+        borderColor: 'divider',
+        bgcolor: 'background.paper',
+        display: 'flex', alignItems: 'center', gap: 2, flexShrink: 0,
+      }}>
+        <Box component="form" onSubmit={(e) => { e.preventDefault(); handleSearch(); }}
+          sx={{ display: 'flex', alignItems: 'center', gap: 1,
+            bgcolor: 'action.hover', borderRadius: 2, px: 1.5, py: 0.5, minWidth: 260,
+            border: '1px solid transparent',
+            '&:focus-within': { borderColor: 'primary.main', bgcolor: 'background.paper' },
+            transition: 'all 0.2s',
+          }}>
+          <SearchIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
+          <Box component="input" placeholder="搜尋步道..." value={keyword}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setKeyword(e.target.value)}
+            onKeyDown={(e: React.KeyboardEvent) => e.key === 'Enter' && handleSearch()}
+            sx={{ border: 'none', outline: 'none', background: 'transparent',
+              fontSize: '0.875rem', width: '100%', color: 'text.primary' }}
+          />
+        </Box>
+        {PCFilters}
+        <Button variant="contained" onClick={() => handleSearch()} size="small"
+          sx={{ borderRadius: 2, px: 2.5, flexShrink: 0 }}>
+          搜尋
+        </Button>
+      </Box>
+
+      {/* PC Split: Trail List + Map */}
+      <Box sx={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
+        {/* Left: Trail list */}
+        <Box sx={{
+          width: 420, flexShrink: 0,
+          overflowY: 'auto',
+          borderRight: '1px solid',
+          borderColor: 'divider',
+          '&::-webkit-scrollbar': { width: 4 },
+          '&::-webkit-scrollbar-thumb': { bgcolor: 'divider', borderRadius: 2 },
+        }}>
+          {isLoading ? (
+            <Box sx={{ p: 2, display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+              {[1,2,3,4].map(i => <Skeleton key={i} variant="rectangular" height={200} sx={{ borderRadius: 2 }} />)}
+            </Box>
+          ) : trails.length > 0 ? (
+            <Box sx={{ p: 2, display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+              <Typography variant="body2" color="text.secondary" sx={{ px: 0.5 }}>
+                共 <Box component="span" sx={{ color: 'primary.main', fontWeight: 700 }}>{trails.length}</Box> 條步道
+              </Typography>
+              {trails.map((trail) => (
+                <PCTrailCard
+                  key={trail.id}
+                  trail={trail}
+                  isActive={trail.id === activeTrailId}
+                  onHover={handleCardHover}
+                />
+              ))}
+            </Box>
+          ) : hasSearched ? (
+            <NoResultState />
+          ) : (
+            <InitialState onTagClick={handleTagClick} history={history}
+              onRemoveHistory={removeHistory} onClearHistory={clearHistory} />
+          )}
+        </Box>
+
+        {/* Right: Map */}
+        <Box sx={{ flex: 1, position: 'relative' }}>
+          <SearchMap
+            trails={[]}
+            activeTrailId={activeTrailId}
+            activeTrailDetail={activeTrailDetail}
+          />
+        </Box>
+      </Box>
+    </Box>
+
+    {/* ── Mobile Layout (xs) ────────────────────── */}
+    <Box sx={{ display: { xs: 'block', md: 'none' }, minHeight: '100vh', bgcolor: 'background.default', pb: 10 }}>
       {/* 頂部搜尋區 */}
       <Box
         sx={{
@@ -638,6 +783,7 @@ export function Search() {
           />
         )}
       </Box>
-    </Box>
+    </Box> {/* end mobile */}
+    </> /* end fragment */
   );
 }

@@ -35,8 +35,8 @@ export function ScrollToTop({ threshold = 300 }: ScrollToTopProps) {
         onClick={scrollToTop}
         sx={{
           position: 'fixed',
-          bottom: 80,
-          right: { xs: 16, md: 'calc(50vw - 199px)' },
+          bottom: { xs: 80, md: 32 },
+          right: { xs: 16, md: 32 },
           zIndex: 1000,
           boxShadow: theme.palette.mode === 'dark'
             ? '0 4px 12px rgba(0,0,0,0.4)'

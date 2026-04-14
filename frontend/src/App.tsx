@@ -6,11 +6,13 @@ import { AnimatePresence } from 'motion/react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ThemeContextProvider } from './contexts/ThemeContext';
 import { BottomNav } from './components/BottomNav';
+import { TopNav } from './components/TopNav';
 import { PageTransition } from './components/PageTransition';
 import PWAUpdatePrompt from './components/PWAUpdatePrompt';
 import { LoadingProgress, SuspenseFallback } from './components/LoadingProgress';
 import { PageSkeleton } from './components/Skeletons';
 import { ScrollToTop } from './components/ScrollToTop';
+import { Footer } from './components/Footer';
 import { Home } from './pages/Home';
 
 // Lazy load pages
@@ -116,34 +118,25 @@ function AnimatedRoutes() {
 
 function AppRoutes() {
   return (
-    <Box
-      sx={{
-        minHeight: '100vh',
-        bgcolor: { xs: 'background.default', md: '#1a2f22' },
-        display: { md: 'flex' },
-        justifyContent: { md: 'center' },
-      }}
-    >
-      {/* Phone shell on desktop */}
-      <Box
-        sx={{
-          width: '100%',
-          maxWidth: { md: 430 },
-          minHeight: '100vh',
-          bgcolor: 'background.default',
-          position: 'relative',
-          boxShadow: {
-            md: '0 0 0 1px rgba(255,255,255,0.06), 0 8px 60px rgba(0,0,0,0.6)',
-          },
-        }}
-      >
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', display: 'flex', flexDirection: 'column' }}>
+      {/* PC Top Navigation - hidden on mobile */}
+      <TopNav />
+
+      {/* Main content */}
+      <Box sx={{ flex: 1 }}>
         <LoadingProgress />
         <Suspense fallback={<LoadingFallback />}>
           <AnimatedRoutes />
         </Suspense>
         <ScrollToTop />
-        <BottomNav />
+        {/* Bottom nav - hidden on PC */}
+        <Box sx={{ display: { xs: 'block', md: 'none' } }}>
+          <BottomNav />
+        </Box>
       </Box>
+
+      {/* Footer - hidden on mobile */}
+      <Footer />
     </Box>
   );
 }

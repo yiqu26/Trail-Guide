@@ -20,9 +20,9 @@ const getTheme = (isDark: boolean) =>
     palette: {
       mode: isDark ? 'dark' : 'light',
       primary: {
-        main: '#1B4332',
-        light: '#52796F',
-        dark: '#0D2818',
+        main: isDark ? '#40916C' : '#1B4332',
+        light: isDark ? '#74C69E' : '#52796F',
+        dark: isDark ? '#2D6A4F' : '#0D2818',
         contrastText: '#ffffff',
       },
       secondary: {

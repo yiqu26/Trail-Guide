@@ -149,7 +149,245 @@ export function TrailDetail() {
   const diffColor = trail.difficulty ? difficultyColors[trail.difficulty] : undefined;
 
   return (
-    <Box sx={{ bgcolor: 'background.default', pb: 12 }}>
+    <>
+    {/* ══════════════════════════════════
+        PC Layout (md+)
+    ══════════════════════════════════ */}
+    <Box sx={{ display: { xs: 'none', md: 'block' }, bgcolor: 'background.default', minHeight: '100vh' }}>
+      <Box sx={{ maxWidth: 1200, mx: 'auto', px: { md: 3, lg: 5 }, py: 4 }}>
+        <Box sx={{ display: 'flex', gap: 4, alignItems: 'flex-start' }}>
+
+          {/* ── Left: Main content ── */}
+          <Box sx={{ flex: 1, minWidth: 0 }}>
+            {/* Hero Image */}
+            <Box sx={{ position: 'relative', borderRadius: 3, overflow: 'hidden', aspectRatio: '16/9', mb: 4 }}>
+              <Box
+                component="img"
+                src={trail.coverImage || '/placeholder-trail.jpg'}
+                alt={trail.title}
+                sx={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+              />
+              <Box sx={{
+                position: 'absolute', inset: 0,
+                background: 'linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, transparent 40%, rgba(0,0,0,0.75) 100%)',
+              }} />
+              {/* Back button */}
+              <IconButton
+                onClick={() => navigate(-1)}
+                sx={{ position: 'absolute', top: 16, left: 16, ...glassBtn }}
+              >
+                <ArrowBackIcon sx={{ fontSize: 20 }} />
+              </IconButton>
+              {/* Share + Favorite */}
+              <Box sx={{ position: 'absolute', top: 16, right: 16, display: 'flex', gap: 1 }}>
+                <IconButton onClick={handleShare} sx={glassBtn}><ShareIcon sx={{ fontSize: 20 }} /></IconButton>
+                <IconButton
+                  onClick={() => { if (!isAuthenticated) { navigate('/login'); return; } favoriteMutation.mutate(); }}
+                  disabled={favoriteMutation.isPending}
+                  sx={glassBtn}
+                >
+                  {isAuthenticated && trail.isFavorite
+                    ? <FavoriteIcon sx={{ fontSize: 20, color: '#ff5c75' }} />
+                    : <FavoriteBorderIcon sx={{ fontSize: 20 }} />}
+                </IconButton>
+              </Box>
+              {/* Title overlay */}
+              <Box sx={{ position: 'absolute', bottom: 20, left: 24, right: 24 }}>
+                {trail.difficulty && diffColor && (
+                  <Box sx={{ display: 'inline-flex', bgcolor: diffColor, borderRadius: '6px', px: 1, py: 0.3, mb: 1 }}>
+                    <Typography sx={{ fontSize: '0.68rem', color: 'white', fontWeight: 700, lineHeight: 1 }}>
+                      {difficultyLabels[trail.difficulty]}
+                    </Typography>
+                  </Box>
+                )}
+                <Typography sx={{
+                  fontFamily: '"Noto Serif TC", serif', fontWeight: 700,
+                  fontSize: '1.75rem', lineHeight: 1.25, color: 'white',
+                  textShadow: '0 2px 12px rgba(0,0,0,0.5)',
+                }}>
+                  {trail.title}
+                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 0.5 }}>
+                  <LocationOnIcon sx={{ fontSize: 14, color: 'rgba(255,255,255,0.7)' }} />
+                  <Typography sx={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.7)' }}>
+                    {[trail.countyName, trail.locationName].filter(Boolean).join(' · ')}
+                  </Typography>
+                </Box>
+              </Box>
+            </Box>
+
+            {/* Intro */}
+            {trail.intro && (
+              <Box sx={{ mb: 4 }}>
+                <SectionHeader>步道介紹</SectionHeader>
+                <Typography variant="body2" color="text.secondary" sx={{ whiteSpace: 'pre-line', lineHeight: 1.9, fontSize: '0.95rem' }}>
+                  {trail.intro}
+                </Typography>
+              </Box>
+            )}
+
+            {/* Map */}
+            <Box sx={{ mb: 4 }}>
+              <SectionHeader>地圖</SectionHeader>
+              <Box sx={{ borderRadius: 2, overflow: 'hidden', height: 420 }}>
+                <TrailMap title={trail.title} latitude={trail.latitude} longitude={trail.longitude} trailHeads={trail.trailHeads} />
+              </Box>
+            </Box>
+
+            {/* Trail Heads */}
+            {trail.trailHeads.length > 0 && (
+              <Box sx={{ mb: 4 }}>
+                <SectionHeader>步道入口</SectionHeader>
+                <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 1.5 }}>
+                  {trail.trailHeads.map((head) => (
+                    <Card key={head.id} elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderLeft: '3px solid', borderLeftColor: 'primary.main' }}>
+                      <CardContent sx={{ py: 1.5, '&:last-child': { pb: 1.5 } }}>
+                        <Typography variant="subtitle2" fontWeight={600} sx={{ fontFamily: '"Noto Serif TC", serif' }}>{head.name}</Typography>
+                        {head.description && <Typography variant="caption" color="text.secondary">{head.description}</Typography>}
+                      </CardContent>
+                    </Card>
+                  ))}
+                </Box>
+              </Box>
+            )}
+
+            {/* Comments */}
+            <Box>
+              <SectionHeader>評論</SectionHeader>
+              <CommentSection trailId={trail.id} />
+            </Box>
+          </Box>
+
+          {/* ── Right: Sticky Sidebar ── */}
+          <Box sx={{ width: 300, flexShrink: 0 }}>
+            <Box sx={{ position: 'sticky', top: 84, display: 'flex', flexDirection: 'column', gap: 2 }}>
+
+              {/* Stats Card */}
+              <Box sx={{ bgcolor: 'background.paper', border: '1px solid', borderColor: 'divider', borderRadius: 3, overflow: 'hidden' }}>
+                <Box sx={{ bgcolor: 'primary.main', px: 2.5, py: 1.5 }}>
+                  <Typography sx={{ color: 'white', fontWeight: 700, fontSize: '0.85rem', opacity: 0.9 }}>步道數據</Typography>
+                </Box>
+                <Box sx={{ px: 2.5, py: 2, display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+                  {trail.evaluation && (
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Typography variant="body2" color="text.secondary">評分</Typography>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                        <StarIcon sx={{ fontSize: 16, color: '#F5C842' }} />
+                        <Typography variant="body2" fontWeight={700}>{trail.evaluation.toFixed(1)}</Typography>
+                        {trail.commentCount > 0 && <Typography variant="caption" color="text.secondary">({trail.commentCount})</Typography>}
+                      </Box>
+                    </Box>
+                  )}
+                  {trail.distance && (
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Typography variant="body2" color="text.secondary">距離</Typography>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                        <StraightenIcon sx={{ fontSize: 16, color: 'primary.main' }} />
+                        <Typography variant="body2" fontWeight={600}>{(trail.distance / 1000).toFixed(1)} km</Typography>
+                      </Box>
+                    </Box>
+                  )}
+                  {trail.costTime && (
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Typography variant="body2" color="text.secondary">所需時間</Typography>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                        <AccessTimeIcon sx={{ fontSize: 16, color: 'primary.main' }} />
+                        <Typography variant="body2" fontWeight={600}>{formatDuration(trail.costTime)}</Typography>
+                      </Box>
+                    </Box>
+                  )}
+                  {trail.altitude && (
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Typography variant="body2" color="text.secondary">最高海拔</Typography>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                        <HeightIcon sx={{ fontSize: 16, color: 'primary.main' }} />
+                        <Typography variant="body2" fontWeight={600}>{trail.altitude} m</Typography>
+                      </Box>
+                    </Box>
+                  )}
+                  {trail.difficulty && diffColor && (
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Typography variant="body2" color="text.secondary">難度</Typography>
+                      <Box sx={{ px: 1.2, py: 0.3, borderRadius: 1, bgcolor: diffColor }}>
+                        <Typography sx={{ fontSize: '0.72rem', color: 'white', fontWeight: 700 }}>{difficultyLabels[trail.difficulty]}</Typography>
+                      </Box>
+                    </Box>
+                  )}
+                  {trail.roadStatus && (
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Typography variant="body2" color="text.secondary">路況</Typography>
+                      <Typography variant="body2" fontWeight={600} color="success.main">{trail.roadStatus}</Typography>
+                    </Box>
+                  )}
+                </Box>
+              </Box>
+
+              {/* Action Buttons */}
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                <Button
+                  fullWidth
+                  variant={trail.isFavorite ? 'outlined' : 'contained'}
+                  color="primary"
+                  startIcon={trail.isFavorite ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+                  onClick={() => { if (!isAuthenticated) { navigate('/login'); return; } favoriteMutation.mutate(); }}
+                  disabled={favoriteMutation.isPending}
+                  sx={{ borderRadius: 2, py: 1.2, fontWeight: 600 }}
+                >
+                  {trail.isFavorite ? '已在口袋名單' : '加入口袋名單'}
+                </Button>
+                <Button
+                  fullWidth
+                  variant="outlined"
+                  color={isVisited ? 'success' : 'primary'}
+                  startIcon={isVisited ? <CheckCircleIcon /> : <RadioButtonUncheckedIcon />}
+                  onClick={() => { if (!isAuthenticated) { navigate('/login'); return; } visitedMutation.mutate(); }}
+                  disabled={visitedMutation.isPending}
+                  sx={{ borderRadius: 2, py: 1.2, fontWeight: 600 }}
+                >
+                  {isVisited ? '已去過' : '標記已去過'}
+                </Button>
+                <Button
+                  fullWidth
+                  variant="outlined"
+                  color="inherit"
+                  startIcon={<ShareIcon />}
+                  onClick={handleShare}
+                  sx={{
+                    borderRadius: 2, py: 1.2, fontWeight: 600,
+                    color: 'text.primary',
+                    borderColor: 'divider',
+                    '&:hover': { borderColor: 'text.secondary', bgcolor: 'action.hover' },
+                  }}
+                >
+                  分享步道
+                </Button>
+              </Box>
+
+              {/* Tags */}
+              {trail.chips.length > 0 && (
+                <Box>
+                  <Typography variant="caption" color="text.secondary" sx={{ mb: 1, display: 'block' }}>標籤</Typography>
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.75 }}>
+                    {trail.chips.map((chip) => (
+                      <Chip key={chip} label={chip} size="small" sx={{
+                        height: 24, fontSize: '0.72rem',
+                        bgcolor: (theme) => theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.07)' : 'rgba(27,67,50,0.07)',
+                        color: 'text.secondary',
+                      }} />
+                    ))}
+                  </Box>
+                </Box>
+              )}
+            </Box>
+          </Box>
+        </Box>
+      </Box>
+    </Box>
+
+    {/* ══════════════════════════════════
+        Mobile Layout (xs only)
+    ══════════════════════════════════ */}
+    <Box sx={{ display: { xs: 'block', md: 'none' }, bgcolor: 'background.default', pb: 12 }}>
       {/* ── Hero Image (full bleed, 60svh) ── */}
       <Box sx={{ position: 'relative', height: '60svh', overflow: 'hidden' }}>
         <Box
@@ -398,7 +636,7 @@ export function TrailDetail() {
           {isVisited ? (
             <CheckCircleIcon sx={{ color: 'success.main', fontSize: 28, flexShrink: 0 }} />
           ) : (
-            <RadioButtonUncheckedIcon sx={{ color: 'text.disabled', fontSize: 28, flexShrink: 0 }} />
+            <RadioButtonUncheckedIcon sx={{ color: 'text.secondary', fontSize: 28, flexShrink: 0 }} />
           )}
           <Box sx={{ flex: 1 }}>
             <Typography variant="subtitle2" fontWeight={600} color={isVisited ? 'success.main' : 'text.primary'}>
@@ -436,7 +674,8 @@ export function TrailDetail() {
           {snackbar.message}
         </Alert>
       </Snackbar>
-    </Box>
+    </Box> {/* end mobile */}
+    </> /* end fragment */
   );
 }
 

@@ -27,11 +27,12 @@
 - **步道瀏覽** - 搜尋、分類、縣市、難度篩選
 - **GPS 附近步道** - 根據定位顯示周邊步道
 - **互動地圖** - 步道位置與入口標記
-- **登山打卡** - GPS 驗證、記錄登山時間與心得
-- **成就徽章** - 37 種成就，解鎖條件包含打卡次數、特定步道等
-- **收藏功能** - 建立個人收藏清單
-- **評論系統** - 查看與點讚評論
+- **已去過標記** - 記錄走過的步道，追蹤個人足跡
+- **口袋名單** - 建立個人收藏清單
+- **評論系統** - 發表、編輯、刪除評論，支援圖片上傳與點讚
 - **Google 登入** - 支援第三方快速登入
+- **PWA 支援** - 可安裝至手機桌面，支援離線緩存
+- **深色模式** - 支援淺色 / 深色 / 跟隨系統
 
 ## 快速開始
 
@@ -97,19 +98,21 @@ Password: Test123!
 - `GET /api/trails/{id}` - 步道詳情
 - `GET /api/trails/nearby` - 附近步道
 
-### 打卡
-- `GET /api/checkins` - 我的打卡紀錄
-- `POST /api/checkins` - 新增打卡
-- `GET /api/checkins/trail/{trailId}` - 步道打卡紀錄
+### 口袋名單
+- `GET /api/favorites` - 我的口袋名單
+- `POST /api/favorites/{trailId}` - 加入
+- `DELETE /api/favorites/{trailId}` - 移除
 
-### 成就
-- `GET /api/achievements` - 所有成就
-- `GET /api/achievements/user` - 我的成就
+### 已去過
+- `GET /api/visitedtrails` - 已去過清單
+- `POST /api/visitedtrails/{trailId}` - 標記已去過
+- `DELETE /api/visitedtrails/{trailId}` - 取消標記
 
-### 收藏
-- `GET /api/favorites` - 我的收藏
-- `POST /api/favorites/{trailId}` - 加入收藏
-- `DELETE /api/favorites/{trailId}` - 移除收藏
+### 評論
+- `GET /api/trails/{id}/comments` - 步道評論
+- `POST /api/trails/{id}/comments` - 發表評論（支援圖片）
+- `PUT /api/trails/{id}/comments/{commentId}` - 編輯評論
+- `DELETE /api/trails/{id}/comments/{commentId}` - 刪除評論
 
 ## 專案結構
 

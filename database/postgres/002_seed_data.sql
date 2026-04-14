@@ -251,9 +251,9 @@ INSERT INTO CollectionTrails (CollectionId, TrailId, SortOrder) VALUES
 -- =============================================
 
 INSERT INTO Banners (Title, ImageUrl, Link, SortOrder, IsActive) VALUES
-('探索台灣最美步道', 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=1200', '/search', 1, TRUE),
-('春季賞花推薦', 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200', '/collection/1', 2, TRUE),
-('親子步道精選', 'https://images.unsplash.com/photo-1454496522488-7a8e488e8606?w=1200', '/collection/2', 3, TRUE);
+('探索台灣最美步道', 'https://images.unsplash.com/photo-1610112278135-4f80f54ca14a?w=2560&q=92&fm=jpg&cs=srgb&fit=crop', '/search', 1, TRUE),
+('春季賞花推薦', 'https://images.unsplash.com/photo-1761141954416-fc30efa133bb?w=2560&q=92&fm=jpg&cs=srgb&fit=crop', '/collection/1', 2, TRUE),
+('親子步道精選', 'https://images.unsplash.com/photo-1762375213094-55e959663c72?w=2560&q=92&fm=jpg&cs=srgb&fit=crop', '/collection/2', 3, TRUE);
 
 -- =============================================
 -- 公告

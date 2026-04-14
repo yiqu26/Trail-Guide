@@ -2,16 +2,16 @@ import type { HomeData, TrailListItem, TrailDetail } from '../types';
 
 // 使用 Unsplash 的免費步道圖片
 const trailImages = {
-  xiangshan: 'https://images.unsplash.com/photo-1501555088652-021faa106b9b?w=800',
-  forest: 'https://images.unsplash.com/photo-1448375240586-882707db888b?w=800',
-  mountain: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800',
-  trail1: 'https://images.unsplash.com/photo-1551632811-561732d1e306?w=800',
-  trail2: 'https://images.unsplash.com/photo-1533240332313-0db49b459ad6?w=800',
-  trail3: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800',
-  waterfall: 'https://images.unsplash.com/photo-1432405972618-c60b0225b8f9?w=800',
-  banner1: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=1200',
-  banner2: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200',
-  banner3: 'https://images.unsplash.com/photo-1454496522488-7a8e488e8606?w=1200',
+  xiangshan: 'https://images.unsplash.com/photo-1501555088652-021faa106b9b?w=1200&q=85&auto=format&fit=crop',
+  forest: 'https://images.unsplash.com/photo-1448375240586-882707db888b?w=1200&q=85&auto=format&fit=crop',
+  mountain: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=1200&q=85&auto=format&fit=crop',
+  trail1: 'https://images.unsplash.com/photo-1551632811-561732d1e306?w=1200&q=85&auto=format&fit=crop',
+  trail2: 'https://images.unsplash.com/photo-1533240332313-0db49b459ad6?w=1200&q=85&auto=format&fit=crop',
+  trail3: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1200&q=85&auto=format&fit=crop',
+  waterfall: 'https://images.unsplash.com/photo-1432405972618-c60b0225b8f9?w=1200&q=85&auto=format&fit=crop',
+  banner1: 'https://images.unsplash.com/photo-1610112278135-4f80f54ca14a?w=2560&q=92&fm=jpg&cs=srgb&fit=crop',
+  banner2: 'https://images.unsplash.com/photo-1761141954416-fc30efa133bb?w=2560&q=92&fm=jpg&cs=srgb&fit=crop',
+  banner3: 'https://images.unsplash.com/photo-1762375213094-55e959663c72?w=2560&q=92&fm=jpg&cs=srgb&fit=crop',
 };
 
 export const mockTrails: TrailListItem[] = [

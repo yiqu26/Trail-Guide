@@ -21,6 +21,7 @@
     "axios": "^1.13.3",
     "jwt-decode": "^4.0.0",
     "leaflet": "^1.9.4",
+    "lucide-react": "^1.8.0",
     "motion": "^12.30.0",
     "nprogress": "^0.2.0",
     "react": "^19.2.0",
