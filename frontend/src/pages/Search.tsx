@@ -352,6 +352,7 @@ export function Search() {
       setTrails(results);
     } catch (error) {
       console.error('Search failed:', error);
+      setTrails([]);
     } finally {
       setIsLoading(false);
     }
@@ -513,7 +514,7 @@ export function Search() {
         {/* Right: Map */}
         <Box sx={{ flex: 1, position: 'relative' }}>
           <SearchMap
-            trails={[]}
+            trails={trails}
             activeTrailId={activeTrailId}
             activeTrailDetail={activeTrailDetail}
           />

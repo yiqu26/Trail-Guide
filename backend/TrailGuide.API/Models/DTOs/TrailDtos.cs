@@ -12,6 +12,8 @@ public class TrailListDto
     public string? LocationName { get; set; }
     public List<string> Chips { get; set; } = new();
     public bool IsFavorite { get; set; }
+    public decimal? Latitude { get; set; }
+    public decimal? Longitude { get; set; }
 }
 
 public class TrailDetailDto

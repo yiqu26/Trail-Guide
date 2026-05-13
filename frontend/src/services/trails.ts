@@ -2,8 +2,7 @@ import api from './api';
 import { mockTrails, getMockTrailById } from './mockData';
 import type { TrailListItem, TrailDetail, NearbyTrail, TrailSearchParams, County, Classification } from '../types';
 
-// 開發模式下使用 mock 數據
-const USE_MOCK = import.meta.env.DEV;
+const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
 
 export const trailService = {
   async getTrails(params?: TrailSearchParams): Promise<TrailListItem[]> {
@@ -21,6 +20,8 @@ export const trailService = {
             t.locationName?.toLowerCase().includes(keyword)
           );
         }
+        if (params?.minDifficulty) results = results.filter(t => t.difficulty >= params.minDifficulty!);
+        if (params?.maxDifficulty) results = results.filter(t => t.difficulty <= params.maxDifficulty!);
         return results;
       }
       throw error;

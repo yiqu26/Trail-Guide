@@ -71,7 +71,9 @@ public class TrailsController : ControllerBase
                 CostTime = t.CostTime,
                 LocationName = t.Location != null ? t.Location.Name : null,
                 Chips = t.ChipTrails.Select(ct => ct.Chip.Name).ToList(),
-                IsFavorite = userId.HasValue && t.Favorites.Any(f => f.UserId == userId)
+                IsFavorite = userId.HasValue && t.Favorites.Any(f => f.UserId == userId),
+                Latitude = t.Latitude,
+                Longitude = t.Longitude
             })
             .ToListAsync();
 
